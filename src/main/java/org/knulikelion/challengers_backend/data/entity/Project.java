@@ -22,16 +22,16 @@ public class Project {
     @Column(nullable = false)
     private String projectName;
 
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    @Column(nullable = false)
     private String projectDescription;
 
     @Column(nullable = false)
     private Integer projectStatus;
 
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    @Column(nullable = false)
     private String projectPeriod;
 
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    @Column(nullable = false)
     private String projectTechStacks;
 
     @Column(nullable = false)
