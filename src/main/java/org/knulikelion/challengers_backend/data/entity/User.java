@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.data.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -8,7 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,17 +26,12 @@ public class User {
     private String userName;
     @Column(nullable = false, name = "email")
     private String email;
-    @Column(name = "created_at",updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAT;
-    @Column(name = "updated_at")
+    @Column(name = "created_at",nullable = false,updatable = false)
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at",nullable = false)
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Column(nullable = false)
     private List<UserClub> clubs = new ArrayList<>();
-
-
-
 
 }
