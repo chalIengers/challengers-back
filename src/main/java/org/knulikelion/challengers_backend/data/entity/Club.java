@@ -24,7 +24,7 @@ public class Club {
     private Long id;
     @Column(nullable = false, name = "club_name")
     private String clubName;
-    @Column(name = "logo_url",columnDefinition = "TEXT")
+    @Column(name = "logo_url")
     private String logoUrl;
     @Column(name = "club_description",columnDefinition = "LONGTEXT")
     private String clubDescription;
@@ -32,10 +32,11 @@ public class Club {
     private int subscribersNumber;
     @Column(name = "club_form") // club_form column 은 피그마 설명 후 수정 예정.
     private String clubForm;
-    @Column(name = "created_at",updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAT;
-    @Column(name = "updated_at")
+    @Column(name ="club_approved",nullable = false)
+    private boolean clubApproved;
+    @Column(name = "created_at",nullable = false,updatable = false)
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at",nullable = false)
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "club", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
