@@ -18,10 +18,9 @@ public class UserClub {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_club_id")
     private Long id;
-    @Column(name = "created_at",updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAT;
-    @Column(name = "updated_at")
+    @Column(name = "created_at",nullable = false,updatable = false)
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at",nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToOne
