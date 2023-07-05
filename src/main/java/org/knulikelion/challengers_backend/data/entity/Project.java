@@ -40,7 +40,17 @@ public class Project {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+<<<<<<< Updated upstream
 //    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "club_id", nullable = false)
 //    private Club club;
+=======
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "club_id")
+    private Club club;
+>>>>>>> Stashed changes
 }
