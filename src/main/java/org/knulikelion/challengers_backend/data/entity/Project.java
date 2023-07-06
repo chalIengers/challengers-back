@@ -26,13 +26,7 @@ public class Project {
     private String projectDescription;
 
     @Column(nullable = false)
-    private Integer projectStatus;
-
-    @Column(nullable = false)
-    private String projectPeriod;
-
-    @Column(nullable = false)
-    private String projectTechStacks;
+    private String projectCategory;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
