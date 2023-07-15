@@ -26,6 +26,18 @@ public class Project {
     @Column(nullable = false)
     private String projectDescription;
 
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    private String projectDetail;
+
+    @Column(nullable = false)
+    private Integer projectStatus;
+
+    @Column(nullable = false)
+    private String projectPeriod;
+
+    @Column(nullable = false)
+    private String projectTechStacks;
+
     @Column(nullable = false)
     private String projectCategory;
 
@@ -42,4 +54,5 @@ public class Project {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "club_id")
     private Club club;
+
 }
