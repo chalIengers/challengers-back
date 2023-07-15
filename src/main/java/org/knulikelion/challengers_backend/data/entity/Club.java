@@ -2,8 +2,6 @@ package org.knulikelion.challengers_backend.data.entity;
 
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -1,8 +1,7 @@
 package org.knulikelion.challengers_backend.data.entity;
 
-import com.sun.istack.NotNull;
+
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,5 +32,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UserClub> clubs = new ArrayList<>();
-
 }
