@@ -54,5 +54,4 @@ public class Project {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "club_id")
     private Club club;
-
 }
