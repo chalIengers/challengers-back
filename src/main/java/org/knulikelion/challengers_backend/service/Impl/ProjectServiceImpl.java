@@ -2,13 +2,15 @@ package org.knulikelion.challengers_backend.service.Impl;
 
 import org.knulikelion.challengers_backend.data.dao.ProjectCrewDAO;
 import org.knulikelion.challengers_backend.data.dao.ProjectDAO;
+import org.knulikelion.challengers_backend.data.dao.ProjectLinkDAO;
+import org.knulikelion.challengers_backend.data.dao.ProjectTechStackDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
+import org.knulikelion.challengers_backend.data.dto.request.ProjectLinkRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
+import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
-import org.knulikelion.challengers_backend.data.entity.Project;
-import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
-import org.knulikelion.challengers_backend.data.entity.User;
+import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,22 @@ import java.time.format.DateTimeFormatter;
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectDAO projectDAO;
     private final ProjectCrewDAO projectCrewDAO;
+    private final ProjectLinkDAO projectLinkDAO;
+    private final ProjectTechStackDAO projectTechStackDAO;
 //    임시
     private final UserRepository userRepository;
     @Autowired
-    public ProjectServiceImpl(ProjectDAO projectDAO, ProjectCrewDAO projectCrewDAO, UserRepository userRepository) {
+    public ProjectServiceImpl(
+            ProjectDAO projectDAO,
+            ProjectCrewDAO projectCrewDAO,
+            ProjectLinkDAO projectLinkDAO,
+            ProjectTechStackDAO projectTechStackDAO,
+            UserRepository userRepository
+    ) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
+        this.projectLinkDAO = projectLinkDAO;
+        this.projectTechStackDAO = projectTechStackDAO;
         this.userRepository = userRepository;
     }
 
@@ -126,7 +138,25 @@ public class ProjectServiceImpl implements ProjectService {
             projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
             projectCrew.setCreatedAt(currentTime);
             projectCrew.setUpdatedAt(currentTime);
+
             projectCrewDAO.createCrew(projectCrew);
+        }
+
+        for (ProjectLinkRequestDto projectLinkRequestDto : projectRequestDto.getProjectLink()) {
+            ProjectLink projectLink = new ProjectLink();
+            projectLink.setLinkName(projectLinkRequestDto.getName());
+            projectLink.setLinkUrl(projectLinkRequestDto.getLinkUrl());
+            projectLink.setProject(createdProject);
+
+            projectLinkDAO.createLink(projectLink);
+        }
+
+        for (ProjectTechStackRequestDto projectTechStackRequestDto : projectRequestDto.getProjectTechStack()) {
+            ProjectTechStack projectTechStack = new ProjectTechStack();
+            projectTechStack.setTechStackName(projectTechStackRequestDto.getName());
+            projectTechStack.setProject(createdProject);
+
+            projectTechStackDAO.createTechStack(projectTechStack);
         }
 
         ResultResponseDto resultResponseDto = new ResultResponseDto();
