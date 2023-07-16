@@ -36,9 +36,6 @@ public class Project {
     private String projectPeriod;
 
     @Column(nullable = false)
-    private String projectTechStacks;
-
-    @Column(nullable = false)
     private String projectCategory;
 
     @Column(nullable = false)
