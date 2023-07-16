@@ -1,8 +1,10 @@
 package org.knulikelion.challengers_backend.data.dto.request;
 
 import lombok.*;
+import org.knulikelion.challengers_backend.data.entity.Club;
+import org.knulikelion.challengers_backend.data.entity.User;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class ProjectRequestDto {
     private String projectPeriod;
     private String projectTechStacks;
     private String projectCategory;
-    //    private List<ProjectCrew> projectCrew;
+    private List<ProjectCrewRequestDto> projectCrew;
     private Integer uploadedUserId;
     private Integer belongedClubId;
 }
