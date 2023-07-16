@@ -1,9 +1,6 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
-import org.knulikelion.challengers_backend.data.dao.ProjectCrewDAO;
-import org.knulikelion.challengers_backend.data.dao.ProjectDAO;
-import org.knulikelion.challengers_backend.data.dao.ProjectLinkDAO;
-import org.knulikelion.challengers_backend.data.dao.ProjectTechStackDAO;
+import org.knulikelion.challengers_backend.data.dao.*;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectLinkRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
@@ -11,7 +8,6 @@ import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequ
 import org.knulikelion.challengers_backend.data.dto.response.ProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
-import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,21 +20,24 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectCrewDAO projectCrewDAO;
     private final ProjectLinkDAO projectLinkDAO;
     private final ProjectTechStackDAO projectTechStackDAO;
-//    임시
-    private final UserRepository userRepository;
+    private final ClubDAO clubDAO;
+    private final UserDAO userDAO;
+
     @Autowired
     public ProjectServiceImpl(
             ProjectDAO projectDAO,
             ProjectCrewDAO projectCrewDAO,
             ProjectLinkDAO projectLinkDAO,
             ProjectTechStackDAO projectTechStackDAO,
-            UserRepository userRepository
+            ClubDAO clubDAO,
+            UserDAO userDAO
     ) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
         this.projectLinkDAO = projectLinkDAO;
         this.projectTechStackDAO = projectTechStackDAO;
-        this.userRepository = userRepository;
+        this.clubDAO = clubDAO;
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -110,19 +109,9 @@ public class ProjectServiceImpl implements ProjectService {
         if(projectRequestDto.getBelongedClubId() == 0) {
             project.setClub(null);
         } else {
-//            이 부분 추가해야 함 코드
-            project.setClub(null);
+            project.setClub(clubDAO.selectClubById(projectRequestDto.getBelongedClubId()).get());
         }
-
-//        임시
-        User user = new User();
-        user.setUserName("전윤환");
-        user.setCreatedAt(currentTime);
-        user.setUpdatedAt(currentTime);
-        user.setEmail("yunsol267@gmail.com");
-
-        User savedUser = userRepository.save(user);
-        project.setUser(savedUser);
+        project.setUser(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).get());
 
         Project createdProject = projectDAO.createProject(project);
 

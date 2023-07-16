@@ -20,6 +20,6 @@ public class ProjectRequestDto {
     private List<ProjectCrewRequestDto> projectCrew;
     private List<ProjectLinkRequestDto> projectLink;
     private List<ProjectTechStackRequestDto> projectTechStack;
-    private Integer uploadedUserId;
-    private Integer belongedClubId;
+    private Long uploadedUserId;
+    private Long belongedClubId;
 }
