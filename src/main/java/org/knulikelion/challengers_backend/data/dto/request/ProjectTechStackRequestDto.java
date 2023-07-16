@@ -7,8 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ProjectCrewRequestDto {
+public class ProjectTechStackRequestDto {
     private String name;
-    private String role;
-    private String position;
+    private String url;
 }
