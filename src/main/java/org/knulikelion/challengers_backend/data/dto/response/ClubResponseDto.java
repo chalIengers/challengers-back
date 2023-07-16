@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class UserResponseDto {
+public class ClubResponseDto {
     private Integer code;
     private String msg;
 }
