@@ -16,7 +16,6 @@ public class ProjectRequestDto {
     private String projectDetail;
     private Integer projectStatus;
     private String projectPeriod;
-    private String projectTechStacks;
     private String projectCategory;
     private List<ProjectCrewRequestDto> projectCrew;
     private List<ProjectLinkRequestDto> projectLink;

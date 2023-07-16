@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -61,7 +60,6 @@ public class ProjectServiceImpl implements ProjectService {
             projectResponseDto.setImageUrl(selectedProject.getImageUrl());
             projectResponseDto.setProjectStatus(selectedProject.getProjectStatus());
             projectResponseDto.setProjectPeriod(selectedProject.getProjectPeriod());
-            projectResponseDto.setProjectTechStacks(selectedProject.getProjectTechStacks());
             projectResponseDto.setProjectCategory(selectedProject.getProjectCategory());
             projectResponseDto.setCreatedAt(String.valueOf(selectedProject.getCreatedAt()));
             projectResponseDto.setUpdatedAt(String.valueOf(selectedProject.getUpdatedAt()));
@@ -97,7 +95,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ResultResponseDto createProject(ProjectRequestDto projectRequestDto) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         LocalDateTime currentTime = LocalDateTime.now();
 
         Project project = new Project();
@@ -107,7 +104,6 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectDetail(projectRequestDto.getProjectDetail());
         project.setProjectStatus(projectRequestDto.getProjectStatus());
         project.setProjectPeriod(projectRequestDto.getProjectPeriod());
-        project.setProjectTechStacks(projectRequestDto.getProjectTechStacks());
         project.setProjectCategory(projectRequestDto.getProjectCategory());
         project.setCreatedAt(currentTime);
         project.setUpdatedAt(currentTime);

@@ -22,6 +22,6 @@ public class ProjectLink {
     private String linkUrl;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(nullable = false, name = "project_id")
     private Project project;
 }
