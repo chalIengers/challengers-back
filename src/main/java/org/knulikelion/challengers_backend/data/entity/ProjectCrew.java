@@ -1,24 +1,24 @@
 package org.knulikelion.challengers_backend.data.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "project_crew")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
-@Table(name = "project_crew")
+@Builder
+@Data
 public class ProjectCrew {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "projectcrew_id",nullable = false)
     private Long id;
 
     @Column(name = "projectcrew_name",nullable = false)
