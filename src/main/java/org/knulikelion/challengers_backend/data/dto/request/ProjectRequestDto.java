@@ -1,7 +1,6 @@
 package org.knulikelion.challengers_backend.data.dto.request;
 
 import lombok.*;
-import org.knulikelion.challengers_backend.data.dto.ProjectCrewDto;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class ProjectRequestDto {
     private Integer projectStatus;
     private String projectPeriod;
     private String projectCategory;
-    private List<ProjectCrewDto> projectCrew;
+    private List<ProjectCrewRequestDto> projectCrew;
     private List<ProjectLinkRequestDto> projectLink;
     private List<ProjectTechStackRequestDto> projectTechStack;
     private Long uploadedUserId;

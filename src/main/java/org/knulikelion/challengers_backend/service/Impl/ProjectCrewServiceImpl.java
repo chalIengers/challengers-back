@@ -1,13 +1,11 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
-import lombok.RequiredArgsConstructor;
-import org.knulikelion.challengers_backend.data.dto.ProjectCrewDto;
+import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
 import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
 import org.knulikelion.challengers_backend.service.ProjectCrewService;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -20,7 +18,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
     }
 
     @Override
-    public ProjectCrewDto.Info createCrew(ProjectCrewDto.ProjectCrewRequestDto projectCrewRequestDto) {
+    public ProjectCrewRequestDto createCrew(ProjectCrewRequestDto projectCrewRequestDto) {
         ProjectCrew projectCrew = ProjectCrew.builder()
                 .projectCrewName(projectCrewRequestDto.getName())
                 .projectCrewPosition(projectCrewRequestDto.getPosition())
@@ -29,7 +27,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
 
         ProjectCrew saveCrew = projectCrewRepository.save(projectCrew);
 
-        ProjectCrewDto.Info saveCrewDto = ProjectCrewDto.Info.builder()
+        ProjectCrewRequestDto saveCrewDto = ProjectCrewRequestDto.builder()
                 .id(saveCrew.getId())
                 .name(saveCrew.getProjectCrewName())
                 .position(saveCrew.getProjectCrewPosition())
@@ -39,10 +37,10 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
     }
 
     @Override
-    public ProjectCrewDto.Info readCrew(Long id) {
+    public ProjectCrewRequestDto readCrew(Long id) {
         Optional<ProjectCrew> projectCrew = projectCrewRepository.findById(id);
 
-        ProjectCrewDto.Info readCrewDto = ProjectCrewDto.Info.builder()
+        ProjectCrewRequestDto readCrewDto = ProjectCrewRequestDto.builder()
                 .id(projectCrew.get().getId())
                 .name(projectCrew.get().getProjectCrewName())
                 .role(projectCrew.get().getProjectCrewRole())
@@ -53,7 +51,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
     }
 
     @Override
-    public void updateCrew(Long id, ProjectCrewDto.ProjectCrewRequestDto projectCrewRequestDto) throws Exception {
+    public void updateCrew(Long id, ProjectCrewRequestDto projectCrewRequestDto) throws Exception {
 
         ProjectCrew projectCrew = ProjectCrew.builder()
                 .id(id)

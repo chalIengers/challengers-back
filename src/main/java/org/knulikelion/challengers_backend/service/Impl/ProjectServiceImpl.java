@@ -1,10 +1,11 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
 import org.knulikelion.challengers_backend.data.dao.*;
-import org.knulikelion.challengers_backend.data.dto.ProjectCrewDto;
+import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectLinkRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
@@ -115,7 +116,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project createdProject = projectDAO.createProject(project);
 
-        for (ProjectCrewDto projectCrewRequestDto : projectRequestDto.getProjectCrew()) {
+        for (ProjectCrewRequestDto projectCrewRequestDto : projectRequestDto.getProjectCrew()) {
             ProjectCrew projectCrew = new ProjectCrew();
             projectCrew.setProject(createdProject);
             projectCrew.setProjectCrewName(projectCrew.getProjectCrewName());

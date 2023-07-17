@@ -1,16 +1,16 @@
 package org.knulikelion.challengers_backend.service;
 
-import org.knulikelion.challengers_backend.data.dto.ProjectCrewDto;
+import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 
 public interface ProjectCrewService {
 
     // 팀원 작성.
-    ProjectCrewDto.Info createCrew(ProjectCrewDto.ProjectCrewRequestDto projectCrewRequestDto);
+    ProjectCrewRequestDto createCrew(ProjectCrewRequestDto projectCrewRequestDto);
 
     // 팀원 목록
-    ProjectCrewDto.Info readCrew(Long id);
+    ProjectCrewRequestDto readCrew(Long id);
 
-    void updateCrew(Long id, ProjectCrewDto.ProjectCrewRequestDto projectCrewRequestDto) throws Exception;
+    void updateCrew(Long id, ProjectCrewRequestDto projectCrewRequestDto) throws Exception;
 
     void deleteCrew(Long id) throws Exception;
 
