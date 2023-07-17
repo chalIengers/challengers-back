@@ -7,4 +7,5 @@ public interface ProjectService {
     Object getProjectById(Long id);
     ResultResponseDto removeProject(Long id);
     ResultResponseDto createProject(ProjectRequestDto projectRequestDto);
+    ResultResponseDto updateProject(Long id, ProjectRequestDto projectRequestDto);
 }
