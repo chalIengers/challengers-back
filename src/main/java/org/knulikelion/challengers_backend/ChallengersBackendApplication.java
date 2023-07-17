@@ -8,7 +8,6 @@ public class ChallengersBackendApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ChallengersBackendApplication.class, args);
-
     }
 
 }

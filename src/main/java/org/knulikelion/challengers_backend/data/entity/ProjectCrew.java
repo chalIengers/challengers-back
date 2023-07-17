@@ -1,24 +1,24 @@
 package org.knulikelion.challengers_backend.data.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "project_crew")
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
-@Builder
-@Data
-public class ProjectCrew extends BaseEntity{
+@Table(name = "project_crew")
+public class ProjectCrew {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "projectcrew_id",nullable = false)
     private Long id;
 
     @Column(name = "projectcrew_name",nullable = false)
@@ -30,7 +30,13 @@ public class ProjectCrew extends BaseEntity{
     @Column(name = "projectcrew_role",nullable = false)
     private String projectCrewRole;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL,optional = false)
-    @JoinColumn(name = "project_id", nullable = false)
+    @Column(name = "created_at",nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at",nullable = false)
+    private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id")
     private Project project;
 }

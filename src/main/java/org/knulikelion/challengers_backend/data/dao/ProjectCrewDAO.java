@@ -1,15 +1,13 @@
 package org.knulikelion.challengers_backend.data.dao;
 
+import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.ProjectLinkResponseDto;
 import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
 
-import java.util.Optional;
-
+import java.util.List;
 
 public interface ProjectCrewDAO {
-
-    Optional<ProjectCrew> selectById(Long id);
     ProjectCrew createCrew(ProjectCrew projectCrew);
-    ProjectCrew updateCrew(ProjectCrew projectCrew);
-    void removeCrew(Long id);
+    List<ProjectCrewResponseDto> getCrew(Long id);
+    void removeCrew(Long projectId);
 }
-
