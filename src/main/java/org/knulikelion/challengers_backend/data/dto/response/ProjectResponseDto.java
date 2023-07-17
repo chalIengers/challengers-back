@@ -1,7 +1,11 @@
 package org.knulikelion.challengers_backend.data.dto.response;
 
 import lombok.*;
+import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
+
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,12 +19,13 @@ public class ProjectResponseDto {
     private String imageUrl;
     private Integer projectStatus;
     private String ProjectPeriod;
-    private String projectTechStacks;
+    private List<ProjectTechStackResponseDto> projectTechStack;
+    private List<ProjectLinkResponseDto> projectLink;
+    private List<ProjectCrewResponseDto> projectCrew;
     private String projectCategory;
     private String createdAt;
     private String updatedAt;
     private Integer uploadedUserId;
     private Integer belongedClubId;
     private String belongedClubName;
-    private Club club;
 }

@@ -5,14 +5,14 @@ import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDt
 import org.knulikelion.challengers_backend.data.dto.request.ProjectLinkRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.ProjectResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -70,8 +70,12 @@ public class ProjectServiceImpl implements ProjectService {
                 projectResponseDto.setBelongedClubId(null);
                 projectResponseDto.setBelongedClubName(null);
             }
-            projectResponseDto.setClub(selectedProject.getClub());
-
+            List<ProjectTechStackResponseDto> techStacks = projectTechStackDAO.getTechStack(projectResponseDto.getId());
+            projectResponseDto.setProjectTechStack(techStacks);
+            List<ProjectLinkResponseDto> projectLinks = projectLinkDAO.getLink(projectResponseDto.getId());
+            projectResponseDto.setProjectLink(projectLinks);
+            List<ProjectCrewResponseDto> projectCrews = projectCrewDAO.getCrew(projectResponseDto.getId());
+            projectResponseDto.setProjectCrew(projectCrews);
             return projectResponseDto;
         }
     }
