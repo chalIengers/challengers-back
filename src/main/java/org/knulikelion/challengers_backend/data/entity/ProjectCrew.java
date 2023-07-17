@@ -37,6 +37,6 @@ public class ProjectCrew {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "project_id")
     private Project project;
 }

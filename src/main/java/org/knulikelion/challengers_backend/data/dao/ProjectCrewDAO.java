@@ -9,4 +9,5 @@ import java.util.List;
 public interface ProjectCrewDAO {
     ProjectCrew createCrew(ProjectCrew projectCrew);
     List<ProjectCrewResponseDto> getCrew(Long id);
+    void removeCrew(Long projectId);
 }

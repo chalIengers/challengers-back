@@ -8,4 +8,5 @@ import java.util.List;
 public interface ProjectLinkDAO {
     ProjectLink createLink(ProjectLink projectLink);
     List<ProjectLinkResponseDto> getLink(Long id);
+    void removeLink(Long projectId);
 }
