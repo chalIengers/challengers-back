@@ -88,6 +88,9 @@ public class ProjectServiceImpl implements ProjectService {
             resultResponseDto.setCode(1);
             resultResponseDto.setMsg("프로젝트가 존재하지 않음");
         } else {
+            projectTechStackDAO.removeTechStack(id);
+            projectLinkDAO.removeLink(id);
+            projectCrewDAO.removeCrew(id);
             projectDAO.removeProject(id);
             resultResponseDto.setCode(0);
             resultResponseDto.setMsg("프로젝트 삭제 됨");

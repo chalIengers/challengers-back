@@ -21,6 +21,6 @@ public class ProjectTechStack {
     private String techStackName;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false, name = "project_id")
+    @JoinColumn(name = "project_id")
     private Project project;
 }

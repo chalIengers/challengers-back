@@ -8,4 +8,5 @@ import java.util.List;
 public interface ProjectTechStackDAO {
     List<ProjectTechStackResponseDto> getTechStack(Long id);
     ProjectTechStack createTechStack(ProjectTechStack projectTechStack);
+    void removeTechStack(Long projectId);
 }

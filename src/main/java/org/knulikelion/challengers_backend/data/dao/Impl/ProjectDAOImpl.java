@@ -24,7 +24,10 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public void removeProject(Long id) {
-        projectRepository.deleteById(id);
+        Project selectedProject = projectRepository.findById(id).get();
+        selectedProject.setClub(null);
+        selectedProject.setUser(null);
+        projectRepository.delete(selectedProject);
     }
 
     @Override
