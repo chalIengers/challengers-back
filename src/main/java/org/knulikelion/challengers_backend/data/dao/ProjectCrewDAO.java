@@ -9,6 +9,7 @@ public interface ProjectCrewDAO {
 
     Optional<ProjectCrew> selectById(Long id);
     ProjectCrew createCrew(ProjectCrew projectCrew);
+    ProjectCrew updateCrew(ProjectCrew projectCrew);
     void removeCrew(Long id);
 }
 

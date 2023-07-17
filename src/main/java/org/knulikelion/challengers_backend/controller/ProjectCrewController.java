@@ -35,14 +35,11 @@ public class ProjectCrewController {
         return result;
     }
 
-    /*@PutMapping("/update")
+    @PutMapping("/update")
     @ApiOperation(value = "crew 수정")
-    public ResponseEntity<ProjectCrewRequestDto> updateCrew(Long id, @RequestBody ProjectCrewRequestDto projectCrewRequestDto) throws Exception{
-        projectCrewService.updateCrew(id,projectCrewRequestDto);
-        ProjectCrewRequestDto updateCrewDto = projectCrewService.readCrew(id);
-
-        return ResponseEntity.status(HttpStatus.OK).body(updateCrewDto);
-    }*/
+    public ResultResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto, Long id) {
+        return projectCrewService.updateProjcetCrew(id,projectCrewRequestDto);
+    }
 
     @DeleteMapping("/remove")
     @ApiOperation(value = "crew 삭제")

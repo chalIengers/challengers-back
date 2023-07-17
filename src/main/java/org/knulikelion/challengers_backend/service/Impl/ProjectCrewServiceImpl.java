@@ -69,6 +69,33 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
     }
 
     @Override
+    public ResultResponseDto updateProjcetCrew(Long id, ProjectCrewRequestDto projectCrewRequestDto) {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        Optional<ProjectCrew> projectCrewOptional = projectCrewDAO.selectById(id);
+        if(projectCrewOptional.isEmpty()) {
+            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            resultResponseDto.setCode(1);
+            resultResponseDto.setMsg("팀원이 존재하지 않습니다.");
+            return resultResponseDto;
+        }
+        ProjectCrew projectCrew = projectCrewOptional.get();
+        projectCrew.setId(id);
+        projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
+        projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
+        projectCrew.setProjectCrewPosition(projectCrew.getProjectCrewPosition());
+        projectCrew.setUpdatedAt(currentTime);
+
+        projectCrewDAO.updateCrew(projectCrew);
+
+        ResultResponseDto resultResponseDto = new ResultResponseDto();
+        resultResponseDto.setCode(0);
+        resultResponseDto.setMsg("팀원 수정 완료");
+
+        return resultResponseDto;
+    }
+
+    @Override
     public ResultResponseDto removeProjectCrew(Long id) {
         ResultResponseDto resultResponseDto = new ResultResponseDto();
 
