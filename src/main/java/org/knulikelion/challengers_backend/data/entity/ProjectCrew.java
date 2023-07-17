@@ -30,7 +30,7 @@ public class ProjectCrew extends BaseEntity{
     @Column(name = "projectcrew_role",nullable = false)
     private String projectCrewRole;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL,optional = false)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 }
