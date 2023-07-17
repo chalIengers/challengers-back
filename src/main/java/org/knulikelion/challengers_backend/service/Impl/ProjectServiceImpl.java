@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -154,6 +155,79 @@ public class ProjectServiceImpl implements ProjectService {
         ResultResponseDto resultResponseDto = new ResultResponseDto();
         resultResponseDto.setCode(0);
         resultResponseDto.setMsg("프로젝트 생성 완료");
+
+        return resultResponseDto;
+    }
+
+    @Override
+    public ResultResponseDto updateProject(Long projectId, ProjectRequestDto projectRequestDto) {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        Optional<Project> projectOptional = projectDAO.selectProjectById(projectId);
+        if (!projectOptional.isPresent()) {
+            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            resultResponseDto.setCode(1);
+            resultResponseDto.setMsg("프로젝트가 존재하지 않습니다.");
+            return resultResponseDto;
+        }
+
+        Project project = projectOptional.get();
+        project.setId(projectId);
+        project.setProjectName(projectRequestDto.getProjectName());
+        project.setImageUrl(projectRequestDto.getImageUrl());
+        project.setProjectDescription(projectRequestDto.getProjectDescription());
+        project.setProjectDetail(projectRequestDto.getProjectDetail());
+        project.setProjectStatus(projectRequestDto.getProjectStatus());
+        project.setProjectPeriod(projectRequestDto.getProjectPeriod());
+        project.setProjectCategory(projectRequestDto.getProjectCategory());
+        project.setUpdatedAt(currentTime);
+
+        if(projectRequestDto.getBelongedClubId() == 0) {
+            project.setClub(null);
+        } else {
+            project.setClub(clubDAO.selectClubById(projectRequestDto.getBelongedClubId()).orElse(null));
+        }
+
+        project.setUser(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).orElse(null));
+
+        projectDAO.updateProject(project);
+
+        projectTechStackDAO.removeTechStack(projectId);
+        projectLinkDAO.removeLink(projectId);
+        projectCrewDAO.removeCrew(projectId);
+
+        for (ProjectCrewRequestDto projectCrewRequestDto : projectRequestDto.getProjectCrew()) {
+            ProjectCrew projectCrew = new ProjectCrew();
+            projectCrew.setProject(project);
+            projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
+            projectCrew.setProjectCrewPosition(projectCrewRequestDto.getPosition());
+            projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
+            projectCrew.setCreatedAt(currentTime);
+            projectCrew.setUpdatedAt(currentTime);
+
+            projectCrewDAO.createCrew(projectCrew);
+        }
+
+        for (ProjectLinkRequestDto projectLinkRequestDto : projectRequestDto.getProjectLink()) {
+            ProjectLink projectLink = new ProjectLink();
+            projectLink.setLinkName(projectLinkRequestDto.getName());
+            projectLink.setLinkUrl(projectLinkRequestDto.getLinkUrl());
+            projectLink.setProject(project);
+
+            projectLinkDAO.createLink(projectLink);
+        }
+
+        for (ProjectTechStackRequestDto projectTechStackRequestDto : projectRequestDto.getProjectTechStack()) {
+            ProjectTechStack projectTechStack = new ProjectTechStack();
+            projectTechStack.setTechStackName(projectTechStackRequestDto.getName());
+            projectTechStack.setProject(project);
+
+            projectTechStackDAO.createTechStack(projectTechStack);
+        }
+
+        ResultResponseDto resultResponseDto = new ResultResponseDto();
+        resultResponseDto.setCode(0);
+        resultResponseDto.setMsg("프로젝트 업데이트 완료");
 
         return resultResponseDto;
     }

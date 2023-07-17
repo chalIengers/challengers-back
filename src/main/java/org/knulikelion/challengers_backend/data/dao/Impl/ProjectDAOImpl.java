@@ -34,4 +34,17 @@ public class ProjectDAOImpl implements ProjectDAO {
     public Project createProject(Project project) {
         return projectRepository.save(project);
     }
+
+    @Override
+    public Project updateProject(Project project) {
+        Optional<Project> selectedProject = projectRepository.findById(project.getId());
+        Project updatedProject;
+
+        if(selectedProject.isPresent()) {
+            updatedProject = projectRepository.save(project);
+            return updatedProject;
+        }
+
+        return null;
+    }
 }

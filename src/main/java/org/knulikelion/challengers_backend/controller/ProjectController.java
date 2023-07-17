@@ -31,4 +31,9 @@ public class ProjectController {
     public ResultResponseDto createProject(@RequestBody ProjectRequestDto projectRequestDto) {
         return projectService.createProject(projectRequestDto);
     }
+
+    @PutMapping("/update")
+    public ResultResponseDto updateProject(@RequestBody ProjectRequestDto projectRequestDto, Long projectId) {
+        return projectService.updateProject(projectId, projectRequestDto);
+    }
 }
