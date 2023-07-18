@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User {
+public class User extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -25,10 +25,6 @@ public class User {
     private String userName;
     @Column(nullable = false, name = "email")
     private String email;
-    @Column(name = "created_at",nullable = false,updatable = false)
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UserClub> clubs = new ArrayList<>();
