@@ -29,7 +29,7 @@ public class Club {
     @Column(name = "club_form")
     private String clubForm;
     @Column(name ="club_approved",nullable = false)
-    private boolean clubApproved;
+    private Integer clubApproved;
     @Column(name = "created_at",nullable = false,updatable = false)
     private LocalDateTime createdAt;
     @Column(name = "updated_at",nullable = false)

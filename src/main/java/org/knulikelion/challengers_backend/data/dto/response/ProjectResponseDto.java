@@ -1,8 +1,7 @@
 package org.knulikelion.challengers_backend.data.dto.response;
 
 import lombok.*;
-import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
-import org.knulikelion.challengers_backend.data.entity.Club;
+
 
 import java.util.List;
 

@@ -55,16 +55,16 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<Club> getClubByUser(Long id) {
+    public List<String> getClubByUser(Long id) {
         User user = userRepository.findById(id).get();
         List<Club> clubs = clubRepository.findAll(); //다 가져와
 
-        List<Club> ans = new ArrayList<>();
+        List<String> ans = new ArrayList<>();
 
         for(Club temp : clubs){
             List<User> userList = temp.getUsers();
             if(userList.contains(user))
-                ans.add(temp);
+                ans.add(temp.getClubName());
         }
         return ans;
     }

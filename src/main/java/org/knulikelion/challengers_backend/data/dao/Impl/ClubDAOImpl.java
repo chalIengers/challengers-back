@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ public class ClubDAOImpl implements ClubDAO {
             clubInfo.setLogoUrl(club.getLogoUrl());
             clubInfo.setClubDescription(club.getClubDescription());
             clubInfo.setClubForm(club.getClubForm());
-            clubInfo.setClubApproved(club.isClubApproved());
+            clubInfo.setClubApproved(club.getClubApproved());
 
             updatedClub = clubRepository.save(clubInfo);
         }else{
@@ -64,9 +65,15 @@ public class ClubDAOImpl implements ClubDAO {
     }
 
     @Override
-    public List<User> getUsersByClubId(Long id) {
+    public List<Long> getUsersByClubId(Long id) {
         logger.info("Get Users By Club_Id:"+id);
-        return clubRepository.getById(id).getUsers();
+        Club selectedClub = clubRepository.getById(id);
+        List<User> members = selectedClub.getUsers();
+        List<Long> ans = new ArrayList<>();
+        for(User user : members){
+            ans.add(user.getId());
+        }
+        return ans;
     }
 
     @Override
