@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Table(name = "project_crew")
+
 public class ProjectCrew extends BaseEntity{
 
     @Id
