@@ -14,5 +14,7 @@ public class ClubRequestDto {
     private String logoUrl;
     private String clubDescription;
     private String clubForm;
-    private List<UserRequestDto> clubMembers;
+    private Integer clubApproved;
+    private List<UserRequestDto> Members;
+    private List<UserRequestDto> updateMembers;
 }

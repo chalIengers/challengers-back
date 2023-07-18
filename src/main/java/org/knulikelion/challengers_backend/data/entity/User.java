@@ -4,10 +4,6 @@ package org.knulikelion.challengers_backend.data.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Data
 @Getter
@@ -16,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -25,7 +21,4 @@ public class User extends BaseEntity{
     private String userName;
     @Column(nullable = false, name = "email")
     private String email;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<UserClub> clubs = new ArrayList<>();
 }

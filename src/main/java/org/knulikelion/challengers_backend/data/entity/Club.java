@@ -4,8 +4,6 @@ package org.knulikelion.challengers_backend.data.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,7 +13,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "club")
-public class Club extends BaseEntity{
+public class Club extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "club_id")
@@ -26,13 +24,12 @@ public class Club extends BaseEntity{
     private String logoUrl;
     @Column(name = "club_description",columnDefinition = "LONGTEXT")
     private String clubDescription;
-    @Column(name = "club_form") // club_form column 은 피그마 설명 후 수정 예정.
+    @Column(name = "club_form")
     private String clubForm;
     @Column(name ="club_approved",nullable = false)
-    private boolean clubApproved;
+    private Integer clubApproved;
 
-    @OneToMany(mappedBy = "club", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<UserClub> clubMembers = new ArrayList<>();
-
-
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<User> users;
 }

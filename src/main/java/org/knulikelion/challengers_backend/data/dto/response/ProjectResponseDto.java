@@ -1,6 +1,7 @@
 package org.knulikelion.challengers_backend.data.dto.response;
 
 import lombok.*;
+
 import java.util.List;
 
 @Data
