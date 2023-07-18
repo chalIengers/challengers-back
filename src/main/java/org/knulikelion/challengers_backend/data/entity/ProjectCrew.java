@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Table(name = "project_crew")
-public class ProjectCrew {
+public class ProjectCrew extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,12 +29,6 @@ public class ProjectCrew {
 
     @Column(name = "projectcrew_role",nullable = false)
     private String projectCrewRole;
-
-    @Column(name = "created_at",nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id")

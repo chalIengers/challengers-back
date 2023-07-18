@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.data.entity;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.*;
 
 
@@ -13,15 +14,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "user_club")
-public class UserClub {
+public class UserClub extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_club_id")
     private Long id;
-    @Column(name = "created_at",nullable = false,updatable = false)
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
