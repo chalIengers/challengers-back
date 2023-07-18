@@ -2,9 +2,7 @@ package org.knulikelion.challengers_backend.data.dao.Impl;
 
 import org.knulikelion.challengers_backend.data.dao.ProjectLinkDAO;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectLinkResponseDto;
-import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
 import org.knulikelion.challengers_backend.data.entity.ProjectLink;
-import org.knulikelion.challengers_backend.data.entity.ProjectTechStack;
 import org.knulikelion.challengers_backend.data.repository.ProjectLinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

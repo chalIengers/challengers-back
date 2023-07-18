@@ -2,14 +2,12 @@ package org.knulikelion.challengers_backend.data.dao.Impl;
 
 import org.knulikelion.challengers_backend.data.dao.ProjectTechStackDAO;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectTechStackResponseDto;
-import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
 import org.knulikelion.challengers_backend.data.entity.ProjectTechStack;
 import org.knulikelion.challengers_backend.data.repository.ProjectTechStackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
