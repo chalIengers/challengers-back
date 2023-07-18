@@ -5,7 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Getter
@@ -35,8 +35,7 @@ public class Club {
     @Column(name = "updated_at",nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "club", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<UserClub> clubMembers = new ArrayList<>();
-
-
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<User> users;
 }

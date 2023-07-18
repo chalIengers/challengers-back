@@ -29,7 +29,4 @@ public class User {
     private LocalDateTime createdAt;
     @Column(name = "updated_at",nullable = false)
     private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<UserClub> clubs = new ArrayList<>();
 }
