@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "club")
-public class Club {
+public class Club extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "club_id")
@@ -30,10 +30,6 @@ public class Club {
     private String clubForm;
     @Column(name ="club_approved",nullable = false)
     private boolean clubApproved;
-    @Column(name = "created_at",nullable = false,updatable = false)
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "club", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<UserClub> clubMembers = new ArrayList<>();
