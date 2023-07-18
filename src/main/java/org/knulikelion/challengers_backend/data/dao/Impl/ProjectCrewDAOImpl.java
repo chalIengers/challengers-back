@@ -44,4 +44,21 @@ public class ProjectCrewDAOImpl implements ProjectCrewDAO {
             projectCrewRepository.delete(projectCrew);
         }
     }
+
+    @Override
+    public Optional<ProjectCrew> selectById(Long id) {
+        return projectCrewRepository.findById(id);
+    }
+
+    @Override
+    public ProjectCrew updateCrew(ProjectCrew projectCrew) {
+        Optional<ProjectCrew> updateCrew  = projectCrewRepository.findById(projectCrew.getId());
+        ProjectCrew updatedProjectCrew;
+
+        if(updateCrew.isEmpty()) {
+            updatedProjectCrew = projectCrewRepository.save(projectCrew);
+            return updatedProjectCrew;
+        }
+        return null;
+    }
 }
