@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,26 +74,40 @@ public class ClubDAOImpl implements ClubDAO {
         }
         return ans;
     }
-
     @Override
-    public List<User> updateUsers(Long id, User selectedUser , User updateUser) {
+    public Club updateUsers(Long id, User selectedUser, User addUser) {
+        Club selectedClub = clubRepository.getById(id);
         logger.info("Update Users Of Club_Id:"+id);
-        Club selectedClub = clubRepository.findById(id).get();
-        if(selectedClub == null){
-            return null;
-        }
 
         List<User> users = selectedClub.getUsers();
+        List<User> newList = new ArrayList<>();
 
-        for(int i=0; i<users.size(); i++){
-            if(users.get(i).equals(selectedUser)){
-                users.set(i, updateUser);
-                break;
+        if (selectedClub.getUsers() == null){
+            newList.add(addUser);
+            selectedClub.setUsers(newList);
+        }else {
+            for(User user : users){
+                if(!user.getId().equals(selectedUser.getId())){
+                    newList.add(user);
+                }
+            }newList.add(addUser);
+            selectedClub.setUsers(newList);
+        }
+        return selectedClub;
+    }
+
+    @Override
+    public Club removeClubUsers(Long id, User userId) {
+        Club selectedClub = clubRepository.findById(id).get();
+        List<User> users = selectedClub.getUsers();
+        List<User> newList = new ArrayList<>();
+        for(User temp : users){
+            if (!temp.getId().equals(userId.getId())){
+                newList.add(temp);
             }
         }
-        selectedClub.setUsers(users);
-        clubRepository.save(selectedClub);
-        return selectedClub.getUsers();
-        }
+        selectedClub.setUsers(newList);
+        return selectedClub;
     }
+}
 
