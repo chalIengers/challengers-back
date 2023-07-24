@@ -21,8 +21,4 @@ public class User extends BaseEntity {
     private String userName;
     @Column(nullable = false, name = "email")
     private String email;
-    @ManyToOne
-    @JoinColumn(name = "club_id")
-    private Club club;
-
 }

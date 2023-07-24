@@ -8,6 +8,5 @@ public interface UserService {
     // JWT 보완 후 구현 예정
     Object getUserById(Long id);
     ResultResponseDto removeUser(Long id);
-    ResultResponseDto createUser(UserUpdateRequestDto userUpdateRequestDto);
     ResultResponseDto updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) throws Exception;
 }

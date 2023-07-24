@@ -1,7 +1,5 @@
 package org.knulikelion.challengers_backend.controller;
 
-import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.UserUpdateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.service.UserService;
@@ -21,10 +19,6 @@ public class UserController {
     public Object getUserById(Long id){
         Object result = userService.getUserById(id);
         return result;
-    }
-    @PostMapping("/create")
-    public ResultResponseDto createProject(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
-        return userService.createUser(userUpdateRequestDto);
     }
     @DeleteMapping("/remove")
     public ResultResponseDto removeUserById(Long id){

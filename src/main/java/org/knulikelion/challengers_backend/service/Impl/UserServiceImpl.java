@@ -64,18 +64,6 @@ public class UserServiceImpl implements UserService {
         return resultResponseDto;
     }
 
-    @Override
-    public ResultResponseDto createUser(UserUpdateRequestDto userUpdateRequestDto) {
-        User userInfo = new User();
-        userInfo.setEmail(userUpdateRequestDto.getEmail());
-        userInfo.setUserName(userUpdateRequestDto.getUserName());
-        userDAO.createUser(userInfo);
-
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-        resultResponseDto.setCode(0);
-        resultResponseDto.setMsg("유저 생성 완료");
-        return resultResponseDto;
-    }
 
     @Override
     public ResultResponseDto updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) throws Exception {
