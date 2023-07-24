@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface UserDAO {
     Optional<User> selectUserById(Long id);
+    User createUser(User user);
     User updateUser(Long id,User user) throws Exception;
     void removeUser(Long id);
     List<String> getClubByUser(Long id);

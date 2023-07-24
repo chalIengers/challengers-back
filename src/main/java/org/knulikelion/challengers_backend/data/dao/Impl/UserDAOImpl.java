@@ -32,6 +32,11 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
     public User updateUser(Long id, User user) throws Exception {
         Optional <User> selectedUser = userRepository.findById(id);
 

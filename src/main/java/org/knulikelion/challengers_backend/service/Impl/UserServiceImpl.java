@@ -1,7 +1,7 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
-import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
+import org.knulikelion.challengers_backend.data.dto.request.UserUpdateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.UserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.User;
@@ -65,12 +65,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResultResponseDto createUser(UserRequestDto userRequestDto) {
-        return null;
+    public ResultResponseDto createUser(UserUpdateRequestDto userUpdateRequestDto) {
+        User userInfo = new User();
+        userInfo.setEmail(userUpdateRequestDto.getEmail());
+        userInfo.setUserName(userUpdateRequestDto.getUserName());
+        userDAO.createUser(userInfo);
+
+        ResultResponseDto resultResponseDto = new ResultResponseDto();
+        resultResponseDto.setCode(0);
+        resultResponseDto.setMsg("유저 생성 완료");
+        return resultResponseDto;
     }
 
     @Override
-    public ResultResponseDto updateUser(Long id, UserRequestDto userRequestDto) throws Exception {
+    public ResultResponseDto updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) throws Exception {
         LocalDateTime currentTime = LocalDateTime.now();
 
         Optional<User> selectedUser = userDAO.selectUserById(id);
@@ -82,8 +90,8 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = selectedUser.get();
-        user.setUserName(userRequestDto.getUserName());
-        user.setEmail(userRequestDto.getEmail());
+        user.setUserName(userUpdateRequestDto.getUserName());
+        user.setEmail(userUpdateRequestDto.getEmail());
         user.setUpdatedAt(currentTime);
         userDAO.updateUser(id, user);
 

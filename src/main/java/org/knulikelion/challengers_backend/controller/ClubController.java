@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.controller;
 
+import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.service.ClubService;
@@ -25,8 +26,8 @@ public class ClubController {
         return clubService.removeClub(id);
     }
     @PostMapping("/create")
-    public ResultResponseDto createClub(@RequestBody ClubRequestDto clubRequestDto){
-        return clubService.createClub(clubRequestDto);
+    public ResultResponseDto createClub(@RequestBody ClubCreateRequestDto clubCreateRequestDto){
+        return clubService.createClub(clubCreateRequestDto);
     }
     @PutMapping("/update")
     public ResultResponseDto updateClub(@RequestBody ClubRequestDto clubRequestDto , Long clubId) throws Exception {

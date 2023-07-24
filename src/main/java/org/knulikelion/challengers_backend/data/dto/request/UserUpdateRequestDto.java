@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class UserRequestDto {
-    private Long id;
+public class UserUpdateRequestDto {
+    private String email;
+    private String userName;
 }

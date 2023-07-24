@@ -29,7 +29,8 @@ public class Club extends BaseEntity {
     @Column(name ="club_approved",nullable = false)
     private Integer clubApproved;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "club")
+//    @JoinColumn(name = "user_id")
     private List<User> users;
+
 }
