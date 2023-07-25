@@ -6,9 +6,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -30,6 +27,6 @@ public class Club extends BaseEntity {
     @Column(name ="club_approved",nullable = false)
     private Integer clubApproved;
 
-    @OneToMany(mappedBy = "club")
-    private List<User> members = new ArrayList<>();
+    @OneToMany(mappedBy = "club",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<UserClub> clubs = new ArrayList<>();
 }

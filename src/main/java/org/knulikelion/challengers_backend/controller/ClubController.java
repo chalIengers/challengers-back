@@ -33,4 +33,17 @@ public class ClubController {
     public ResultResponseDto updateClub(@RequestBody ClubRequestDto clubRequestDto , Long clubId) throws Exception {
         return clubService.updateClub(clubId,clubRequestDto);
     }
+    @PostMapping("/addMember")
+    public ResultResponseDto addClubMember(Long userId, Long clubId){
+        return clubService.addMember(userId,clubId);
+    }
+    @PutMapping("/updateMember")
+    public ResultResponseDto updateClubMember(Long userId, Long updateUserId, Long clubId){
+        return clubService.updateMember(userId,updateUserId,clubId);
+    }
+    @DeleteMapping("/deleteMember")
+    public ResultResponseDto removeClubMember(Long userId, Long clubId){
+        return clubService.removeMember(userId,clubId);
+    }
+
 }

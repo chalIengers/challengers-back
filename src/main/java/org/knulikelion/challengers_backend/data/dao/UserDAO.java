@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.data.dao;
 
+import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.User;
 
 import java.util.List;
@@ -10,5 +11,5 @@ public interface UserDAO {
     User createUser(User user);
     User updateUser(Long id,User user) throws Exception;
     void removeUser(Long id);
-    List<String> getClubByUser(Long id);
+    List<Club> getClubByUser(Long id);
 }

@@ -9,4 +9,7 @@ public interface ClubService {
     ResultResponseDto removeClub(Long id);
     ResultResponseDto createClub(ClubCreateRequestDto clubCreateRequestDto);
     ResultResponseDto updateClub(Long id, ClubRequestDto clubRequestDto) throws Exception;
+    ResultResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId);
+    ResultResponseDto removeMember(Long findUserId, Long clubId);
+    ResultResponseDto addMember(Long userId, Long clubId);
 }

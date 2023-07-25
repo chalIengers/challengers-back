@@ -1,7 +1,6 @@
 package org.knulikelion.challengers_backend.controller;
 
 import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.UserUpdateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class UserController {
         return userService.removeUser(id);
     }
     @PutMapping("/update")
-    public ResultResponseDto updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto, Long userId) throws Exception {
-        return userService.updateUser(userId,userUpdateRequestDto);
+    public ResultResponseDto updateUser(@RequestBody UserRequestDto userRequestDto, Long userId) throws Exception {
+        return userService.updateUser(userId,userRequestDto);
     }
 }
