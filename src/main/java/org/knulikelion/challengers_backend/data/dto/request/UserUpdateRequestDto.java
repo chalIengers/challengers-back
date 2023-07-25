@@ -10,4 +10,6 @@ import lombok.*;
 public class UserUpdateRequestDto {
     private String email;
     private String userName;
+    private Long selectClubId;
+    private Long updateClubId;
 }

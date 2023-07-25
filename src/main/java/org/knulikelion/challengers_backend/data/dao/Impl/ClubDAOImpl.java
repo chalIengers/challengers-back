@@ -59,7 +59,7 @@ public class ClubDAOImpl implements ClubDAO {
     public void removeClub(Long id) {
         logger.info("Delete Club Id:"+id);
         Club selectedClub = clubRepository.findById(id).get();
-        selectedClub.setUsers(null);
+        selectedClub.setMembers(null);
         clubRepository.delete(selectedClub);
     }
 
@@ -67,47 +67,13 @@ public class ClubDAOImpl implements ClubDAO {
     public List<Long> getUsersByClubId(Long id) {
         logger.info("Get Users By Club_Id:"+id);
         Club selectedClub = clubRepository.getById(id);
-        List<User> members = selectedClub.getUsers();
+        List<User> members = selectedClub.getMembers();
         List<Long> ans = new ArrayList<>();
         for(User user : members){
             ans.add(user.getId());
         }
         return ans;
     }
-    @Override
-    public Club updateUsers(Long id, User selectedUser, User addUser) {
-        Club selectedClub = clubRepository.getById(id);
-        logger.info("Update Users Of Club_Id:"+id);
 
-        List<User> users = selectedClub.getUsers();
-        List<User> newList = new ArrayList<>();
-
-        if (selectedClub.getUsers() == null){
-            newList.add(addUser);
-            selectedClub.setUsers(newList);
-        }else {
-            for(User user : users){
-                if(!user.getId().equals(selectedUser.getId())){
-                    newList.add(user);
-                }
-            }newList.add(addUser);
-            selectedClub.setUsers(newList);
-        }
-        return selectedClub;
-    }
-
-    @Override
-    public Club removeClubUsers(Long id, User userId) {
-        Club selectedClub = clubRepository.findById(id).get();
-        List<User> users = selectedClub.getUsers();
-        List<User> newList = new ArrayList<>();
-        for(User temp : users){
-            if (!temp.getId().equals(userId.getId())){
-                newList.add(temp);
-            }
-        }
-        selectedClub.setUsers(newList);
-        return selectedClub;
-    }
 }
 

@@ -3,11 +3,9 @@ package org.knulikelion.challengers_backend.service.Impl;
 import org.knulikelion.challengers_backend.data.dao.ClubDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
-import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.slf4j.Logger;
@@ -84,18 +82,18 @@ public class ClubServiceImpl implements ClubService {
         club.setClubApproved(0);
         club.setCreatedAt(currentTime);
         club.setUpdatedAt(currentTime);
-        if(clubCreateRequestDto.getMembers().isEmpty()){
-            club.setUsers(null);
-        }else{
-            List<User> users = new ArrayList<>();
-            for(UserRequestDto userId : clubCreateRequestDto.getMembers()){
-                User user = userRepository.getById(userId.getId());
-                users.add(user);
-                users.sort(Comparator.comparing(User::getId));
-                club.setUsers(users);
-            }
-
-        }
+//        if(clubCreateRequestDto.getMembers().isEmpty()){
+//            club.setUsers(null);
+//        }else{
+//            List<User> users = new ArrayList<>();
+//            for(UserRequestDto userId : clubCreateRequestDto.getMembers()){
+//                User user = userRepository.getById(userId.getId());
+//                users.add(user);
+//                users.sort(Comparator.comparing(User::getId));
+//                club.setUsers(users);
+//            }
+//
+//        }
         clubDAO.createClub(club);
 
         ResultResponseDto resultResponseDto = new ResultResponseDto();
@@ -121,49 +119,50 @@ public class ClubServiceImpl implements ClubService {
             club.setLogoUrl(clubRequestDto.getLogoUrl());
             club.setClubDescription(clubRequestDto.getClubDescription());
             club.setClubForm(clubRequestDto.getClubForm());
+            club.setClubApproved(clubRequestDto.getClubApproved());
             club.setUpdatedAt(currentTime);
 
 
-            if(clubRequestDto.getMembers() == null){
-                logger.info("변경 멤버 없음.");
-                club.setUsers(club.getUsers());
-            }else{
-                List<UserRequestDto> selectedUserId = clubRequestDto.getMembers();
-                // 변경 할 멤버 request
-                List<User> wntUser = new ArrayList<>(); //wntUser : 변경 할 User List
-                    for (UserRequestDto wnt : selectedUserId) {
-                        wntUser.add(userRepository.getById(wnt.getId()));
-                    }
-                List<UserRequestDto> selectedUpdateUserId = clubRequestDto.getUpdateMembers();
-                List<User> udpUsers = new ArrayList<>(); //udpUsers : Update 할 User List
-                for (UserRequestDto udp : selectedUpdateUserId) {
-                    udpUsers.add(userRepository.getById(udp.getId()));
-                }
-                if(udpUsers.isEmpty()){
-                    List<User> clubMembers = club.getUsers();
-                    List<User> newList = new ArrayList<>();
-                    for (User findUser : wntUser) {
-                        for (User selectedUser : clubMembers) {
-                            if (!findUser.getId().equals(selectedUser.getId())) {
-                                newList.add(selectedUser);
-                            }
-                        }
-                    }
-                    club.setUsers(newList);
-                }else{
-                    List<User> clubMembers = club.getUsers();
-                    List<User> newList = new ArrayList<>();
-                    for (User findUser : wntUser) {
-                        for (User selectedUser : clubMembers) {
-                            if(!findUser.getId().equals(selectedUser.getId())){
-                                newList.add(selectedUser);
-                            }
-                        }
-                    }
-                    newList.addAll(udpUsers);
-                    club.setUsers(newList);
-                }
-            }
+//            if(clubRequestDto.getMembers() == null){
+//                logger.info("변경 멤버 없음.");
+//                club.setUsers(club.getUsers());
+//            }else{
+//                List<UserRequestDto> selectedUserId = clubRequestDto.getMembers();
+//                // 변경 할 멤버 request
+//                List<User> wntUser = new ArrayList<>(); //wntUser : 변경 할 User List
+//                    for (UserRequestDto wnt : selectedUserId) {
+//                        wntUser.add(userRepository.getById(wnt.getId()));
+//                    }
+//                List<UserRequestDto> selectedUpdateUserId = clubRequestDto.getUpdateMembers();
+//                List<User> udpUsers = new ArrayList<>(); //udpUsers : Update 할 User List
+//                for (UserRequestDto udp : selectedUpdateUserId) {
+//                    udpUsers.add(userRepository.getById(udp.getId()));
+//                }
+//                if(udpUsers.isEmpty()){
+//                    List<User> clubMembers = club.getUsers();
+//                    List<User> newList = new ArrayList<>();
+//                    for (User findUser : wntUser) {
+//                        for (User selectedUser : clubMembers) {
+//                            if (!findUser.getId().equals(selectedUser.getId())) {
+//                                newList.add(selectedUser);
+//                            }
+//                        }
+//                    }
+//                    club.setUsers(newList);
+//                }else{
+//                    List<User> clubMembers = club.getUsers();
+//                    List<User> newList = new ArrayList<>();
+//                    for (User findUser : wntUser) {
+//                        for (User selectedUser : clubMembers) {
+//                            if(!findUser.getId().equals(selectedUser.getId())){
+//                                newList.add(selectedUser);
+//                            }
+//                        }
+//                    }
+//                    newList.addAll(udpUsers);
+//                    club.setUsers(newList);
+//                }
+//            }
             clubDAO.updateClub(id, club);
             ResultResponseDto resultResponseDto = new ResultResponseDto();
             resultResponseDto.setCode(0);

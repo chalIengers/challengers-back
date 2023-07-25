@@ -1,6 +1,5 @@
 package org.knulikelion.challengers_backend.data.entity;
 
-
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,4 +20,7 @@ public class User extends BaseEntity {
     private String userName;
     @Column(nullable = false, name = "email")
     private String email;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "club_id")
+    private Club club;
 }

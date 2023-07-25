@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.controller;
 
+import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.UserUpdateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.service.UserService;
@@ -14,6 +15,10 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+    @PostMapping("/create")
+    public ResultResponseDto createProject(@RequestBody UserRequestDto userRequestDto) {
+        return userService.createUser(userRequestDto);
     }
     @GetMapping("/get")
     public Object getUserById(Long id){

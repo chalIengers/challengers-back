@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +57,10 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void removeUser(Long id) {
         logger.info("Delete User Id:"+id);
+        User selectedUser = userRepository.findById(id).get();
+        selectedUser.setClub(null);
         userRepository.deleteById(id);
+
     }
 
     @Override
@@ -67,7 +71,7 @@ public class UserDAOImpl implements UserDAO {
         List<String> ans = new ArrayList<>();
 
         for(Club temp : clubs){
-            List<User> userList = temp.getUsers();
+            List<User> userList = temp.getMembers();
             if(userList.contains(user))
                 ans.add(temp.getClubName());
         }

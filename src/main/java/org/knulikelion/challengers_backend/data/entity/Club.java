@@ -1,10 +1,11 @@
 package org.knulikelion.challengers_backend.data.entity;
 
-
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+
 
 @Getter
 @Setter
@@ -29,7 +30,6 @@ public class Club extends BaseEntity {
     @Column(name ="club_approved",nullable = false)
     private Integer clubApproved;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<User> users;
+    @OneToMany(mappedBy = "club")
+    private List<User> members = new ArrayList<>();
 }

@@ -1,6 +1,7 @@
 package org.knulikelion.challengers_backend.data.dto.request;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 @Data
 @NoArgsConstructor
@@ -8,5 +9,8 @@ import lombok.*;
 @ToString
 @Builder
 public class UserRequestDto {
-    private Long id;
+    private String userName;
+    private String email;
+    @Nullable
+    private Long clubId;
 }
