@@ -1,6 +1,7 @@
 package org.knulikelion.challengers_backend.data.dto.response;
 
 import lombok.*;
+import org.knulikelion.challengers_backend.data.entity.User;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ public class ClubResponseDto {
     private Integer clubApproved;
     private String createdAt;
     private String updatedAt;
-    private List<Long> clubMembers;
+    private List<User> clubMembers;
 }

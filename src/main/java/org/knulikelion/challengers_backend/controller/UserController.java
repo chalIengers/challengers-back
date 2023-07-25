@@ -15,6 +15,10 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+    @PostMapping("/create")
+    public ResultResponseDto createProject(@RequestBody UserRequestDto userRequestDto) {
+        return userService.createUser(userRequestDto);
+    }
     @GetMapping("/get")
     public Object getUserById(Long id){
         Object result = userService.getUserById(id);

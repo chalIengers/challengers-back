@@ -3,13 +3,14 @@ package org.knulikelion.challengers_backend.data.dao.Impl;
 import org.knulikelion.challengers_backend.data.dao.ClubDAO;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.User;
+import org.knulikelion.challengers_backend.data.entity.UserClub;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 
+import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,11 @@ import java.util.Optional;
 @Component
 public class ClubDAOImpl implements ClubDAO {
     private static final Logger logger = LoggerFactory.getLogger(ClubDAOImpl.class);
-
+    private final UserClubRepository userClubRepository;
     private final ClubRepository clubRepository;
     @Autowired
-    public ClubDAOImpl(ClubRepository clubRepository) {
+    public ClubDAOImpl(UserClubRepository userClubRepository, ClubRepository clubRepository) {
+        this.userClubRepository = userClubRepository;
         this.clubRepository = clubRepository;
     }
 
@@ -59,42 +61,22 @@ public class ClubDAOImpl implements ClubDAO {
     @Override
     public void removeClub(Long id) {
         logger.info("Delete Club Id:"+id);
-        Club selectedClub = clubRepository.findById(id).get();
-        selectedClub.setUsers(null);
-        clubRepository.delete(selectedClub);
+        clubRepository.deleteById(id);
     }
 
     @Override
-    public List<Long> getUsersByClubId(Long id) {
-        logger.info("Get Users By Club_Id:"+id);
-        Club selectedClub = clubRepository.getById(id);
-        List<User> members = selectedClub.getUsers();
-        List<Long> ans = new ArrayList<>();
-        for(User user : members){
-            ans.add(user.getId());
-        }
-        return ans;
-    }
+    public List<User> getUsersByClubId(Long id) {
+        logger.info("Get Users By Club_Id:" + id);
 
-    @Override
-    public List<User> updateUsers(Long id, User selectedUser , User updateUser) {
-        logger.info("Update Users Of Club_Id:"+id);
-        Club selectedClub = clubRepository.findById(id).get();
-        if(selectedClub == null){
-            return null;
-        }
+        List<UserClub> userClubList = userClubRepository.findAll();
+        List<User> userList = new ArrayList<>();
 
-        List<User> users = selectedClub.getUsers();
-
-        for(int i=0; i<users.size(); i++){
-            if(users.get(i).equals(selectedUser)){
-                users.set(i, updateUser);
-                break;
+        for (UserClub userClub : userClubList) {
+            if (userClub.getClub().getId().equals(id)) {
+                userList.add(userClub.getUser());
             }
         }
-        selectedClub.setUsers(users);
-        clubRepository.save(selectedClub);
-        return selectedClub.getUsers();
-        }
+        return userList;
     }
+}
 

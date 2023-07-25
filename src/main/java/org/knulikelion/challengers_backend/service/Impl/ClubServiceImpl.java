@@ -1,24 +1,39 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
 import org.knulikelion.challengers_backend.data.dao.ClubDAO;
+import org.knulikelion.challengers_backend.data.dao.UserDAO;
+import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
+import org.knulikelion.challengers_backend.data.entity.User;
+import org.knulikelion.challengers_backend.data.entity.UserClub;
+import org.knulikelion.challengers_backend.data.repository.ClubRepository;
+import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
+import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.*;
+
 @Service
 public class ClubServiceImpl implements ClubService {
     private static final Logger logger = LoggerFactory.getLogger(ClubServiceImpl.class);
     private final ClubDAO clubDAO;
+    private final ClubRepository clubRepository;
+    private final UserClubRepository userClubRepository;
+    private final UserRepository userRepository;
 
-    public ClubServiceImpl(ClubDAO clubDAO) {
+
+    public ClubServiceImpl(ClubDAO clubDAO, ClubRepository clubRepository, UserClubRepository userClubRepository, UserRepository userRepository, UserDAO userDAO) {
         this.clubDAO = clubDAO;
+        this.clubRepository = clubRepository;
+        this.userClubRepository = userClubRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -28,8 +43,8 @@ public class ClubServiceImpl implements ClubService {
 
             resultResponseDto.setCode(1);
             resultResponseDto.setMsg("클럽이 존재하지 않음");
-
             return resultResponseDto;
+
         }else{
             Club selectedClub = clubDAO.selectClubById(id).get();
             ClubResponseDto clubResponseDto = new ClubResponseDto();
@@ -39,10 +54,10 @@ public class ClubServiceImpl implements ClubService {
             clubResponseDto.setClubDescription(selectedClub.getClubDescription());
             clubResponseDto.setClubForm(selectedClub.getClubForm());
             clubResponseDto.setClubApproved(selectedClub.getClubApproved());
-            if(clubDAO.getUsersByClubId(id) == null){
-                clubResponseDto.setClubMembers(null);
-            }else{
+            if(!clubDAO.getUsersByClubId(id).isEmpty()){
                 clubResponseDto.setClubMembers(clubDAO.getUsersByClubId(id));
+            }else{
+                clubResponseDto.setClubMembers(null);
             }
             return clubResponseDto;
         }
@@ -64,18 +79,18 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public ResultResponseDto createClub(ClubRequestDto clubRequestDto) {
+    public ResultResponseDto createClub(ClubCreateRequestDto clubCreateRequestDto) {
         LocalDateTime currentTime = LocalDateTime.now();
 
         Club club = new Club();
-        club.setClubName(clubRequestDto.getClubName());
-        club.setLogoUrl(clubRequestDto.getLogoUrl());
-        club.setClubDescription(clubRequestDto.getClubDescription());
-        club.setClubForm(clubRequestDto.getClubForm());
-        club.setClubApproved(clubRequestDto.getClubApproved());
+        club.setClubName(clubCreateRequestDto.getClubName());
+        club.setLogoUrl(clubCreateRequestDto.getLogoUrl());
+        club.setClubDescription(clubCreateRequestDto.getClubDescription());
+        club.setClubForm(clubCreateRequestDto.getClubForm());
+        club.setClubApproved(0);
         club.setCreatedAt(currentTime);
         club.setUpdatedAt(currentTime);
-        club.setUsers(null);
+
         clubDAO.createClub(club);
 
         ResultResponseDto resultResponseDto = new ResultResponseDto();
@@ -94,16 +109,83 @@ public class ClubServiceImpl implements ClubService {
             resultResponseDto.setCode(1);
             resultResponseDto.setMsg("클럽이 존재하지 않습니다.");
             return resultResponseDto;
+        }else {
+            Club club = clubOptional.get();
+            club.setClubName(clubRequestDto.getClubName());
+            club.setLogoUrl(clubRequestDto.getLogoUrl());
+            club.setClubDescription(clubRequestDto.getClubDescription());
+            club.setClubForm(clubRequestDto.getClubForm());
+            club.setClubApproved(clubRequestDto.getClubApproved());
+            club.setUpdatedAt(currentTime);
+
+            clubDAO.updateClub(id, club);
+            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            resultResponseDto.setCode(0);
+            resultResponseDto.setMsg("클럽 생성 완료");
+            return resultResponseDto;
+        }
+    }
+
+    @Override
+    public ResultResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId) {
+        List<UserClub> userClubList = userClubRepository.findAll();
+        User updateUser = userRepository.getById(updateUserId);
+        Club club = clubRepository.getById(clubId);
+        for(UserClub userClub : userClubList){
+            if((userClub.getClub().getId().equals(clubId)) && (userClub.getUser().getId().equals(findUserId))){
+                userClub.setUser(updateUser);
+                userClub.setClub(club);
+                userClubRepository.save(userClub);
+                break;
+            }
         }
 
-        Club club = clubOptional.get();
-        club.setClubName(clubRequestDto.getClubName());
-        club.setLogoUrl(clubRequestDto.getLogoUrl());
-        club.setClubApproved(clubRequestDto.getClubApproved());
-        club.setClubDescription(clubRequestDto.getClubDescription());
-        club.setClubForm(clubRequestDto.getClubForm());
-        club.setUpdatedAt(currentTime);
-        clubDAO.updateClub(id, club);
+
         return null;
     }
+
+    @Override
+    public ResultResponseDto removeMember(Long findUserId, Long clubId) {
+        List<UserClub> userClubList = userClubRepository.findAll();
+        Long userClubId = null;
+        for (UserClub userClub : userClubList){
+            if((userClub.getClub().getId().equals(clubId)) && (userClub.getUser().getId().equals(findUserId))){
+                userClubId = userClub.getId();
+                break;
+            }
+        }
+        if(userClubId!=null){
+            userClubRepository.deleteById(userClubId);
+        }
+        ResultResponseDto resultResponseDto = new ResultResponseDto();
+        resultResponseDto.setCode(0);
+        resultResponseDto.setMsg("멤버 삭제 완료");
+
+        return resultResponseDto;
+    }
+
+    @Override
+    public ResultResponseDto addMember(Long userId, Long clubId) {
+        User user = userRepository.getById(userId);
+        if (user.getId()==null){
+            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            resultResponseDto.setCode(1);
+            resultResponseDto.setMsg("해당 유저 없음");
+            return  resultResponseDto;
+        }else{
+            Club club = clubRepository.getById(clubId);
+
+            UserClub userClub = new UserClub();
+            userClub.setClub(club);
+            userClub.setUser(user);
+            userClubRepository.save(userClub);
+
+            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            resultResponseDto.setCode(0);
+            resultResponseDto.setMsg("멤버 추가");
+            return resultResponseDto;
+        }
+
+    }
+
 }

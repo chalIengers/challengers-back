@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.controller;
 
+import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.service.ClubService;
@@ -25,11 +26,24 @@ public class ClubController {
         return clubService.removeClub(id);
     }
     @PostMapping("/create")
-    public ResultResponseDto createClub(@RequestBody ClubRequestDto clubRequestDto){
-        return clubService.createClub(clubRequestDto);
+    public ResultResponseDto createClub(@RequestBody ClubCreateRequestDto clubCreateRequestDto){
+        return clubService.createClub(clubCreateRequestDto);
     }
     @PutMapping("/update")
     public ResultResponseDto updateClub(@RequestBody ClubRequestDto clubRequestDto , Long clubId) throws Exception {
         return clubService.updateClub(clubId,clubRequestDto);
     }
+    @PostMapping("/addMember")
+    public ResultResponseDto addClubMember(Long userId, Long clubId){
+        return clubService.addMember(userId,clubId);
+    }
+    @PutMapping("/updateMember")
+    public ResultResponseDto updateClubMember(Long userId, Long updateUserId, Long clubId){
+        return clubService.updateMember(userId,updateUserId,clubId);
+    }
+    @DeleteMapping("/deleteMember")
+    public ResultResponseDto removeClubMember(Long userId, Long clubId){
+        return clubService.removeMember(userId,clubId);
+    }
+
 }

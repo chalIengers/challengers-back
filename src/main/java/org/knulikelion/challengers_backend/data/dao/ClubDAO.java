@@ -11,6 +11,5 @@ public interface ClubDAO{
     Club updateClub(Long id, Club club) throws Exception;
     Club createClub(Club club);
     void removeClub(Long id);
-    List<Long> getUsersByClubId(Long id);
-    List<User> updateUsers(Long id, User selectedUser, User updateUser);
+    List<User> getUsersByClubId(Long id);
 }

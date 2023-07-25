@@ -8,10 +8,10 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ClubRequestDto {
+public class ClubCreateRequestDto {
     private String clubName;
     private String logoUrl;
     private String clubDescription;
     private String clubForm;
-    private Integer clubApproved;
 }
+
