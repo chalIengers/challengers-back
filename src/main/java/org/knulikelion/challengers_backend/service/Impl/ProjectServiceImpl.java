@@ -55,6 +55,7 @@ public class ProjectServiceImpl implements ProjectService {
 
             return resultResponseDto;
         } else {
+//            대상 프로젝트 선택
             Project selectedProject = projectDAO.selectProjectById(id).get();
             ProjectResponseDto projectResponseDto = new ProjectResponseDto();
             projectResponseDto.setId(selectedProject.getId());
@@ -76,12 +77,20 @@ public class ProjectServiceImpl implements ProjectService {
                 projectResponseDto.setBelongedClubId(null);
                 projectResponseDto.setBelongedClubName(null);
             }
+
+//            프로젝트에 포함된 기술 스텍 불러옴
             List<ProjectTechStackResponseDto> techStacks = projectTechStackDAO.getTechStack(projectResponseDto.getId());
             projectResponseDto.setProjectTechStack(techStacks);
+
+//            프로젝트에 포함된 링크 불러옴
             List<ProjectLinkResponseDto> projectLinks = projectLinkDAO.getLink(projectResponseDto.getId());
             projectResponseDto.setProjectLink(projectLinks);
+
+//            프로젝트에 포함된 크루 불러옴
             List<ProjectCrewResponseDto> projectCrews = projectCrewDAO.getCrew(projectResponseDto.getId());
             projectResponseDto.setProjectCrew(projectCrews);
+
+//            결과 반환
             return projectResponseDto;
         }
     }
@@ -94,14 +103,23 @@ public class ProjectServiceImpl implements ProjectService {
             resultResponseDto.setCode(1);
             resultResponseDto.setMsg("프로젝트가 존재하지 않음");
         } else {
+//            프로젝트에 포함된 기술 스텍 모두 삭제
             logger.info("[Log] 포함된 기술 스텍 전체 삭제");
             projectTechStackDAO.removeTechStack(id);
+
+//            프로젝트에 포함된 링크 모두 삭제
             logger.info("[Log] 포함된 링크 전체 삭제");
             projectLinkDAO.removeLink(id);
+
+//            프로젝트에 포함된 크루 모두 삭제
             logger.info("[Log] 포함된 크루 전체 삭제");
             projectCrewDAO.removeCrew(id);
+
+//            프로젝트 삭제
             logger.info("[Log] 포함된 프로젝트 삭제");
             projectDAO.removeProject(id);
+
+//            결과 값 반환
             logger.info("[Log] 프로젝트 삭제 완료");
             resultResponseDto.setCode(0);
             resultResponseDto.setMsg("프로젝트 삭제 됨");
@@ -112,9 +130,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ResultResponseDto createProject(ProjectRequestDto projectRequestDto) {
-        LocalDateTime currentTime = LocalDateTime.now();
-
         Project project = new Project();
+//        사용자를 찾을 수 없다면, 프로젝트 생성을 거부함
         if(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).isEmpty()) {
             ResultResponseDto resultResponseDto = new ResultResponseDto();
 
@@ -122,6 +139,7 @@ public class ProjectServiceImpl implements ProjectService {
             resultResponseDto.setMsg("존재하지 않는 사용자");
 
             return resultResponseDto;
+//         프로젝트 생성 프로세스 진행
         } else {
             project.setProjectName(projectRequestDto.getProjectName());
             project.setImageUrl(projectRequestDto.getImageUrl());
@@ -130,8 +148,9 @@ public class ProjectServiceImpl implements ProjectService {
             project.setProjectStatus(projectRequestDto.getProjectStatus());
             project.setProjectPeriod(projectRequestDto.getProjectPeriod());
             project.setProjectCategory(projectRequestDto.getProjectCategory());
-            project.setCreatedAt(currentTime);
-            project.setUpdatedAt(currentTime);
+            project.setCreatedAt(LocalDateTime.now());
+            project.setUpdatedAt(LocalDateTime.now());
+//            클럽이 존재하지 않으면, 엔티티의 Club 값을 null로 처리함
             if(projectRequestDto.getBelongedClubId() == 0) {
                 logger.info("[Log] 클럽 정보를 조회하지 못 함, ID:" + projectRequestDto.getBelongedClubId());
                 project.setClub(null);
@@ -140,23 +159,25 @@ public class ProjectServiceImpl implements ProjectService {
                 project.setClub(clubDAO.selectClubById(projectRequestDto.getBelongedClubId()).get());
             }
             project.setUser(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).get());
-
+//            프로젝트 생성
             Project createdProject = projectDAO.createProject(project);
             logger.info("[Log] 프로젝트 생성 됨, ID:" + createdProject.getId());
 
+//            프로젝트 크루 생성
             for (ProjectCrewRequestDto projectCrewRequestDto : projectRequestDto.getProjectCrew()) {
                 ProjectCrew projectCrew = new ProjectCrew();
                 projectCrew.setProject(createdProject);
                 projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
                 projectCrew.setProjectCrewPosition(projectCrewRequestDto.getPosition());
                 projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
-                projectCrew.setCreatedAt(currentTime);
-                projectCrew.setUpdatedAt(currentTime);
+                projectCrew.setCreatedAt(LocalDateTime.now());
+                projectCrew.setUpdatedAt(LocalDateTime.now());
 
                 projectCrewDAO.createCrew(projectCrew);
                 logger.info("[Log] 새로운 크루 생성됨:" + projectCrewRequestDto.getName() + "," + projectCrewRequestDto.getPosition() + "," + projectCrewRequestDto.getRole());
             }
 
+//            프로젝트 링크 생성
             for (ProjectLinkRequestDto projectLinkRequestDto : projectRequestDto.getProjectLink()) {
                 ProjectLink projectLink = new ProjectLink();
                 projectLink.setLinkName(projectLinkRequestDto.getName());
@@ -167,6 +188,7 @@ public class ProjectServiceImpl implements ProjectService {
                 logger.info("[Log] 새로운 프로젝트 링크 생성됨:" + projectLinkRequestDto.getName() + "," + projectLinkRequestDto.getLinkUrl());
             }
 
+//            프로젝트에 포함된 기술 스텍 생성
             for (ProjectTechStackRequestDto projectTechStackRequestDto : projectRequestDto.getProjectTechStack()) {
                 ProjectTechStack projectTechStack = new ProjectTechStack();
                 projectTechStack.setTechStackName(projectTechStackRequestDto.getName());
@@ -176,6 +198,7 @@ public class ProjectServiceImpl implements ProjectService {
                 logger.info("[Log] 새로운 프로젝트 기술 스텍 생성됨:" + projectTechStackRequestDto.getName());
             }
 
+//            프로젝트 생성 프로세스 완료
             ResultResponseDto resultResponseDto = new ResultResponseDto();
             resultResponseDto.setCode(0);
             resultResponseDto.setMsg("프로젝트 생성 완료");
@@ -186,8 +209,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ResultResponseDto updateProject(Long projectId, ProjectRequestDto projectRequestDto) {
-        LocalDateTime currentTime = LocalDateTime.now();
-
         Optional<Project> projectOptional = projectDAO.selectProjectById(projectId);
         if (!projectOptional.isPresent()) {
             ResultResponseDto resultResponseDto = new ResultResponseDto();
@@ -206,7 +227,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectStatus(projectRequestDto.getProjectStatus());
         project.setProjectPeriod(projectRequestDto.getProjectPeriod());
         project.setProjectCategory(projectRequestDto.getProjectCategory());
-        project.setUpdatedAt(currentTime);
+//        최종 수정일 업데이트
+        project.setUpdatedAt(LocalDateTime.now());
 
         if(projectRequestDto.getBelongedClubId() == 0) {
             project.setClub(null);
@@ -232,8 +254,8 @@ public class ProjectServiceImpl implements ProjectService {
             projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
             projectCrew.setProjectCrewPosition(projectCrewRequestDto.getPosition());
             projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
-            projectCrew.setCreatedAt(currentTime);
-            projectCrew.setUpdatedAt(currentTime);
+            projectCrew.setCreatedAt(LocalDateTime.now());
+            projectCrew.setUpdatedAt(LocalDateTime.now());
 
             projectCrewDAO.createCrew(projectCrew);
 
