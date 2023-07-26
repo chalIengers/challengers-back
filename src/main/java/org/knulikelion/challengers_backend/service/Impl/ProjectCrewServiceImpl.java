@@ -24,15 +24,14 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
 
     @Override
     public ResultResponseDto createProjectCrew(ProjectCrewRequestDto projectCrewRequestDto) {
-        LocalDateTime currentTime = LocalDateTime.now();
 
 
         ProjectCrew projectCrew = new ProjectCrew();
         projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
         projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
         projectCrew.setProjectCrewPosition(projectCrewRequestDto.getPosition());
-        projectCrew.setCreatedAt(currentTime);
-        projectCrew.setUpdatedAt(currentTime);
+        projectCrew.setCreatedAt(LocalDateTime.now());
+        projectCrew.setUpdatedAt(LocalDateTime.now());
 
         ProjectCrew createdProjectCrew = projectCrewDAO.createCrew(projectCrew);
         ResultResponseDto resultResponseDto = new ResultResponseDto();
@@ -65,7 +64,6 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
 
     @Override
     public ResultResponseDto updateProjcetCrew(Long id, ProjectCrewRequestDto projectCrewRequestDto) {
-        LocalDateTime currentTime = LocalDateTime.now();
 
         Optional<ProjectCrew> projectCrewOptional = projectCrewDAO.selectById(id);
         if(projectCrewOptional.isEmpty()) {
@@ -79,7 +77,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
         projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
         projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
         projectCrew.setProjectCrewPosition(projectCrew.getProjectCrewPosition());
-        projectCrew.setUpdatedAt(currentTime);
+        projectCrew.setUpdatedAt(LocalDateTime.now());
 
         projectCrewDAO.updateCrew(projectCrew);
 
