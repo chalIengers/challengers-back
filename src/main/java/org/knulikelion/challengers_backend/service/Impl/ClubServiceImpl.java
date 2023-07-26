@@ -80,18 +80,6 @@ public class ClubServiceImpl implements ClubService {
             }
 //            클럽 삭제
             clubRepository.deleteById(id);
-//            List<UserClub> userClubList =userClubRepository.findAll();
-//            for(UserClub userClub : userClubList){
-//                if(userClub.getClub().getId().equals(id)){
-//                    userClub.setUser(null);
-//                    userClub.setClub(null);
-//                    userClubRepository.save(userClub);
-//                    clubDAO.removeClub(id);
-//                    userClubRepository.delete(userClub);
-//                }else{
-//                    clubDAO.removeClub(id);
-//                }
-//            }
         }
         resultResponseDto.setCode(0);
         resultResponseDto.setMsg("클럽 삭제 됨");
