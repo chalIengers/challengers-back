@@ -71,7 +71,15 @@ public class ClubServiceImpl implements ClubService {
             resultResponseDto.setCode(1);
             resultResponseDto.setMsg("클럽이 존재하지 않음");
         }else{
-            clubDAO.removeClub(id);
+//            UserClub 매핑 값 삭제
+            List<UserClub> selectedMapping = userClubRepository.findAllByClubId(id);
+            for (UserClub userClub : selectedMapping) {
+                userClub.setUser(null);
+                userClub.setClub(null);
+                userClubRepository.delete(userClub);
+            }
+//            클럽 삭제
+            clubRepository.deleteById(id);
         }
         resultResponseDto.setCode(0);
         resultResponseDto.setMsg("클럽 삭제 됨");
@@ -80,7 +88,6 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     public ResultResponseDto createClub(ClubCreateRequestDto clubCreateRequestDto) {
-        LocalDateTime currentTime = LocalDateTime.now();
 
         Club club = new Club();
         club.setClubName(clubCreateRequestDto.getClubName());
@@ -88,8 +95,8 @@ public class ClubServiceImpl implements ClubService {
         club.setClubDescription(clubCreateRequestDto.getClubDescription());
         club.setClubForm(clubCreateRequestDto.getClubForm());
         club.setClubApproved(0);
-        club.setCreatedAt(currentTime);
-        club.setUpdatedAt(currentTime);
+        club.setCreatedAt(LocalDateTime.now());
+        club.setUpdatedAt(LocalDateTime.now());
 
         clubDAO.createClub(club);
 
@@ -101,7 +108,6 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     public ResultResponseDto updateClub(Long id, ClubRequestDto clubRequestDto) throws Exception {
-        LocalDateTime currentTime = LocalDateTime.now();
 
         Optional<Club> clubOptional = clubDAO.selectClubById(id);
         if(clubOptional.isEmpty()){
@@ -116,7 +122,7 @@ public class ClubServiceImpl implements ClubService {
             club.setClubDescription(clubRequestDto.getClubDescription());
             club.setClubForm(clubRequestDto.getClubForm());
             club.setClubApproved(clubRequestDto.getClubApproved());
-            club.setUpdatedAt(currentTime);
+            club.setUpdatedAt(LocalDateTime.now());
 
             clubDAO.updateClub(id, club);
             ResultResponseDto resultResponseDto = new ResultResponseDto();
@@ -131,17 +137,28 @@ public class ClubServiceImpl implements ClubService {
         List<UserClub> userClubList = userClubRepository.findAll();
         User updateUser = userRepository.getById(updateUserId);
         Club club = clubRepository.getById(clubId);
-        for(UserClub userClub : userClubList){
-            if((userClub.getClub().getId().equals(clubId)) && (userClub.getUser().getId().equals(findUserId))){
+        ResultResponseDto resultResponseDto = new ResultResponseDto();
+
+        boolean isUpdated = false;
+        for (UserClub userClub : userClubList) {
+            if (userClub.getClub().getId().equals(clubId) && userClub.getUser().getId().equals(findUserId)) {
                 userClub.setUser(updateUser);
                 userClub.setClub(club);
                 userClubRepository.save(userClub);
+                isUpdated = true;
                 break;
             }
         }
 
+        if (isUpdated) {
+            resultResponseDto.setCode(1);
+            resultResponseDto.setMsg("클럽 멤버 업데이트 완료");
+        } else {
+            resultResponseDto.setCode(0);
+            resultResponseDto.setMsg("클럽 멤버 업데이트 실패");
+        }
 
-        return null;
+        return resultResponseDto;
     }
 
     @Override
