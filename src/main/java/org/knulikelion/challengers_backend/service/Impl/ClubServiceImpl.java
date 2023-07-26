@@ -71,18 +71,24 @@ public class ClubServiceImpl implements ClubService {
             resultResponseDto.setCode(1);
             resultResponseDto.setMsg("클럽이 존재하지 않음");
         }else{
-            List<UserClub> userClubList =userClubRepository.findAll();
-            for(UserClub userClub : userClubList){
-                if(userClub.getClub().getId().equals(id)){
-                    userClub.setUser(null);
-                    userClub.setClub(null);
-                    userClubRepository.save(userClub);
-                    clubDAO.removeClub(id);
-                    userClubRepository.delete(userClub);
-                }else{
-                    clubDAO.removeClub(id);
-                }
+            List<UserClub> selectedMapping = userClubRepository.findAllByClubId(id);
+            for (UserClub userClub : selectedMapping) {
+                userClub.setUser(null);
+                userClub.setClub(null);
+                userClubRepository.delete(userClub);
             }
+//            List<UserClub> userClubList =userClubRepository.findAll();
+//            for(UserClub userClub : userClubList){
+//                if(userClub.getClub().getId().equals(id)){
+//                    userClub.setUser(null);
+//                    userClub.setClub(null);
+//                    userClubRepository.save(userClub);
+//                    clubDAO.removeClub(id);
+//                    userClubRepository.delete(userClub);
+//                }else{
+//                    clubDAO.removeClub(id);
+//                }
+//            }
         }
         resultResponseDto.setCode(0);
         resultResponseDto.setMsg("클럽 삭제 됨");
