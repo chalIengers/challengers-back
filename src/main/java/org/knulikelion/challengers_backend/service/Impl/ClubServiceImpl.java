@@ -71,12 +71,15 @@ public class ClubServiceImpl implements ClubService {
             resultResponseDto.setCode(1);
             resultResponseDto.setMsg("클럽이 존재하지 않음");
         }else{
+//            UserClub 매핑 값 삭제
             List<UserClub> selectedMapping = userClubRepository.findAllByClubId(id);
             for (UserClub userClub : selectedMapping) {
                 userClub.setUser(null);
                 userClub.setClub(null);
                 userClubRepository.delete(userClub);
             }
+//            클럽 삭제
+            clubRepository.deleteById(id);
 //            List<UserClub> userClubList =userClubRepository.findAll();
 //            for(UserClub userClub : userClubList){
 //                if(userClub.getClub().getId().equals(id)){
