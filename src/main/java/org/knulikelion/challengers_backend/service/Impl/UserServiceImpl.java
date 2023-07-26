@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
         User user = selectedUser.get();
         user.setUserName(userRequestDto.getUserName());
         user.setEmail(userRequestDto.getEmail());
-        user.setUpdatedAt(currentTime);
+        user.setUpdatedAt(LocalDateTime.now());
 
         userDAO.updateUser(id, user);
 
