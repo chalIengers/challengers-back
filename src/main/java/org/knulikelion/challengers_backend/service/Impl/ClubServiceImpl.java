@@ -54,6 +54,8 @@ public class ClubServiceImpl implements ClubService {
             clubResponseDto.setClubDescription(selectedClub.getClubDescription());
             clubResponseDto.setClubForm(selectedClub.getClubForm());
             clubResponseDto.setClubApproved(selectedClub.getClubApproved());
+            clubResponseDto.setCreatedAt(String.valueOf(selectedClub.getCreatedAt()));
+            clubResponseDto.setUpdatedAt(String.valueOf(selectedClub.getUpdatedAt()));
             if(!clubDAO.getUsersByClubId(id).isEmpty()){
                 clubResponseDto.setClubMembers(clubDAO.getUsersByClubId(id));
             }else{
