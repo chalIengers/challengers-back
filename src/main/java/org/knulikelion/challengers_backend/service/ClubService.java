@@ -16,5 +16,5 @@ public interface ClubService {
     ResultResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId);
     ResultResponseDto removeMember(Long findUserId, Long clubId);
     ResultResponseDto addMember(Long userId, Long clubId);
-    List<ClubListResponseDto> findAllCubs();
+    List<ClubListResponseDto> findAllClubs();
 }

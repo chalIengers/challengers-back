@@ -210,7 +210,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public List<ClubListResponseDto> findAllCubs() {
+    public List<ClubListResponseDto> findAllClubs() {
         return clubRepository.findAll().stream()
                 .map(club -> new ClubListResponseDto(club.getClubName(),club.getLogoUrl()))
                 .collect(Collectors.toList());
