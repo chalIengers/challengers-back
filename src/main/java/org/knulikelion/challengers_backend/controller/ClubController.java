@@ -56,7 +56,7 @@ public class ClubController {
         return clubJoinService.createJoinRequest(userId, clubId);
     }
 
-    @PutMapping("/accpet-join-request")
+    @PutMapping("/accept/join/request")
     public UserClub acceptJoinRequest(@RequestParam("joinRequestId") Long joinRequestId){
         return clubJoinService.acceptJoinRequest(joinRequestId);
     }
