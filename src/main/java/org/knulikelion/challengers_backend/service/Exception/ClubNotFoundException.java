@@ -1,4 +1,4 @@
-package org.knulikelion.challengers_backend.service.Impl;
+package org.knulikelion.challengers_backend.service.Exception;
 
 public class ClubNotFoundException extends RuntimeException {
     public ClubNotFoundException() {
