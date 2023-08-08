@@ -53,7 +53,7 @@ public class ClubController {
     @GetMapping("/list")
     @ResponseBody
     public List<ClubListResponseDto> clubList() {
-        return clubService.findAllCubs();
+        return clubService.findAllClubs();
     }
 
 }
