@@ -2,6 +2,7 @@ package org.knulikelion.challengers_backend.controller;
 
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.service.ClubService;
@@ -49,9 +50,10 @@ public class ClubController {
         return clubService.removeMember(userId,clubId);
     }
 
-    @GetMapping("/clubList")
-    public List<Club> clubList() {
-        return clubService.findAllClub();
+    @GetMapping("/list")
+    @ResponseBody
+    public List<ClubListResponseDto> clubList() {
+        return clubService.findAllCubs();
     }
 
 }
