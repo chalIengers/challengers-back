@@ -3,9 +3,12 @@ package org.knulikelion.challengers_backend.controller;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/club")
@@ -44,6 +47,11 @@ public class ClubController {
     @DeleteMapping("/deleteMember")
     public ResultResponseDto removeClubMember(Long userId, Long clubId){
         return clubService.removeMember(userId,clubId);
+    }
+
+    @GetMapping("/clubList")
+    public List<Club> clubList() {
+        return clubService.findAllClub();
     }
 
 }

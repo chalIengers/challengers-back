@@ -206,5 +206,9 @@ public class ClubServiceImpl implements ClubService {
         }
 
     }
+    @Override
+    public List<Club> findAllClub() {
+        return clubRepository.findAll();
+    }
 
 }
