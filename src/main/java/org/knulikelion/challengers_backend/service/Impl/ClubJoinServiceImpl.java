@@ -10,9 +10,10 @@ import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
+import org.knulikelion.challengers_backend.service.Exception.ClubJoinNotFoundException;
+import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
+import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,8 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     @Override
     public ClubJoin createJoinRequest(Long userId, Long clubId) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
-        Club club = clubRepository.findById(clubId).orElseThrow(() -> new ClubNotFoundException());
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
 
         ClubJoin clubJoin = new ClubJoin(user, club, false);
         return clubJoinRepository.save(clubJoin);
@@ -36,7 +37,7 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     @Override
     public UserClub acceptJoinRequest(Long joinRequestId) {
         ClubJoin clubJoin = clubJoinRepository.findById(joinRequestId)
-                .orElseThrow(() -> new ClubJoinNotFoundException());
+                .orElseThrow(ClubJoinNotFoundException::new);
 
         clubJoin.setAccepted(true);
         clubJoinRepository.save(clubJoin);
