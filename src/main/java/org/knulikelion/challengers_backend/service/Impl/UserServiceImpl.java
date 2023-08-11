@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
@@ -15,31 +16,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserDAO userDAO;
-
     public UserServiceImpl(UserDAO userDAO) {
         this.userDAO = userDAO;
-    }
-
-    @Override
-    public ResultResponseDto createUser(UserRequestDto userRequestDto) {
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        User userInfo = new User();
-        userInfo.setUserName(userRequestDto.getUserName());
-        userInfo.setEmail(userRequestDto.getEmail());
-        userInfo.setCreatedAt(currentTime);
-        userInfo.setUpdatedAt(currentTime);
-        userDAO.createUser(userInfo);
-
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-        resultResponseDto.setCode(0);
-        resultResponseDto.setMsg("유저 생성 완료");
-        return resultResponseDto;
     }
 
     @Override
@@ -55,7 +37,7 @@ public class UserServiceImpl implements UserService {
             User selectedUser = userDAO.selectUserById(id).get();
             UserResponseDto userResponseDto = new UserResponseDto();
             userResponseDto.setId(selectedUser.getId());
-            userResponseDto.setUserName(selectedUser.getUserName());
+            userResponseDto.setUserName(selectedUser.getUsername());
             userResponseDto.setEmail(selectedUser.getEmail());
             userResponseDto.setCreatedAt(String.valueOf(selectedUser.getCreatedAt()));
             userResponseDto.setUpdatedAt(String.valueOf(selectedUser.getUpdatedAt()));
