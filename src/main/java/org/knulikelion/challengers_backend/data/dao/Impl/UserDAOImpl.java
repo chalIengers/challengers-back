@@ -45,7 +45,7 @@ public class UserDAOImpl implements UserDAO {
         User updatedUser;
         if(selectedUser.isPresent()){
             User userInfo = selectedUser.get();
-            userInfo.setUserName(user.getUserName());
+            userInfo.setUserName(user.getUsername());
             userInfo.setEmail(user.getEmail());
 
             updatedUser = userRepository.save(userInfo);
