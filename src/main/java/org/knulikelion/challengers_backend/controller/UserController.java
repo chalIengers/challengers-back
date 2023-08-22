@@ -21,8 +21,7 @@ public class UserController {
     }
     @GetMapping("/get")
     public Object getUserById(Long id){
-        Object result = userService.getUserById(id);
-        return result;
+        return userService.getUserById(id);
     }
     @DeleteMapping("/remove")
     public ResultResponseDto removeUserById(Long id){
