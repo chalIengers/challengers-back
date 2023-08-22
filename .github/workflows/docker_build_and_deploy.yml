@@ -34,7 +34,7 @@ jobs:
 
     - name: web docker build and push
       run: |
-          docker login -u ${{ secrets.DOCKER_KEY }}
+          docker login -u ${{ secrets.DOCKER_REPO }} -p ${{ secrets.DOCKER_KEY }}
           docker build -t ${{ secrets.DOCKER_REPO }}/challengers-backend:latest .
           docker push ${{ secrets.DOCKER_REPO }}/challengers-backend
 
