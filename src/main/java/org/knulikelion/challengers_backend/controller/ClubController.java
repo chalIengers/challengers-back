@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/club")
+@RequestMapping("/api/v1/club")
 public class ClubController {
     private final ClubService clubService;
 

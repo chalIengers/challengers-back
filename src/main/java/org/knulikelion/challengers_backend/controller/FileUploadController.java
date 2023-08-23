@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/file")
 public class FileUploadController {
     private final AmazonS3 amazonS3Client;
 
@@ -26,7 +26,7 @@ public class FileUploadController {
 
     private static final String BUCKET_NAME = "challengers";
 
-    @PostMapping("/upload/image")
+    @PostMapping("/upload")
     public BaseResponseDto uploadToS3(@RequestParam("file") MultipartFile file) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
         try {
