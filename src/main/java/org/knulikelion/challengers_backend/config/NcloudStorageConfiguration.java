@@ -11,17 +11,23 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class NcloudStorageConfiguration {
-    @Value("${cloud.aws.credentials.access-key}")
-    private String accessKey;
+    private final String accessKey;
 
-    @Value("${cloud.aws.credentials.secret-key}")
-    private String secretKey;
+    private final String secretKey;
 
-    @Value("${cloud.aws.region.static}")
-    private String region;
+    private final String region;
 
-    @Value("${cloud.aws.s3.endpoint}")
-    private String endPoint;
+    private final String endPoint;
+
+    public NcloudStorageConfiguration(@Value("${cloud.aws.credentials.access-key}") String accessKey,
+                                      @Value("${cloud.aws.credentials.secret-key}") String secretKey,
+                                      @Value("${cloud.aws.region.static}") String region,
+                                      @Value("${cloud.aws.s3.endpoint}") String endPoint) {
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+        this.region = region;
+        this.endPoint = endPoint;
+    }
 
     @Bean
     public AmazonS3Client amazonS3Client() {
