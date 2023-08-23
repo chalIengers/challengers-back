@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,6 +94,52 @@ public class ProjectServiceImpl implements ProjectService {
 //            결과 반환
             return projectResponseDto;
         }
+    }
+
+    @Override
+    public List<ProjectResponseDto> getAllProjects() {
+        List<Project> projects = projectDAO.getAllProjects();
+        List<ProjectResponseDto> projectResponseDtoList = new ArrayList<>();
+
+        for (Project temp : projects) {
+            ProjectResponseDto projectResponseDto = new ProjectResponseDto();
+
+            projectResponseDto.setId(temp.getId());
+            projectResponseDto.setProjectName(temp.getProjectName());
+            projectResponseDto.setProjectDescription(temp.getProjectDescription());
+            projectResponseDto.setProjectDetail(temp.getProjectDetail());
+            projectResponseDto.setImageUrl(temp.getImageUrl());
+            projectResponseDto.setProjectStatus(temp.getProjectStatus());
+            projectResponseDto.setProjectPeriod(temp.getProjectPeriod());
+            projectResponseDto.setProjectCategory(temp.getProjectCategory());
+            projectResponseDto.setCreatedAt(String.valueOf(temp.getCreatedAt()));
+            projectResponseDto.setUpdatedAt(String.valueOf(temp.getUpdatedAt()));
+            projectResponseDto.setUploadedUserId(temp.getUser().getId().intValue());
+            if (temp.getClub() != null) {
+                projectResponseDto.setBelongedClubId(temp.getClub().getId().intValue());
+                projectResponseDto.setBelongedClubName(temp.getClub().getClubName());
+            } else {
+                logger.info("[Log] 클럽이 존재하지 않음");
+                projectResponseDto.setBelongedClubId(null);
+                projectResponseDto.setBelongedClubName(null);
+            }
+
+//            프로젝트에 포함된 기술 스텍 불러옴
+            List<ProjectTechStackResponseDto> techStacks = projectTechStackDAO.getTechStack(projectResponseDto.getId());
+            projectResponseDto.setProjectTechStack(techStacks);
+
+//            프로젝트에 포함된 링크 불러옴
+            List<ProjectLinkResponseDto> projectLinks = projectLinkDAO.getLink(projectResponseDto.getId());
+            projectResponseDto.setProjectLink(projectLinks);
+
+//            프로젝트에 포함된 크루 불러옴
+            List<ProjectCrewResponseDto> projectCrews = projectCrewDAO.getCrew(projectResponseDto.getId());
+            projectResponseDto.setProjectCrew(projectCrews);
+
+            projectResponseDtoList.add(projectResponseDto);
+        }
+
+        return projectResponseDtoList;
     }
 
     @Override
