@@ -1,13 +1,17 @@
 package org.knulikelion.challengers_backend.controller;
 
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.ProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/project")
 public class ProjectController {
     private final ProjectService projectService;
 
@@ -18,8 +22,12 @@ public class ProjectController {
 
     @GetMapping("/get")
     public Object getProjectById(Long id) {
-        Object result = projectService.getProjectById(id);
-        return result;
+        return projectService.getProjectById(id);
+    }
+
+    @GetMapping("/get/all")
+    public List<AllProjectResponseDto> getAllProjects() {
+        return projectService.getAllProjects();
     }
 
     @DeleteMapping("/remove")

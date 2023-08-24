@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,6 +94,32 @@ public class ProjectServiceImpl implements ProjectService {
 //            결과 반환
             return projectResponseDto;
         }
+    }
+
+    @Override
+    public List<AllProjectResponseDto> getAllProjects() {
+        List<Project> projects = projectDAO.getAllProjects();
+        List<AllProjectResponseDto> allProjectResponseDtoList = new ArrayList<>();
+
+        for (Project temp : projects) {
+            AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
+
+            allProjectResponseDto.setId(temp.getId());
+            allProjectResponseDto.setProjectName(temp.getProjectName());
+            allProjectResponseDto.setProjectDescription(temp.getProjectDescription());
+            allProjectResponseDto.setImageUrl(temp.getImageUrl());
+            allProjectResponseDto.setProjectCategory(temp.getProjectCategory());
+            if (temp.getClub() != null) {
+                allProjectResponseDto.setBelongedClubName(temp.getClub().getClubName());
+            } else {
+                logger.info("[Log] 클럽이 존재하지 않음");
+                allProjectResponseDto.setBelongedClubName(null);
+            }
+
+            allProjectResponseDtoList.add(allProjectResponseDto);
+        }
+
+        return allProjectResponseDtoList;
     }
 
     @Override
