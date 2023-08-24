@@ -27,6 +27,10 @@ public class Club extends BaseEntity {
     @Column(name ="club_approved",nullable = false)
     private Integer clubApproved;
 
+
     @OneToMany(mappedBy = "club",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<UserClub> clubs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ClubJoin> clubJoins = new ArrayList<>();
 }
