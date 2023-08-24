@@ -78,5 +78,10 @@ public class ClubDAOImpl implements ClubDAO {
         }
         return userList;
     }
+
+    @Override
+    public List<Club> getAllClub() {
+        return clubRepository.findAll();
+    }
 }
 
