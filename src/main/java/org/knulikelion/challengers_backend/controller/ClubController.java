@@ -4,7 +4,9 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
-import org.knulikelion.challengers_backend.data.entity.Club;
+import org.knulikelion.challengers_backend.data.entity.ClubJoin;
+import org.knulikelion.challengers_backend.data.entity.UserClub;
+import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,12 @@ import java.util.List;
 @RequestMapping("/api/v1/club")
 public class ClubController {
     private final ClubService clubService;
+    private final ClubJoinService clubJoinService;
 
     @Autowired
-    public ClubController(ClubService clubService) {
+    public ClubController(ClubService clubService, ClubJoinService clubJoinService) {
         this.clubService = clubService;
+        this.clubJoinService = clubJoinService;
     }
     @GetMapping("/get")
     public Object getClubById(Long id){
@@ -54,6 +58,16 @@ public class ClubController {
     @ResponseBody
     public List<ClubListResponseDto> clubList() {
         return clubService.findAllClubs();
+    }
+
+    @PostMapping("/join")
+    public ClubJoin createJoinRequest(@RequestParam Long userId, @RequestParam Long clubId) {
+        return clubJoinService.createJoinRequest(userId, clubId);
+    }
+
+    @PutMapping("/accept/join/request")
+    public UserClub acceptJoinRequest(@RequestParam("joinRequestId") Long joinRequestId){
+        return clubJoinService.acceptJoinRequest(joinRequestId);
     }
 
 }
