@@ -26,10 +26,14 @@ public class ClubController {
         this.clubJoinService = clubJoinService;
     }
 
+    @GetMapping("/get/logo/all")
+    public List<ClubLogoResponseDto> getAllClubLogo() {
+        return clubService.getAllClubLogo();
+    }
+  
     @GetMapping("/get")
     public Object getClubById(Long id){
-        Object result = clubService.getClubById(id);
-        return result;
+        return clubService.getClubById(id);
     }
 
     @DeleteMapping("/remove")

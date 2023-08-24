@@ -12,4 +12,5 @@ public interface ClubDAO{
     Club createClub(Club club);
     void removeClub(Long id);
     List<User> getUsersByClubId(Long id);
+    List<Club> getAllClub();
 }
