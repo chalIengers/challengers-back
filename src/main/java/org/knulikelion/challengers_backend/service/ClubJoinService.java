@@ -12,7 +12,7 @@ public interface ClubJoinService {
 
     public ClubJoinResponseDto createJoinRequest(Long userId, Long clubId);
 
-    public UserClub acceptJoinRequest(Long joinRequestId);
+    public UserClub acceptJoinRequest(Long joinRequestId, boolean isAccepted);
 
     List<PendingUserResponseDto> getPendingRequestUser(Club club);
 }

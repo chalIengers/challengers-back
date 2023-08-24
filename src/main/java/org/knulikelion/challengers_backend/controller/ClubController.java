@@ -71,8 +71,8 @@ public class ClubController {
     }
 
     @PutMapping("/accept/join/request")
-    public UserClub acceptJoinRequest(@RequestParam("joinRequestId") Long joinRequestId){
-        return clubJoinService.acceptJoinRequest(joinRequestId);
+    public UserClub acceptJoinRequest(@RequestParam("joinRequestId") Long joinRequestId, @RequestParam("isAccepted") boolean isAccepted){
+        return clubJoinService.acceptJoinRequest(joinRequestId,isAccepted);
     }
 
     @GetMapping("/pending/requests/users/{clubId}")

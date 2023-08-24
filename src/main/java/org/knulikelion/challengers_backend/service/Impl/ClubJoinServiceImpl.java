@@ -38,15 +38,21 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     }
 
     @Override
-    public UserClub acceptJoinRequest(Long joinRequestId) {
+    public UserClub acceptJoinRequest(Long joinRequestId, boolean isAccepted) {
         ClubJoin clubJoin = clubJoinRepository.findById(joinRequestId)
                 .orElseThrow(ClubJoinNotFoundException::new);
 
-        clubJoin.setStatus(JoinRequestStatus.APPROVED);
-        clubJoinRepository.save(clubJoin);
+        if(isAccepted) {
+            clubJoin.setStatus(JoinRequestStatus.APPROVED);
+            clubJoinRepository.save(clubJoin);
 
-        UserClub userClub = new UserClub(clubJoin.getUser(),clubJoin.getClub());
-        return userClubRepository.save(userClub);
+            UserClub userClub = new UserClub(clubJoin.getUser(),clubJoin.getClub());
+            return userClubRepository.save(userClub);
+        }else {
+            clubJoin.setStatus(JoinRequestStatus.REJECTED);
+            clubJoinRepository.save(clubJoin);
+            return null;
+        }
     }
 
     @Override
