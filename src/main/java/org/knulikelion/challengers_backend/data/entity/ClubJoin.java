@@ -16,7 +16,12 @@ public class ClubJoin {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean accepted; // 수락 여부 파악.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status",nullable = false)
+    private JoinRequestStatus status = JoinRequestStatus.PENDING; // 요청 상태 저장.
+
+    @Column(name = "accepted", nullable = false)
+    private boolean accepted = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -26,9 +31,9 @@ public class ClubJoin {
     @JoinColumn(name = "club_id")
     private Club club;
 
-    public ClubJoin(User user, Club club, boolean accepted) {
+    public ClubJoin(User user, Club club,JoinRequestStatus status) {
         this.user = user;
         this.club = club;
-        this.accepted = accepted;
+        this.status = status;
     }
 }

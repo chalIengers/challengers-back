@@ -2,7 +2,9 @@ package org.knulikelion.challengers_backend.controller;
 
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.ClubJoinResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.ClubJoin;
@@ -63,9 +65,9 @@ public class ClubController {
         return clubService.findAllClubs();
     }
 
-    @PostMapping("/join")
-    public ClubJoin createJoinRequest(@RequestParam Long userId, @RequestParam Long clubId) {
-        return clubJoinService.createJoinRequest(userId, clubId);
+    @PostMapping("/join/request")
+    public ClubJoinResponseDto createJoinRequest(@RequestParam Long userId, @RequestParam Long clubId) {
+        return clubJoinService.createJoinRequest(userId,clubId);
     }
 
     @PutMapping("/accept/join/request")
@@ -73,11 +75,11 @@ public class ClubController {
         return clubJoinService.acceptJoinRequest(joinRequestId);
     }
 
-    @GetMapping("/pending/requests/users")
-    public ResponseEntity<List<ClubJoin>> getPendingUsers(@PathVariable Long clubId) {
+    @GetMapping("/pending/requests/users/{clubId}")
+    public ResponseEntity<List<PendingUserResponseDto>> getPendingUsers(@PathVariable Long clubId) {
         Club club = clubService.findById(clubId)
                 .orElseThrow(() -> new NoSuchElementException("클럽을 찾을 수 없습니다."));
-        List<ClubJoin> getPendingUsers = clubJoinService.getPendingRequestUser(club);
+        List<PendingUserResponseDto> getPendingUsers = clubJoinService.getPendingRequestUser(club);
         return ResponseEntity.ok(getPendingUsers);
     }
 
