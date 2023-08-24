@@ -1,10 +1,9 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
 import lombok.RequiredArgsConstructor;
-import org.knulikelion.challengers_backend.data.entity.Club;
-import org.knulikelion.challengers_backend.data.entity.ClubJoin;
-import org.knulikelion.challengers_backend.data.entity.User;
-import org.knulikelion.challengers_backend.data.entity.UserClub;
+import org.knulikelion.challengers_backend.data.dto.response.ClubJoinResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
+import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
@@ -15,6 +14,7 @@ import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundExcepti
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,13 +27,14 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     private final ClubJoinRepository clubJoinRepository;
 
     @Override
-    public ClubJoin createJoinRequest(Long userId, Long clubId) {
+    public ClubJoinResponseDto createJoinRequest(Long userId, Long clubId) {
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
 
-        ClubJoin clubJoin = new ClubJoin(user, club, false);
-        return clubJoinRepository.save(clubJoin);
+        ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
+        ClubJoin savedClubJoin = clubJoinRepository.save(clubJoin);
+        return new ClubJoinResponseDto(savedClubJoin.getId(),userId,clubId,JoinRequestStatus.PENDING);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ClubJoinServiceImpl implements ClubJoinService {
         ClubJoin clubJoin = clubJoinRepository.findById(joinRequestId)
                 .orElseThrow(ClubJoinNotFoundException::new);
 
-        clubJoin.setAccepted(true);
+        clubJoin.setStatus(JoinRequestStatus.APPROVED);
         clubJoinRepository.save(clubJoin);
 
         UserClub userClub = new UserClub(clubJoin.getUser(),clubJoin.getClub());
@@ -49,7 +50,18 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     }
 
     @Override
-    public List<ClubJoin> getPendingRequestUser(Club club) {
-        return clubJoinRepository.findByClub(club);
+    public List<PendingUserResponseDto> getPendingRequestUser(Club club) {
+
+        List<ClubJoin> clubJoins = club.getClubJoins();
+        List<PendingUserResponseDto> pendingUsers = new ArrayList<>();
+
+        for(ClubJoin clubJoin : clubJoins) {
+            if(clubJoin.getStatus() == JoinRequestStatus.PENDING) {
+                User user = clubJoin.getUser();
+                PendingUserResponseDto pendingUser = new PendingUserResponseDto(user.getId(),user.getUserName(), user.getEmail());
+                pendingUsers.add(pendingUser);
+            }
+        }
+        return pendingUsers;
     }
 }
