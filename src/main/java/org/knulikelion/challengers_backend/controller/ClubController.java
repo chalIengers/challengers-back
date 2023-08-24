@@ -77,8 +77,7 @@ public class ClubController {
     public ResponseEntity<List<ClubJoin>> getPendingUsers(@PathVariable Long clubId) {
         Club club = clubService.findById(clubId)
                 .orElseThrow(() -> new NoSuchElementException("클럽을 찾을 수 없습니다."));
-
-        List<ClubJoin> getPendingUsers = clubJoinService.getPendingUser(club);
+        List<ClubJoin> getPendingUsers = clubJoinService.getPendingRequestUser(club);
         return ResponseEntity.ok(getPendingUsers);
     }
 
