@@ -15,6 +15,8 @@ import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundExcepti
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ClubJoinServiceImpl implements ClubJoinService {
@@ -44,5 +46,10 @@ public class ClubJoinServiceImpl implements ClubJoinService {
 
         UserClub userClub = new UserClub(clubJoin.getUser(),clubJoin.getClub());
         return userClubRepository.save(userClub);
+    }
+
+    @Override
+    public List<ClubJoin> getPendingRequestUser(Club club) {
+        return clubJoinRepository.findByClub(club);
     }
 }

@@ -7,8 +7,10 @@ import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ClubService {
+    Optional<Club> findById(Long id);
     Object getClubById(Long id);
     ResultResponseDto removeClub(Long id);
     ResultResponseDto createClub(ClubCreateRequestDto clubCreateRequestDto);

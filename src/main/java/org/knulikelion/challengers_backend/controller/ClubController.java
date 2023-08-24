@@ -4,14 +4,17 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.ClubJoin;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/club")
@@ -68,6 +71,15 @@ public class ClubController {
     @PutMapping("/accept/join/request")
     public UserClub acceptJoinRequest(@RequestParam("joinRequestId") Long joinRequestId){
         return clubJoinService.acceptJoinRequest(joinRequestId);
+    }
+
+    @GetMapping("/pending/requests/users")
+    public ResponseEntity<List<ClubJoin>> getPendingUsers(@PathVariable Long clubId) {
+        Club club = clubService.findById(clubId)
+                .orElseThrow(() -> new NoSuchElementException("클럽을 찾을 수 없습니다."));
+
+        List<ClubJoin> getPendingUsers = clubJoinService.getPendingUser(club);
+        return ResponseEntity.ok(getPendingUsers);
     }
 
 }
