@@ -4,6 +4,7 @@ import org.knulikelion.challengers_backend.data.dao.ClubDAO;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClubServiceImpl implements ClubService {
@@ -207,4 +209,10 @@ public class ClubServiceImpl implements ClubService {
 
     }
 
+    @Override
+    public List<ClubListResponseDto> findAllClubs() {
+        return clubRepository.findAll().stream()
+                .map(club -> new ClubListResponseDto(club.getClubName(),club.getLogoUrl()))
+                .collect(Collectors.toList());
+    }
 }

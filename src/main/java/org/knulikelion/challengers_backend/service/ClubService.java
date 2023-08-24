@@ -2,7 +2,11 @@ package org.knulikelion.challengers_backend.service;
 
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.entity.Club;
+
+import java.util.List;
 
 public interface ClubService {
     Object getClubById(Long id);
@@ -12,4 +16,5 @@ public interface ClubService {
     ResultResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId);
     ResultResponseDto removeMember(Long findUserId, Long clubId);
     ResultResponseDto addMember(Long userId, Long clubId);
+    List<ClubListResponseDto> findAllClubs();
 }
