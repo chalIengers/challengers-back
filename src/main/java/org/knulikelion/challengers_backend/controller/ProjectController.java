@@ -2,8 +2,7 @@ package org.knulikelion.challengers_backend.controller;
 
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ProjectResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,17 +30,17 @@ public class ProjectController {
     }
 
     @DeleteMapping("/remove")
-    public ResultResponseDto removeProjectById(Long id) {
+    public BaseResponseDto removeProjectById(Long id) {
         return projectService.removeProject(id);
     }
 
     @PostMapping("/create")
-    public ResultResponseDto createProject(@RequestBody ProjectRequestDto projectRequestDto) {
+    public BaseResponseDto createProject(@RequestBody ProjectRequestDto projectRequestDto) {
         return projectService.createProject(projectRequestDto);
     }
 
     @PutMapping("/update")
-    public ResultResponseDto updateProject(@RequestBody ProjectRequestDto projectRequestDto, Long projectId) {
+    public BaseResponseDto updateProject(@RequestBody ProjectRequestDto projectRequestDto, Long projectId) {
         return projectService.updateProject(projectId, projectRequestDto);
     }
 }
