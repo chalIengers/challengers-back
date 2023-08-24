@@ -39,6 +39,11 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public Optional<Club> findById(Long id) {
+        return clubRepository.findById(id);
+    }
+
+    @Override
     public Object getClubById(Long id) {
         if (clubDAO.selectClubById(id).isEmpty()){
             ResultResponseDto resultResponseDto = new ResultResponseDto();
