@@ -160,12 +160,12 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = new Project();
 //        사용자를 찾을 수 없다면, 프로젝트 생성을 거부함
         if(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).isEmpty()) {
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("존재하지 않는 사용자");
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("존재하지 않는 사용자");
 
-            return resultResponseDto;
+            return baseResponseDto;
 //         프로젝트 생성 프로세스 진행
         } else {
             project.setProjectName(projectRequestDto.getProjectName());
