@@ -6,6 +6,7 @@ import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -20,6 +21,11 @@ public class ProjectDAOImpl implements ProjectDAO {
     @Override
     public Optional<Project> selectProjectById(Long id) {
         return projectRepository.findById(id);
+    }
+
+    @Override
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
     }
 
     @Override

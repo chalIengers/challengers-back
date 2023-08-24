@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Controller
-@RequestMapping("/projectCrew")
+@RequestMapping("/project-crews")
 public class ProjectCrewController {
     final private ProjectCrewService projectCrewService;
 
@@ -19,26 +19,26 @@ public class ProjectCrewController {
         this.projectCrewService = projectCrewService;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     @ApiOperation(value = "crew 추가")
     public ResultResponseDto createCrew(@RequestBody ProjectCrewRequestDto projectCrewResponseDto) {
         return projectCrewService.createProjectCrew(projectCrewResponseDto);
     }
 
-    @GetMapping("/get")
+    @GetMapping
     @ApiOperation(value = "crew 조회")
     public Object getCrewById(Long id) {
         Object result = projectCrewService.getProjectCrewById(id);
         return result;
     }
 
-    @PutMapping("/update")
+    @PutMapping
     @ApiOperation(value = "crew 수정")
     public ResultResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto, Long id) {
         return projectCrewService.updateProjcetCrew(id,projectCrewRequestDto);
     }
 
-    @DeleteMapping("/remove")
+    @DeleteMapping
     @ApiOperation(value = "crew 삭제")
     public ResultResponseDto removeCrewById(Long id) {
         return projectCrewService.removeProjectCrew(id);
