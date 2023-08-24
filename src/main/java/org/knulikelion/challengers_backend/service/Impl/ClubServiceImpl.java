@@ -4,9 +4,9 @@ import org.knulikelion.challengers_backend.data.dao.ClubDAO;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
@@ -46,11 +46,11 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public Object getClubById(Long id) {
         if (clubDAO.selectClubById(id).isEmpty()){
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("클럽이 존재하지 않음");
-            return resultResponseDto;
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("클럽이 존재하지 않음");
+            return baseResponseDto;
 
         }else{
             Club selectedClub = clubDAO.selectClubById(id).get();
@@ -73,12 +73,12 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public ResultResponseDto removeClub(Long id) {
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
+    public BaseResponseDto removeClub(Long id) {
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
 
         if(clubDAO.selectClubById(id).isEmpty()){
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("클럽이 존재하지 않음");
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("클럽이 존재하지 않음");
         }else{
 //            UserClub 매핑 값 삭제
             List<UserClub> selectedMapping = userClubRepository.findAllByClubId(id);
@@ -90,13 +90,13 @@ public class ClubServiceImpl implements ClubService {
 //            클럽 삭제
             clubRepository.deleteById(id);
         }
-        resultResponseDto.setCode(0);
-        resultResponseDto.setMsg("클럽 삭제 됨");
-        return resultResponseDto;
+        baseResponseDto.setSuccess(true);
+        baseResponseDto.setMsg("클럽 삭제 됨");
+        return baseResponseDto;
     }
 
     @Override
-    public ResultResponseDto createClub(ClubCreateRequestDto clubCreateRequestDto) {
+    public BaseResponseDto createClub(ClubCreateRequestDto clubCreateRequestDto) {
 
         Club club = new Club();
         club.setClubName(clubCreateRequestDto.getClubName());
@@ -109,21 +109,23 @@ public class ClubServiceImpl implements ClubService {
 
         clubDAO.createClub(club);
 
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-        resultResponseDto.setCode(0);
-        resultResponseDto.setMsg("클럽 생성 완료");
-        return resultResponseDto;
+        BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                .success(true)
+                .msg("클럽 생성이 완료되었습니다.")
+                .build();
+
+        return baseResponseDto;
     }
 
     @Override
-    public ResultResponseDto updateClub(Long id, ClubRequestDto clubRequestDto) throws Exception {
+    public BaseResponseDto updateClub(Long id, ClubRequestDto clubRequestDto) throws Exception {
 
         Optional<Club> clubOptional = clubDAO.selectClubById(id);
         if(clubOptional.isEmpty()){
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("클럽이 존재하지 않습니다.");
-            return resultResponseDto;
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("클럽이 존재하지 않습니다.");
+            return baseResponseDto;
         }else {
             Club club = clubOptional.get();
             club.setClubName(clubRequestDto.getClubName());
@@ -134,19 +136,19 @@ public class ClubServiceImpl implements ClubService {
             club.setUpdatedAt(LocalDateTime.now());
 
             clubDAO.updateClub(id, club);
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
-            resultResponseDto.setCode(0);
-            resultResponseDto.setMsg("클럽 생성 완료");
-            return resultResponseDto;
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+            baseResponseDto.setSuccess(true);
+            baseResponseDto.setMsg("클럽 생성 완료");
+            return baseResponseDto;
         }
     }
 
     @Override
-    public ResultResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId) {
+    public BaseResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId) {
         List<UserClub> userClubList = userClubRepository.findAll();
         User updateUser = userRepository.getById(updateUserId);
         Club club = clubRepository.getById(clubId);
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
 
         boolean isUpdated = false;
         for (UserClub userClub : userClubList) {
@@ -160,18 +162,18 @@ public class ClubServiceImpl implements ClubService {
         }
 
         if (isUpdated) {
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("클럽 멤버 업데이트 완료");
+            baseResponseDto.setSuccess(true);
+            baseResponseDto.setMsg("클럽 멤버 업데이트 완료");
         } else {
-            resultResponseDto.setCode(0);
-            resultResponseDto.setMsg("클럽 멤버 업데이트 실패");
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("클럽 멤버 업데이트 실패");
         }
 
-        return resultResponseDto;
+        return baseResponseDto;
     }
 
     @Override
-    public ResultResponseDto removeMember(Long findUserId, Long clubId) {
+    public BaseResponseDto removeMember(Long findUserId, Long clubId) {
         List<UserClub> userClubList = userClubRepository.findAll();
         Long userClubId = null;
         for (UserClub userClub : userClubList){
@@ -183,21 +185,21 @@ public class ClubServiceImpl implements ClubService {
         if(userClubId!=null){
             userClubRepository.deleteById(userClubId);
         }
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-        resultResponseDto.setCode(0);
-        resultResponseDto.setMsg("멤버 삭제 완료");
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
+        baseResponseDto.setSuccess(true);
+        baseResponseDto.setMsg("멤버 삭제 완료");
 
-        return resultResponseDto;
+        return baseResponseDto;
     }
 
     @Override
-    public ResultResponseDto addMember(Long userId, Long clubId) {
+    public BaseResponseDto addMember(Long userId, Long clubId) {
         User user = userRepository.getById(userId);
         if (user.getId()==null){
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("해당 유저 없음");
-            return  resultResponseDto;
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("해당 유저 없음");
+            return baseResponseDto;
         }else{
             Club club = clubRepository.getById(clubId);
 
@@ -206,10 +208,10 @@ public class ClubServiceImpl implements ClubService {
             userClub.setUser(user);
             userClubRepository.save(userClub);
 
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
-            resultResponseDto.setCode(0);
-            resultResponseDto.setMsg("멤버 추가");
-            return resultResponseDto;
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+            baseResponseDto.setSuccess(true);
+            baseResponseDto.setMsg("멤버 추가");
+            return baseResponseDto;
         }
 
     }

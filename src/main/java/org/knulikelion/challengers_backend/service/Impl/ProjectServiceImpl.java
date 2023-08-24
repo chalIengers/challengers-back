@@ -48,13 +48,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Object getProjectById(Long id) {
         if(projectDAO.selectProjectById(id).isEmpty()) {
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("프로젝트가 존재하지 않음");
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("프로젝트가 존재하지 않음");
             logger.info("[Log] 프로젝트가 존재하지 않음, ID:" + id);
 
-            return resultResponseDto;
+            return baseResponseDto;
         } else {
 //            대상 프로젝트 선택
             Project selectedProject = projectDAO.selectProjectById(id).get();
@@ -123,12 +123,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ResultResponseDto removeProject(Long id) {
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
+    public BaseResponseDto removeProject(Long id) {
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
 
         if(projectDAO.selectProjectById(id).isEmpty()) {
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("프로젝트가 존재하지 않음");
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("프로젝트가 존재하지 않음");
         } else {
 //            프로젝트에 포함된 기술 스텍 모두 삭제
             logger.info("[Log] 포함된 기술 스텍 전체 삭제");
@@ -148,15 +148,15 @@ public class ProjectServiceImpl implements ProjectService {
 
 //            결과 값 반환
             logger.info("[Log] 프로젝트 삭제 완료");
-            resultResponseDto.setCode(0);
-            resultResponseDto.setMsg("프로젝트 삭제 됨");
+            baseResponseDto.setSuccess(true);
+            baseResponseDto.setMsg("프로젝트 삭제가 완료되었습니다.");
         }
 
-        return resultResponseDto;
+        return baseResponseDto;
     }
 
     @Override
-    public ResultResponseDto createProject(ProjectRequestDto projectRequestDto) {
+    public BaseResponseDto createProject(ProjectRequestDto projectRequestDto) {
         Project project = new Project();
 //        사용자를 찾을 수 없다면, 프로젝트 생성을 거부함
         if(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).isEmpty()) {
@@ -226,23 +226,25 @@ public class ProjectServiceImpl implements ProjectService {
             }
 
 //            프로젝트 생성 프로세스 완료
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
-            resultResponseDto.setCode(0);
-            resultResponseDto.setMsg("프로젝트 생성 완료");
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(true)
+                    .msg("프로젝트 생성 완료")
+                    .build();
 
-            return resultResponseDto;
+            return baseResponseDto;
         }
     }
 
     @Override
-    public ResultResponseDto updateProject(Long projectId, ProjectRequestDto projectRequestDto) {
+    public BaseResponseDto updateProject(Long projectId, ProjectRequestDto projectRequestDto) {
         Optional<Project> projectOptional = projectDAO.selectProjectById(projectId);
         if (!projectOptional.isPresent()) {
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("프로젝트가 존재하지 않습니다.");
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(false)
+                    .msg("프로젝트가 존재하지 않습니다.")
+                    .build();
             logger.info("[Log] 프로젝트가 존재하지 않음, ID:" + projectId);
-            return resultResponseDto;
+            return baseResponseDto;
         }
 
         Project project = projectOptional.get();
@@ -310,10 +312,11 @@ public class ProjectServiceImpl implements ProjectService {
             logger.info("[Log] 새로운 프로젝트 기술 스텍 생성됨:" + projectTechStackRequestDto.getName());
         }
 
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-        resultResponseDto.setCode(0);
-        resultResponseDto.setMsg("프로젝트 업데이트 완료");
+        BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                .success(true)
+                .msg("프로젝트 업데이트가 완료되었습니다.")
+                .build();
 
-        return resultResponseDto;
+        return baseResponseDto;
     }
 }

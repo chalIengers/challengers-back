@@ -2,12 +2,8 @@ package org.knulikelion.challengers_backend.controller;
 
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubJoinResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
-import org.knulikelion.challengers_backend.data.entity.ClubJoin;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
@@ -29,33 +25,40 @@ public class ClubController {
         this.clubService = clubService;
         this.clubJoinService = clubJoinService;
     }
+
     @GetMapping("/get")
     public Object getClubById(Long id){
         Object result = clubService.getClubById(id);
         return result;
     }
+
     @DeleteMapping("/remove")
-    public ResultResponseDto removeClubById(Long id){
+    public BaseResponseDto removeClubById(Long id){
         return clubService.removeClub(id);
     }
+
     @PostMapping("/create")
-    public ResultResponseDto createClub(@RequestBody ClubCreateRequestDto clubCreateRequestDto){
+    public BaseResponseDto createClub(@RequestBody ClubCreateRequestDto clubCreateRequestDto){
         return clubService.createClub(clubCreateRequestDto);
     }
+
     @PutMapping("/update")
-    public ResultResponseDto updateClub(@RequestBody ClubRequestDto clubRequestDto , Long clubId) throws Exception {
+    public BaseResponseDto updateClub(@RequestBody ClubRequestDto clubRequestDto , Long clubId) throws Exception {
         return clubService.updateClub(clubId,clubRequestDto);
     }
+
     @PostMapping("/addMember")
-    public ResultResponseDto addClubMember(Long userId, Long clubId){
+    public BaseResponseDto addClubMember(Long userId, Long clubId){
         return clubService.addMember(userId,clubId);
     }
+
     @PutMapping("/updateMember")
-    public ResultResponseDto updateClubMember(Long userId, Long updateUserId, Long clubId){
+    public BaseResponseDto updateClubMember(Long userId, Long updateUserId, Long clubId){
         return clubService.updateMember(userId,updateUserId,clubId);
     }
+
     @DeleteMapping("/deleteMember")
-    public ResultResponseDto removeClubMember(Long userId, Long clubId){
+    public BaseResponseDto removeClubMember(Long userId, Long clubId){
         return clubService.removeMember(userId,clubId);
     }
 
