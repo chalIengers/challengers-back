@@ -78,7 +78,7 @@ public class ClubController {
         Club club = clubService.findById(clubId)
                 .orElseThrow(() -> new NoSuchElementException("클럽을 찾을 수 없습니다."));
 
-        List<ClubJoin> getPendingUsers = clubJoinService.getPendingUser(club);
+        List<ClubJoin> getPendingUsers = clubJoinService.getPendingRequestUser(club);
         return ResponseEntity.ok(getPendingUsers);
     }
 
