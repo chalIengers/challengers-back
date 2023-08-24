@@ -5,6 +5,7 @@ import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.ClubLogoResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
@@ -70,6 +71,22 @@ public class ClubServiceImpl implements ClubService {
             }
             return clubResponseDto;
         }
+    }
+
+    @Override
+    public List<ClubLogoResponseDto> getAllClubLogo() {
+        List<ClubLogoResponseDto> clubLogoResponseDtoList = new ArrayList<>();
+        List<Club> club = clubDAO.getAllClub();
+
+        for(Club temp : club) {
+            ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
+            if(!temp.getLogoUrl().isEmpty()) {
+                clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
+                clubLogoResponseDtoList.add(clubLogoResponseDto);
+            }
+        }
+
+        return clubLogoResponseDtoList;
     }
 
     @Override
