@@ -1,6 +1,7 @@
 package org.knulikelion.challengers_backend.controller;
 
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.service.ProjectService;
@@ -25,7 +26,7 @@ public class ProjectController {
     }
 
     @GetMapping("/get/all")
-    public List<ProjectResponseDto> getAllProjects() {
+    public List<AllProjectResponseDto> getAllProjects() {
         return projectService.getAllProjects();
     }
 
