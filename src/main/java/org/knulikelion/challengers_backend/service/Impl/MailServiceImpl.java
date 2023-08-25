@@ -23,7 +23,7 @@ public class MailServiceImpl implements MailService {
         number = (int)(Math.random() * 999999-100000+1) + 100000; /*Math.random() * 최댓값-최솟값+1) + 최솟값*/
     }
     @Override
-    public MimeMessage createMessage(String name,String email){
+    public MimeMessage createMessage(String email){
         createNumber();
         log.info("Number : {}",number);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -52,11 +52,11 @@ public class MailServiceImpl implements MailService {
         return mimeMessage;
     }
     @Override
-    public int sendMail(String name ,String email) {
-        MimeMessage mimeMessage = createMessage(name,email);
+    public String sendMail(String email) {
+        MimeMessage mimeMessage = createMessage(email);
         log.info("[Mail 전송 시작]");
         javaMailSender.send(mimeMessage);
         log.info("[Mail 전송 완료]");
-        return number;
+        return String.valueOf(number);
     }
 }
