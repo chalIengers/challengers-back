@@ -26,7 +26,6 @@ public class User extends BaseEntity implements UserDetails {
     private static final long serialVersionUID = 6014984039564979072L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false)
