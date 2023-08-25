@@ -35,7 +35,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false,unique = true)
     private String email; /*서비스 내에서 사용할 uid*/
 
     @ElementCollection(fetch = FetchType.EAGER)
