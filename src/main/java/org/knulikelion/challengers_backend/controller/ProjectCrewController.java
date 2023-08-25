@@ -3,6 +3,7 @@ package org.knulikelion.challengers_backend.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
@@ -25,7 +26,7 @@ public class ProjectCrewController {
 
     @PostMapping
     @ApiOperation(value = "crew 추가")
-    public ResultResponseDto createCrew(@RequestBody ProjectCrewRequestDto projectCrewResponseDto) {
+    public BaseResponseDto createCrew(@RequestBody ProjectCrewRequestDto projectCrewResponseDto) {
         return projectCrewService.createProjectCrew(projectCrewResponseDto);
     }
 
@@ -45,13 +46,13 @@ public class ProjectCrewController {
 
     @PutMapping("/{id}")
     @ApiOperation(value = "crew 수정")
-    public ResultResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto,@PathVariable Long id) {
-        return projectCrewService.updateProjcetCrew(id,projectCrewRequestDto);
+    public BaseResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto,@PathVariable Long id) {
+        return projectCrewService.updateProjectCrew(id,projectCrewRequestDto);
     }
 
     @DeleteMapping
     @ApiOperation(value = "crew 삭제")
-    public ResultResponseDto removeCrewById(Long id) {
+    public BaseResponseDto removeCrewById(Long id) {
         return projectCrewService.removeProjectCrew(id);
     }
 }

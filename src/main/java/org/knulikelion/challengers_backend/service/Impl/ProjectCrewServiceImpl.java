@@ -32,7 +32,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
     }
 
     @Override
-    public ResultResponseDto createProjectCrew(ProjectCrewRequestDto projectCrewRequestDto) {
+    public BaseResponseDto createProjectCrew(ProjectCrewRequestDto projectCrewRequestDto) {
 
 
         ProjectCrew projectCrew = new ProjectCrew();
@@ -43,8 +43,8 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
         projectCrew.setUpdatedAt(LocalDateTime.now());
 
         ProjectCrew createdProjectCrew = projectCrewDAO.createCrew(projectCrew);
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-        resultResponseDto.setCode(0);
+        BaseResponseDto resultResponseDto = new BaseResponseDto();
+        resultResponseDto.setSuccess(true);
         resultResponseDto.setMsg("팀원 생성 완료");
 
         return resultResponseDto;
@@ -91,9 +91,9 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
     @Override
     public Object getProjectCrewById(Long id) {
         if (projectCrewDAO.selectById(id).isEmpty()) {
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
+            BaseResponseDto resultResponseDto = new BaseResponseDto();
 
-            resultResponseDto.setCode(1);
+            resultResponseDto.setSuccess(false);
             resultResponseDto.setMsg("팀원 조회 불가");
 
             return resultResponseDto;
@@ -109,12 +109,12 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
         }
     }
     @Override
-    public ResultResponseDto updateProjcetCrew(Long id, ProjectCrewRequestDto projectCrewRequestDto) {
+    public BaseResponseDto updateProjectCrew(Long id, ProjectCrewRequestDto projectCrewRequestDto) {
 
         Optional<ProjectCrew> projectCrewOptional = projectCrewDAO.selectById(id);
         if(projectCrewOptional.isEmpty()) {
-            ResultResponseDto resultResponseDto = new ResultResponseDto();
-            resultResponseDto.setCode(1);
+            BaseResponseDto resultResponseDto = new BaseResponseDto();
+            resultResponseDto.setSuccess(false);
             resultResponseDto.setMsg("팀원이 존재하지 않습니다.");
             return resultResponseDto;
         }
@@ -127,23 +127,23 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
 
         projectCrewDAO.updateCrew(projectCrew);
 
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-        resultResponseDto.setCode(0);
+        BaseResponseDto resultResponseDto = new BaseResponseDto();
+        resultResponseDto.setSuccess(true);
         resultResponseDto.setMsg("팀원 수정 완료");
 
         return resultResponseDto;
     }
 
     @Override
-    public ResultResponseDto removeProjectCrew(Long id) {
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
+    public BaseResponseDto removeProjectCrew(Long id) {
+        BaseResponseDto resultResponseDto = new BaseResponseDto();
 
         if(projectCrewDAO.selectById(id).isEmpty()) {
-            resultResponseDto.setCode(1);
+            resultResponseDto.setSuccess(false);
             resultResponseDto.setMsg("팀원 조회 불가");
         }else {
             projectCrewDAO.removeCrew(id);
-            resultResponseDto.setCode(0);
+            resultResponseDto.setSuccess(true);
             resultResponseDto.setMsg("팀원 삭제 완료");
         }
         return resultResponseDto;
