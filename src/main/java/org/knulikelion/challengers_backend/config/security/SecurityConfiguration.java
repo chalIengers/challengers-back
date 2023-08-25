@@ -61,6 +61,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/club/join/request").hasRole("USER")
                 .antMatchers("/api/v1/club/accpet/join/request").hasRole("USER")
 
+                .antMatchers("/project-crews/position/{projectId}}").permitAll()
+
                 .anyRequest().hasRole("USER")
                 .and()
                 .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
