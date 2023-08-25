@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface ProjectDAO {
     Optional<Project> selectProjectById(Long id);
-    List<Project> getAllProjects();
+    List<Project> getAllProjects(int page, int size);
     Project createProject(Project project);
     Project updateProject(Project project);
     void removeProject(Long id);

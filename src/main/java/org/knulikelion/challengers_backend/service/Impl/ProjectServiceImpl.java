@@ -96,9 +96,10 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
+
     @Override
-    public List<AllProjectResponseDto> getAllProjects() {
-        List<Project> projects = projectDAO.getAllProjects();
+    public List<AllProjectResponseDto> getAllProjects(int page, int size) {
+        List<Project> projects = projectDAO.getAllProjects(page, size);
         List<AllProjectResponseDto> allProjectResponseDtoList = new ArrayList<>();
 
         for (Project temp : projects) {

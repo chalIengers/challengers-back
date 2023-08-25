@@ -27,8 +27,10 @@ public class ClubController {
     }
 
     @GetMapping("/get/logo/all")
-    public List<ClubLogoResponseDto> getAllClubLogo() {
-        return clubService.getAllClubLogo();
+    public List<ClubLogoResponseDto> getAllClubLogo(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        return clubService.getAllClubLogo(page, size);
     }
   
     @GetMapping("/get")
@@ -68,17 +70,19 @@ public class ClubController {
 
     @GetMapping("/list")
     @ResponseBody
-    public List<ClubListResponseDto> clubList() {
-        return clubService.findAllClubs();
+    public List<ClubListResponseDto> findAllClubs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        return clubService.findAllClubs(page,size);
     }
 
-    @PostMapping("/join/request")
+    @PostMapping("/join-requests")
     public ClubJoinResponseDto createJoinRequest(@RequestParam Long userId, @RequestParam Long clubId) {
         return clubJoinService.createJoinRequest(userId,clubId);
     }
 
-    @PutMapping("/accept/join/request")
-    public UserClub acceptJoinRequest(@RequestParam("joinRequestId") Long joinRequestId, @RequestParam("isAccepted") boolean isAccepted){
+    @PutMapping("/join-requests/{joinRequestId}")
+    public UserClub acceptJoinRequest(@PathVariable Long joinRequestId, @RequestParam("isAccepted") boolean isAccepted){
         return clubJoinService.acceptJoinRequest(joinRequestId,isAccepted);
     }
 

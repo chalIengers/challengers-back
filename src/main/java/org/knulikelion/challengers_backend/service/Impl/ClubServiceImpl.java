@@ -17,6 +17,7 @@ import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -74,9 +75,9 @@ public class ClubServiceImpl implements ClubService {
     }
 
   @Override
-  public List<ClubLogoResponseDto> getAllClubLogo() {
+  public List<ClubLogoResponseDto> getAllClubLogo(int page, int size) {
         List<ClubLogoResponseDto> clubLogoResponseDtoList = new ArrayList<>();
-        List<Club> club = clubDAO.getAllClub();
+        List<Club> club = clubDAO.getAllClub(page,size);
 
         for(Club temp : club) {
             ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
@@ -235,8 +236,8 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public List<ClubListResponseDto> findAllClubs() {
-        return clubRepository.findAll().stream()
+    public List<ClubListResponseDto> findAllClubs(int page, int size) {
+        return clubRepository.findAll(PageRequest.of(page,size)).stream()
                 .map(club -> new ClubListResponseDto(club.getClubName(),club.getLogoUrl()))
                 .collect(Collectors.toList());
     }
