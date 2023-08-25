@@ -21,4 +21,9 @@ public class UserClub {
     @ManyToOne
     @JoinColumn(name = "club_id",nullable = true)
     private Club club;
+
+    public UserClub(User user, Club club) {
+        this.user = user;
+        this.club = club;
+    }
 }
