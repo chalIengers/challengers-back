@@ -1,6 +1,8 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
+import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.response.ClubJoinResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
@@ -25,16 +27,18 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     private final ClubRepository clubRepository;
     private final UserClubRepository userClubRepository;
     private final ClubJoinRepository clubJoinRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDAO userDAO;
 
     @Override
-    public ClubJoinResponseDto createJoinRequest(Long userId, Long clubId) {
+    public ClubJoinResponseDto createJoinRequest(String token, Long clubId) {
 
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId()).orElseThrow(UserNotFoundException::new);
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
 
         ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
         ClubJoin savedClubJoin = clubJoinRepository.save(clubJoin);
-        return new ClubJoinResponseDto(savedClubJoin.getId(),userId,clubId,JoinRequestStatus.PENDING);
+        return new ClubJoinResponseDto(savedClubJoin.getId(), userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId(), clubId,JoinRequestStatus.PENDING);
     }
 
     @Override

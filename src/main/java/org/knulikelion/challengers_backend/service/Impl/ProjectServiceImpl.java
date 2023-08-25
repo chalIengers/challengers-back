@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
+import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dao.*;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectLinkRequestDto;
@@ -25,6 +26,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectCrewDAO projectCrewDAO;
     private final ProjectLinkDAO projectLinkDAO;
     private final ProjectTechStackDAO projectTechStackDAO;
+    private final JwtTokenProvider jwtTokenProvider;
     private final ClubDAO clubDAO;
     private final UserDAO userDAO;
 
@@ -34,6 +36,7 @@ public class ProjectServiceImpl implements ProjectService {
             ProjectCrewDAO projectCrewDAO,
             ProjectLinkDAO projectLinkDAO,
             ProjectTechStackDAO projectTechStackDAO,
+            JwtTokenProvider jwtTokenProvider,
             ClubDAO clubDAO,
             UserDAO userDAO
     ) {
@@ -41,6 +44,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectCrewDAO = projectCrewDAO;
         this.projectLinkDAO = projectLinkDAO;
         this.projectTechStackDAO = projectTechStackDAO;
+        this.jwtTokenProvider = jwtTokenProvider;
         this.clubDAO = clubDAO;
         this.userDAO = userDAO;
     }
@@ -157,10 +161,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public BaseResponseDto createProject(ProjectRequestDto projectRequestDto) {
+    public BaseResponseDto createProject(ProjectRequestDto projectRequestDto, String token) {
         Project project = new Project();
 //        사용자를 찾을 수 없다면, 프로젝트 생성을 거부함
-        if(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).isEmpty()) {
+        User founduser = userDAO.getByEmail(jwtTokenProvider.getUserEmail(token));
+        if(founduser == null) {
             BaseResponseDto baseResponseDto = new BaseResponseDto();
 
             baseResponseDto.setSuccess(false);
@@ -186,7 +191,7 @@ public class ProjectServiceImpl implements ProjectService {
                 logger.info("[Log] 클럽 정보 조회 완료, ID:" + projectRequestDto.getBelongedClubId());
                 project.setClub(clubDAO.selectClubById(projectRequestDto.getBelongedClubId()).get());
             }
-            project.setUser(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).get());
+            project.setUser(founduser);
 //            프로젝트 생성
             Project createdProject = projectDAO.createProject(project);
             logger.info("[Log] 프로젝트 생성 됨, ID:" + createdProject.getId());
@@ -237,8 +242,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public BaseResponseDto updateProject(Long projectId, ProjectRequestDto projectRequestDto) {
+    public BaseResponseDto updateProject(Long projectId, ProjectRequestDto projectRequestDto, String token) {
         Optional<Project> projectOptional = projectDAO.selectProjectById(projectId);
+        User foundUser = userDAO.getByEmail(jwtTokenProvider.getUserEmail(token));
         if (!projectOptional.isPresent()) {
             BaseResponseDto baseResponseDto = BaseResponseDto.builder()
                     .success(false)
@@ -267,7 +273,7 @@ public class ProjectServiceImpl implements ProjectService {
             project.setClub(clubDAO.selectClubById(projectRequestDto.getBelongedClubId()).orElse(null));
         }
 
-        project.setUser(userDAO.selectUserById(projectRequestDto.getUploadedUserId()).orElse(null));
+        project.setUser(foundUser);
         logger.info("[Log] 프로젝트 업데이트 됨");
         projectDAO.updateProject(project);
 

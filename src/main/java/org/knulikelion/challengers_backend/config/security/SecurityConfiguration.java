@@ -31,19 +31,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/sign-in",
                         "/api/v1/request-sign-up",
                         "/api/v1/sign-up").permitAll()
-                .antMatchers("/api/v1/club/get/logo/all").permitAll()
+
+//                Project
                 .antMatchers("/api/v1/project/get/all").permitAll()
                 .antMatchers("/api/v1/project/get").permitAll()
-                .antMatchers("/api/v1/club/list").permitAll()
-
                 .antMatchers("/api/v1/project/create").hasRole("USER")
                 .antMatchers("/api/v1/project/update").hasRole("USER")
-                .antMatchers("/api/v1/file/**").hasRole("USER")
-                .antMatchers("/api/v1/project/update").hasRole("USER")
                 .antMatchers("/api/v1/project/remove").hasRole("USER")
+
+//                File Upload
+                .antMatchers("/api/v1/file/**").hasRole("USER")
+
+//                User
                 .antMatchers("/api/v1/user/get").hasRole("USER")
                 .antMatchers("/api/v1/user/remove").hasRole("USER")
                 .antMatchers("/api/v1/user/update").hasRole("USER")
+
+//                Club
+                .antMatchers("/api/v1/club/get/logo/all").permitAll()
+                .antMatchers("/api/v1/club/list").permitAll()
                 .antMatchers("/api/v1/club/get").hasRole("USER")
                 .antMatchers("/api/v1/club/create").hasRole("USER")
                 .antMatchers("/api/v1/club/update").hasRole("USER")
@@ -55,7 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/club/join/request").hasRole("USER")
                 .antMatchers("/api/v1/club/accpet/join/request").hasRole("USER")
 
-                .anyRequest().hasRole("USER") /*나머지 요청은 인증된 ADMIN만 접근 가능*/
+                .anyRequest().hasRole("USER")
                 .and()
                 .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
                 .and()
