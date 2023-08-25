@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@Controller
 @RequestMapping("/project-crews")
 public class ProjectCrewController {
     private final ProjectCrewService projectCrewService;
@@ -30,13 +29,13 @@ public class ProjectCrewController {
         return projectCrewService.createProjectCrew(projectCrewResponseDto);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     @ApiOperation(value = "crew 조회")
-    public Object getCrewById(Long id) {
+    public Object getCrewById(@PathVariable Long id) {
         return projectCrewService.getProjectCrewById(id);
     }
 
-    @GetMapping
+    @GetMapping("/position/{projectId}}")
     @ApiOperation(value = "포지션 별 crew 조회")
     public Map<String, List<ProjectCrewResponseDto>> getCrewsGroupedByPosition(@PathVariable Long projectId) {
         List<ProjectCrewResponseDto> crews = (List<ProjectCrewResponseDto>) projectCrewService.getCrewsGroupedByPosition(projectId);
@@ -44,9 +43,9 @@ public class ProjectCrewController {
                 .collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @ApiOperation(value = "crew 수정")
-    public ResultResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto, Long id) {
+    public ResultResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto,@PathVariable Long id) {
         return projectCrewService.updateProjcetCrew(id,projectCrewRequestDto);
     }
 
