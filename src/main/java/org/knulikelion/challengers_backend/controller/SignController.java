@@ -51,6 +51,7 @@ public class SignController {
     public void exceptionTest() throws RuntimeException{
         throw new RuntimeException("접근이 금지되었습니다.");
     }
+
     @ExceptionHandler(value = RuntimeException.class)
     public ResponseEntity<Map<String, String>> ExceptionHandler(RuntimeException e){
         HttpHeaders responseHeaders = new HttpHeaders();

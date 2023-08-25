@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ClubJoinService {
 
-    public ClubJoinResponseDto createJoinRequest(Long userId, Long clubId);
+    public ClubJoinResponseDto createJoinRequest(String token, Long clubId);
 
     public UserClub acceptJoinRequest(Long joinRequestId, boolean isAccepted);
 
