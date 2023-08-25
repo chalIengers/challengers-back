@@ -76,13 +76,13 @@ public class ClubController {
         return clubService.findAllClubs(page,size);
     }
 
-    @PostMapping("/join/request")
+    @PostMapping("/join-requests")
     public ClubJoinResponseDto createJoinRequest(@RequestParam Long userId, @RequestParam Long clubId) {
         return clubJoinService.createJoinRequest(userId,clubId);
     }
 
-    @PutMapping("/accept/join/request")
-    public UserClub acceptJoinRequest(@RequestParam("joinRequestId") Long joinRequestId, @RequestParam("isAccepted") boolean isAccepted){
+    @PutMapping("/join-requests/{joinRequestId}")
+    public UserClub acceptJoinRequest(@PathVariable Long joinRequestId, @RequestParam("isAccepted") boolean isAccepted){
         return clubJoinService.acceptJoinRequest(joinRequestId,isAccepted);
     }
 
