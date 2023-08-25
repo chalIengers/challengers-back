@@ -29,10 +29,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/sign-in",
-                        "/api/v1/exception",
                         "/api/v1/request-sign-up",
                         "/api/v1/sign-up").permitAll()
-                .antMatchers("**exception**").permitAll()
 
                 .anyRequest().hasRole("USER") /*나머지 요청은 인증된 ADMIN만 접근 가능*/
                 .and()
