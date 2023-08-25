@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/project-crews")
 public class ProjectCrewController {
-    final private ProjectCrewService projectCrewService;
+    private final ProjectCrewService projectCrewService;
 
     public ProjectCrewController(ProjectCrewService projectCrewService, ProjectCrewRepository projectCrewRepository) {
         this.projectCrewService = projectCrewService;
@@ -36,7 +36,7 @@ public class ProjectCrewController {
         return projectCrewService.getProjectCrewById(id);
     }
 
-    @GetMapping("/groupedByPosition/{projectId}")
+    @GetMapping
     @ApiOperation(value = "포지션 별 crew 조회")
     public Map<String, List<ProjectCrewResponseDto>> getCrewsGroupedByPosition(@PathVariable Long projectId) {
         List<ProjectCrewResponseDto> crews = (List<ProjectCrewResponseDto>) projectCrewService.getCrewsGroupedByPosition(projectId);
