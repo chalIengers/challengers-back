@@ -27,13 +27,13 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
 
     @Value("${springboot.jwt.secret}")
-    private String secretkey;
+    private String secretKey;
     private final long tokenValidMillisecond = 1000L * 60 * 60; /*1시간 토큰 유효*/
 
     @PostConstruct
     protected void init(){
         log.info("[init] JWT TokenProvider 내 secretKey 초기화 시작");
-        secretkey = Base64.getEncoder().encodeToString(secretkey.getBytes(StandardCharsets.UTF_8));
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
         log.info("[init] JWT TokenProvider 내 secretKey 초기화 완료");
     }
 
@@ -45,20 +45,25 @@ public class JwtTokenProvider {
      * @param roles
      * @return token
      */
-    public String createToken(String userEmail, List<String> roles){
+    public String createToken(String userEmail, List<String> roles) {
         log.info("[createToken] 토큰 생성 시작");
-        Claims claims = Jwts.claims().setSubject(userEmail); /*email 로 식별하는 Claims 객체 생성*/
+        Claims claims = Jwts.claims().setSubject(userEmail);
         claims.put("roles", roles);
 
         Date now = new Date();
         String token = Jwts.builder()
+//                정보 저장
                 .setClaims(claims)
+//                토큰 발행 시간 정보
                 .setIssuedAt(now)
+//                토큰 만료 시간 정보
                 .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
-                .signWith(SignatureAlgorithm.HS384, secretkey) /*암호화 알고리즘, secret 값 세팅*/
+//                암호화 알고리즘, secret 값 세팅
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-            log.info("[createToken] 토큰 생성 완료");
-            return token;
+
+        log.info("[createToken] 토큰 생성 완료");
+        return token;
     }
 
     /**
@@ -68,14 +73,14 @@ public class JwtTokenProvider {
      */
     public Authentication getAuthentication(String token){ /*JWT Token 으로 인증 정보 조회*/
         log.info("[getAuthentication] 토큰 인증 정보 조회 시작");
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserInfo(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserEmail(token));
         log.info("[getAuthentication] 토큰 인증 정보 조회 완료 UserDetails : {}", userDetails.getUsername());
         return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
     }
 
-    public String getUserInfo(String token){
+    public String getUserEmail(String token){
         log.info("[getUserInfo] 토큰 기반 회원 구별 정보 추출");
-        String info = Jwts.parser().setSigningKey(secretkey).parseClaimsJws(token).getBody().getSubject();
+        String info = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         log.info("[getUserInfo] 토큰 기반 회원 구별 정보 추출 완료, info : {}",info);
         return info;
     }
@@ -94,7 +99,7 @@ public class JwtTokenProvider {
     public boolean validateToken(String token){ /*JWT 토큰의 유효성 + 만료일 체크*/
         log.info("[validateToken] 토큰 유효 체크 시작");
         try{
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretkey).parseClaimsJws(token);
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             log.info("[validateToken] 토큰 유효 체크 완료");
             return !claimsJws.getBody().getExpiration().before(new Date()); /*JWT Token 만료 */
         }catch (Exception e){
