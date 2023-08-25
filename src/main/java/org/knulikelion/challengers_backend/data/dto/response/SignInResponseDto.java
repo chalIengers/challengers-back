@@ -8,7 +8,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @ToString
 @SuperBuilder
-public class ResultResponseDto {
-    private Integer code;
-    private String msg;
+public class SignInResponseDto extends ResultResponseDto{
+    private String token;
+    private String email;
+    private String userName;
 }

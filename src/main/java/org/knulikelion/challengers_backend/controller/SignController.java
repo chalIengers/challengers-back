@@ -1,9 +1,11 @@
 package org.knulikelion.challengers_backend.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestWithCodeDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
 import org.knulikelion.challengers_backend.service.SignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +33,18 @@ public class SignController {
     @PostMapping(value = "/sign-up")
     public ResultResponseDto singUp(@RequestBody SignUpRequestWithCodeDto signUpRequestWithCodeDto){
         return signService.signUp(signUpRequestWithCodeDto);
+    }
+
+    @PostMapping(value = "/sign-in")
+    public SignInResponseDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException {
+        log.info("[signIn] 로그인을 시도하고 있습니다. id : {}, pw : ****", signInRequestDto.getEmail());
+        SignInResponseDto signInResponseDto = signService.signIn(signInRequestDto);
+
+        if (signInResponseDto.getCode() == 1) {
+            log.info("[signIn] 정상적으로 로그인되었습니다. id : {}, token : {}", signInRequestDto.getEmail(),
+                    signInResponseDto.getToken());
+        }
+        return signInResponseDto;
     }
 
     @GetMapping(value = "/exception")

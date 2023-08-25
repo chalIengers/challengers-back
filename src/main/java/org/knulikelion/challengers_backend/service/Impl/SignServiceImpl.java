@@ -2,9 +2,11 @@ package org.knulikelion.challengers_backend.service.Impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
+import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestWithCodeDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.MailService;
@@ -53,6 +55,8 @@ public class SignServiceImpl implements SignService {
         return resultResponseDto;
     }
 
+
+
     @Override
     public ResultResponseDto signUp(SignUpRequestWithCodeDto signUpRequestWithCodeDto) {
         log.info("[verifyCode] 인증 번호 확인");
@@ -84,5 +88,29 @@ public class SignServiceImpl implements SignService {
             resultResponseDto.setCode(0);
             return resultResponseDto;
         }
+    }
+    @Override
+    public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
+        log.info("[getSignInResult] signDataHandler 로 회원 정보 요청");
+        User user = userRepository.getByEmail(signInRequestDto.getEmail());
+        log.info("[getSignInResult] Id : {}", signInRequestDto.getEmail());
+
+        log.info("[getSignInResult] 패스워드 비교 수행");
+        if (!passwordEncoder.matches(signInRequestDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException();
+        }
+        log.info("[getSignInResult] 패스워드 일치");
+        log.info("[getSignInResult] SignInResultDto 객체 생성");
+        SignInResponseDto signInResultDto = SignInResponseDto.builder()
+                .token(jwtTokenProvider.createToken(String.valueOf(user.getEmail()),
+                        user.getRoles()))
+                .email(user.getEmail())
+                .userName(user.getUserName())
+                .code(1)
+                .msg("로그인에 성공하였습니다.")
+                .build();
+        log.info("[getSignInResult] SignInResultDto 객체에 값 주입");
+
+        return signInResultDto;
     }
 }
