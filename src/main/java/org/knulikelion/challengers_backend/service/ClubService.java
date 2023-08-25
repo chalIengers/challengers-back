@@ -19,6 +19,6 @@ public interface ClubService {
     BaseResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId);
     BaseResponseDto removeMember(Long findUserId, Long clubId);
     BaseResponseDto addMember(Long userId, Long clubId);
-    List<ClubLogoResponseDto> getAllClubLogo();
-    List<ClubListResponseDto> findAllClubs();
+    List<ClubLogoResponseDto> getAllClubLogo(int page, int size);
+    List<ClubListResponseDto> findAllClubs(int page, int size);
 }

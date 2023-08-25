@@ -27,8 +27,10 @@ public class ClubController {
     }
 
     @GetMapping("/get/logo/all")
-    public List<ClubLogoResponseDto> getAllClubLogo() {
-        return clubService.getAllClubLogo();
+    public List<ClubLogoResponseDto> getAllClubLogo(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        return clubService.getAllClubLogo(page, size);
     }
   
     @GetMapping("/get")
@@ -68,8 +70,10 @@ public class ClubController {
 
     @GetMapping("/list")
     @ResponseBody
-    public List<ClubListResponseDto> clubList() {
-        return clubService.findAllClubs();
+    public List<ClubListResponseDto> findAllClubs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        return clubService.findAllClubs(page,size);
     }
 
     @PostMapping("/join/request")
