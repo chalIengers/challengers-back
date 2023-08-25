@@ -32,7 +32,7 @@ public class ClubController {
     @GetMapping("/get/logo/all")
     public List<ClubLogoResponseDto> getAllClubLogo(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
+            @RequestParam(defaultValue = "15") int size) {
         return clubService.getAllClubLogo(page, size);
     }
   
@@ -93,7 +93,7 @@ public class ClubController {
     @ResponseBody
     public List<ClubListResponseDto> findAllClubs(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
+            @RequestParam(defaultValue = "15") int size) {
         return clubService.findAllClubs(page,size);
     }
 

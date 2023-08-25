@@ -4,17 +4,14 @@ package org.knulikelion.challengers_backend.controller;
 import io.swagger.annotations.ApiOperation;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
 import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
 import org.knulikelion.challengers_backend.service.ProjectCrewService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/project-crews")
+@RequestMapping("/api/v1/project-crews")
 public class ProjectCrewController {
     private final ProjectCrewService projectCrewService;
 
@@ -33,13 +30,10 @@ public class ProjectCrewController {
     public Object getCrewById(@PathVariable Long id) {
         return projectCrewService.getProjectCrewById(id);
     }
-
-    @GetMapping("/position/{projectId}}")
+    @GetMapping("/position/{projectId}")
     @ApiOperation(value = "포지션 별 crew 조회")
-    public Map<String, List<ProjectCrewResponseDto>> getCrewsGroupedByPosition(@PathVariable Long projectId) {
-        List<ProjectCrewResponseDto> crews = (List<ProjectCrewResponseDto>) projectCrewService.getCrewsGroupedByPosition(projectId);
-        return crews.stream()
-                .collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
+    public Map<String, Object> getCrewsGroupedByPosition(@PathVariable Long projectId) {
+        return (Map<String, Object>) projectCrewService.getCrewsGroupedByPosition(projectId);
     }
 
     @PutMapping("/{id}")

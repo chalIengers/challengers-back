@@ -11,4 +11,5 @@ public class ProjectCrewRequestDto {
     private String name;
     private String role;
     private String position;
+    private Long projectId; 
 }
