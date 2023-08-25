@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,16 @@ public class ProjectCrewDAOImpl implements ProjectCrewDAO {
                 .stream()
                 .map(ProjectCrewResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, List<ProjectCrewResponseDto>> getCrews(Long id) {
+        List<ProjectCrewResponseDto> crews = projectCrewRepository.findAllByProjectId(id)
+                .stream()
+                .map(ProjectCrewResponseDto::new)
+                .collect(Collectors.toList());
+
+        return crews.stream().collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
     }
 
     @Override

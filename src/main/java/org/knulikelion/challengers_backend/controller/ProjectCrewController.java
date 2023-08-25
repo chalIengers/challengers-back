@@ -3,11 +3,16 @@ package org.knulikelion.challengers_backend.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
 import org.knulikelion.challengers_backend.service.ProjectCrewService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @Controller
@@ -28,8 +33,15 @@ public class ProjectCrewController {
     @GetMapping
     @ApiOperation(value = "crew 조회")
     public Object getCrewById(Long id) {
-        Object result = projectCrewService.getProjectCrewById(id);
-        return result;
+        return projectCrewService.getProjectCrewById(id);
+    }
+
+    @GetMapping("/groupedByPosition/{projectId}")
+    @ApiOperation(value = "포지션 별 crew 조회")
+    public Map<String, List<ProjectCrewResponseDto>> getCrewsGroupedByPosition(@PathVariable Long projectId) {
+        List<ProjectCrewResponseDto> crews = (List<ProjectCrewResponseDto>) projectCrewService.getCrewsGroupedByPosition(projectId);
+        return crews.stream()
+                .collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
     }
 
     @PutMapping

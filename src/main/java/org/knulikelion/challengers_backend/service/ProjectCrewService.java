@@ -8,6 +8,8 @@ public interface ProjectCrewService {
     //팀원 생성
     ResultResponseDto createProjectCrew(ProjectCrewRequestDto projectCrewRequestDto);
 
+    Object getCrewsGroupedByPosition(Long id);
+
     // 팀원 조회.
     Object getProjectCrewById(Long id);
 
