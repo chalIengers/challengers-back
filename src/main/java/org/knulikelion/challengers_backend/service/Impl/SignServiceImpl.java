@@ -73,7 +73,6 @@ public class SignServiceImpl implements SignService {
                     .userName(userName)
                     .email(email)
                     .password(passwordEncoder.encode(password))
-                    .clubs(null)
                     .roles(Collections.singletonList("ROLE_USER"))
                     .build();
             userRepository.save(user);

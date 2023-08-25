@@ -41,7 +41,7 @@ public class MailServiceImpl implements MailService {
             body += "하단의 인증 번호로 이메일 인증을 완료하시면, 정상적으로 Challengers 서비스를 이용하실 수 있습니다.<br />";
             body += "항상 최선의 노력을 다하는 Challengers가 되겠습니다.<br />";
             body += "감사합니다.</p>";
-            body += "<div class='code-box' style='margin-top: 50px; padding-top: 20px; padding-bottom: 20px; font: 25px; text-align: center; background-color: #f4f4f4; border-radius: 10px;'>" + number + "</div>";
+            body += "<div class='code-box' style='margin-top: 50px; padding-top: 20px; color: #000000; padding-bottom: 20px; font-size: 25px; text-align: center; background-color: #f4f4f4; border-radius: 10px;'>" + number + "</div>";
             body += "</body></html>";
             messageHelper.setText(body, true);
             ClassPathResource image = new ClassPathResource("img/challengers.png");
