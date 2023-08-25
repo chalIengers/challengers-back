@@ -9,7 +9,7 @@ import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignUpResponseDto;
 
 public interface SignService {
-    SignUpResponseDto signUp(SignUpRequestWithCodeDto signUpRequestWithCodeDto);
+    ResultResponseDto signUp(SignUpRequestWithCodeDto signUpRequestWithCodeDto);
 //    SignInResponseDto signIn(SignInRequestDto signInRequestDto)throws RuntimeException;
     ResultResponseDto sendCode(SignUpRequestDto signUpRequestDto);
 }

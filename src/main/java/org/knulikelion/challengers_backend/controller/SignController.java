@@ -1,18 +1,14 @@
 package org.knulikelion.challengers_backend.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestWithCodeDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.SignUpResponseDto;
 import org.knulikelion.challengers_backend.service.SignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -33,7 +29,7 @@ public class SignController {
     }
 
     @PostMapping(value = "/sign-up")
-    public SignUpResponseDto singUp(@RequestBody SignUpRequestWithCodeDto signUpRequestWithCodeDto){
+    public ResultResponseDto singUp(@RequestBody SignUpRequestWithCodeDto signUpRequestWithCodeDto){
         return signService.signUp(signUpRequestWithCodeDto);
     }
 

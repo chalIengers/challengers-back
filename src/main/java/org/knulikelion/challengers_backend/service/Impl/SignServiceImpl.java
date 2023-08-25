@@ -5,7 +5,6 @@ import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestWithCodeDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.SignUpResponseDto;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.MailService;
@@ -55,7 +54,7 @@ public class SignServiceImpl implements SignService {
     }
 
     @Override
-    public SignUpResponseDto signUp(SignUpRequestWithCodeDto signUpRequestWithCodeDto) {
+    public ResultResponseDto signUp(SignUpRequestWithCodeDto signUpRequestWithCodeDto) {
         log.info("[verifyCode] 인증 번호 확인");
         String email = signUpRequestWithCodeDto.getEmail() + domain;
         String userName = signUpRequestWithCodeDto.getUserName();
@@ -66,7 +65,7 @@ public class SignServiceImpl implements SignService {
         log.info("emailCodeMap : " + emailCodeMap.values());
 
         User user;
-        SignUpResponseDto signUpResponseDto = new SignUpResponseDto();
+        ResultResponseDto resultResponseDto = new ResultResponseDto();
 
         if (inputNumber != null && actualNumber != null && actualNumber.equals(inputNumber)) {
             user = User.builder()
@@ -77,15 +76,13 @@ public class SignServiceImpl implements SignService {
                     .build();
             userRepository.save(user);
 
-            signUpResponseDto.setSuccess(true);
-            signUpResponseDto.setMsg("성공적으로 회원가입 하였습니다.");
-            signUpResponseDto.setCode(1);
-            return signUpResponseDto;
+            resultResponseDto.setMsg("성공적으로 회원가입 하였습니다.");
+            resultResponseDto.setCode(1);
+            return resultResponseDto;
         } else {
-            signUpResponseDto.setSuccess(false);
-            signUpResponseDto.setMsg("회원가입에 실패하셨습니다.");
-            signUpResponseDto.setCode(0);
-            return signUpResponseDto;
+            resultResponseDto.setMsg("회원가입에 실패하셨습니다.");
+            resultResponseDto.setCode(0);
+            return resultResponseDto;
         }
     }
 }
