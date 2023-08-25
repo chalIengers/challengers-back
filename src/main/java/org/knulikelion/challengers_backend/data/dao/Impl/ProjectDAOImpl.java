@@ -24,7 +24,7 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public List<Project> getAllProjects() {
+    public List<Project> getAllProjects(int page, int size) {
         return projectRepository.findAll();
     }
 

@@ -80,7 +80,7 @@ public class ClubDAOImpl implements ClubDAO {
     }
 
     @Override
-    public List<Club> getAllClub() {
+    public List<Club> getAllClub(int page, int size) {
         return clubRepository.findAll();
     }
 }
