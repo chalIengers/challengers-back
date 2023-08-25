@@ -39,6 +39,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/project/update").hasRole("USER")
                 .antMatchers("/api/v1/project/remove").hasRole("USER")
 
+//                ProjectCrew
+                .antMatchers("/api/v1/project-crews/**").permitAll()
+
 //                File Upload
                 .antMatchers("/api/v1/file/**").hasRole("USER")
 
@@ -61,7 +64,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/club/join/request").hasRole("USER")
                 .antMatchers("/api/v1/club/accpet/join/request").hasRole("USER")
 
-                .antMatchers("/project-crews/position/{projectId}}").permitAll()
 
                 .anyRequest().hasRole("USER")
                 .and()
