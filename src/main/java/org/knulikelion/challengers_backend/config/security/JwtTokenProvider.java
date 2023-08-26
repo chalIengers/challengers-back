@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -90,6 +92,25 @@ public class JwtTokenProvider {
         log.info("[getUserInfo] 토큰 기반 회원 구별 정보 추출 완료, info : {}",info);
         return info;
     }
+
+    public String refreshToken(String refreshToken, String userEmail) {
+        log.info("[refreshToken] 리프레시 토큰으로 액세스 토큰 재발급 시작");
+
+        // 리프레시 토큰 유효성 검사
+        if (validateToken(refreshToken)) {
+            // 유저의 이메일로 새로운 액세스 토큰 생성
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+            return createAccessToken(userEmail, roles);
+        } else {
+            log.error("[refreshToken] 리프레시 토큰이 유효하지 않음");
+            throw new RuntimeException("Refresh token is not valid");
+        }
+    }
+
 
     /**
      * HTTP Request Header 에 설정된 토큰 값을 가져옴

@@ -1,11 +1,14 @@
 package org.knulikelion.challengers_backend.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestWithCodeDto;
+import org.knulikelion.challengers_backend.data.dto.request.TokenRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.TokenResponseDto;
 import org.knulikelion.challengers_backend.service.SignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,9 +24,11 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class SignController {
     private final SignService signService;
+    private final JwtTokenProvider jwtTokenProvider;
     @Autowired
-    public SignController(SignService signService) {
+    public SignController(SignService signService, JwtTokenProvider jwtTokenProvider) {
         this.signService = signService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
     @PostMapping(value = "/request-sign-up")
     public ResultResponseDto requestSignUp(@RequestBody SignUpRequestDto signUpRequestDto){
@@ -45,6 +50,12 @@ public class SignController {
                     signInResponseDto.getAccessToken());
         }
         return signInResponseDto;
+    }
+
+    @PostMapping(value = "/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody TokenRequestDto tokenRequestDto) {
+        String accessToken = jwtTokenProvider.refreshToken(tokenRequestDto.getRefreshToken(), tokenRequestDto.getUserEmail());
+        return ResponseEntity.ok(new TokenResponseDto(accessToken));
     }
 
     @GetMapping(value = "/exception")
