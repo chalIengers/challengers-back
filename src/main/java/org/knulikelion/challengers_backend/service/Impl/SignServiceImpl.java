@@ -102,8 +102,8 @@ public class SignServiceImpl implements SignService {
         log.info("[getSignInResult] 패스워드 일치");
         log.info("[getSignInResult] SignInResultDto 객체 생성");
         SignInResponseDto signInResultDto = SignInResponseDto.builder()
-                .token(jwtTokenProvider.createToken(String.valueOf(user.getEmail()),
-                        user.getRoles()))
+                .accessToken(jwtTokenProvider.createAccessToken(String.valueOf(user.getEmail()), user.getRoles()))
+                .refreshToken(jwtTokenProvider.createRefreshToken(String.valueOf(user.getEmail())))
                 .email(user.getEmail())
                 .userName(user.getUserName())
                 .code(1)
