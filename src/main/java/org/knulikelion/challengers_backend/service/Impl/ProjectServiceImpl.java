@@ -12,6 +12,9 @@ import org.knulikelion.challengers_backend.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -102,18 +105,18 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     @Override
-    public List<AllProjectResponseDto> getAllProjects(int page, int size) {
-        List<Project> projects = projectDAO.getAllProjects(page, size);
-        List<AllProjectResponseDto> allProjectResponseDtoList = new ArrayList<>();
+    public Page<AllProjectResponseDto> getAllProjects(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Project> projects = projectDAO.getAllProjects(pageable);
 
-        for (Project temp : projects) {
+        return projects.map(temp -> {
             AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
-
             allProjectResponseDto.setId(temp.getId());
             allProjectResponseDto.setProjectName(temp.getProjectName());
             allProjectResponseDto.setProjectDescription(temp.getProjectDescription());
             allProjectResponseDto.setImageUrl(temp.getImageUrl());
             allProjectResponseDto.setProjectCategory(temp.getProjectCategory());
+
             if (temp.getClub() != null) {
                 allProjectResponseDto.setBelongedClubName(temp.getClub().getClubName());
             } else {
@@ -121,10 +124,8 @@ public class ProjectServiceImpl implements ProjectService {
                 allProjectResponseDto.setBelongedClubName(null);
             }
 
-            allProjectResponseDtoList.add(allProjectResponseDto);
-        }
-
-        return allProjectResponseDtoList;
+            return allProjectResponseDto;
+        });
     }
 
     @Override

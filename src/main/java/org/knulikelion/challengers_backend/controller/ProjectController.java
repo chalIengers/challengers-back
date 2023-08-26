@@ -7,6 +7,7 @@ import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseD
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@ public class ProjectController {
     }
 
     @GetMapping("/get/all")
-    public List<AllProjectResponseDto> getAllProjects(
+    public Page<AllProjectResponseDto> getAllProjects(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size) {
         return projectService.getAllProjects(page, size);

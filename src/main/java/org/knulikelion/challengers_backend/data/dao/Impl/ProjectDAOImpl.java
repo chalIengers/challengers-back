@@ -4,6 +4,8 @@ import org.knulikelion.challengers_backend.data.dao.ProjectDAO;
 import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,8 +26,8 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public List<Project> getAllProjects(int page, int size) {
-        return projectRepository.findAll();
+    public Page<Project> getAllProjects(Pageable pageable) {
+        return projectRepository.findAll(pageable);
     }
 
     @Override
