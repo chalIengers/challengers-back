@@ -11,5 +11,4 @@ import java.util.List;
 @Builder
 public class TokenRequestDto {
     private String refreshToken;
-    private String userEmail;
 }

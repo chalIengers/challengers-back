@@ -54,7 +54,7 @@ public class SignController {
 
     @PostMapping(value = "/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody TokenRequestDto tokenRequestDto) {
-        String accessToken = jwtTokenProvider.refreshToken(tokenRequestDto.getRefreshToken(), tokenRequestDto.getUserEmail());
+        String accessToken = jwtTokenProvider.refreshToken(tokenRequestDto.getRefreshToken(), jwtTokenProvider.getUserEmail(tokenRequestDto.getRefreshToken()));
         return ResponseEntity.ok(new TokenResponseDto(accessToken));
     }
 
