@@ -4,7 +4,6 @@ import org.knulikelion.challengers_backend.data.entity.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ProjectDAO {
