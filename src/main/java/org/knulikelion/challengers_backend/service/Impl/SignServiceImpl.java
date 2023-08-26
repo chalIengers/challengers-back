@@ -71,6 +71,12 @@ public class SignServiceImpl implements SignService {
         User user;
         ResultResponseDto resultResponseDto = new ResultResponseDto();
 
+        if(userRepository.findByEmail(email) != null){
+            resultResponseDto.setMsg("중복된 이메일이 있습니다.");
+            resultResponseDto.setCode(0);
+            return resultResponseDto;
+        }
+
         if (inputNumber != null && actualNumber != null && actualNumber.equals(inputNumber)) {
             user = User.builder()
                     .userName(userName)
