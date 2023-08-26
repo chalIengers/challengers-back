@@ -169,7 +169,8 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public BaseResponseDto removeMember(String userEmail,Long findUserId, Long clubId) {
+    public BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId) {
+        User findUser = userRepository.getByEmail(deleteUserEmail);
         Optional<Club> findClub = clubRepository.findById(clubId);
         BaseResponseDto baseResponseDto = new BaseResponseDto();
         if (findClub.isEmpty()) {
@@ -181,7 +182,7 @@ public class ClubServiceImpl implements ClubService {
         Club club = findClub.get();
         User user = userRepository.getByEmail(userEmail);
         if (club.getClubManager().equals(user)) {
-            UserClub deleteEntity = userClubRepository.findByUserIdAndClubId(findUserId, clubId);
+            UserClub deleteEntity = userClubRepository.findByUserIdAndClubId(findUser.getId(), clubId);
 
             if (deleteEntity == null) {
                 baseResponseDto.setSuccess(false);
