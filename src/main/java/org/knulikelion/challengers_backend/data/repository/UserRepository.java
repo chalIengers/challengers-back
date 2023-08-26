@@ -1,4 +1,10 @@
 package org.knulikelion.challengers_backend.data.repository;
 
-public interface UserRepository {
+import org.knulikelion.challengers_backend.data.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    User getByEmail(String email);
+    User findByEmail(String email);
 }
