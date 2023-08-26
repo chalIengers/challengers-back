@@ -42,7 +42,7 @@ public class SignController {
 
         if (signInResponseDto.getCode() == 1) {
             log.info("[signIn] 정상적으로 로그인되었습니다. id : {}, token : {}", signInRequestDto.getEmail(),
-                    signInResponseDto.getToken());
+                    signInResponseDto.getAccessToken());
         }
         return signInResponseDto;
     }
