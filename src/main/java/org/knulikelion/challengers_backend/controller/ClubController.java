@@ -80,8 +80,8 @@ public class ClubController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public BaseResponseDto removeClubMember(HttpServletRequest request,Long userId, Long clubId){
-        return clubService.removeMember(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),userId,clubId);
+    public BaseResponseDto removeClubMember(HttpServletRequest request,String userEmail, Long clubId){
+        return clubService.removeMember(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),userEmail,clubId);
     }
 
     @GetMapping("/list")
