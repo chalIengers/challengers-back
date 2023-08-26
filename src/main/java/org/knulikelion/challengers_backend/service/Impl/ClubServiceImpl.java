@@ -208,11 +208,10 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public BaseResponseDto addMember(Long userId, Long clubId) {
         User user = userRepository.getById(userId);
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
         if (user.getId()==null){
-            BaseResponseDto baseResponseDto = new BaseResponseDto();
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("해당 유저 없음");
-            return baseResponseDto;
         }else{
             Club club = clubRepository.getById(clubId);
 
@@ -221,12 +220,10 @@ public class ClubServiceImpl implements ClubService {
             userClub.setUser(user);
             userClubRepository.save(userClub);
 
-            BaseResponseDto baseResponseDto = new BaseResponseDto();
             baseResponseDto.setSuccess(true);
-            baseResponseDto.setMsg("멤버 추가");
-            return baseResponseDto;
+            baseResponseDto.setMsg("성공적으로 클럽 멤버를 추가하였습니다.");
         }
-
+        return baseResponseDto;
     }
 
     @Override
