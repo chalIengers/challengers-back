@@ -30,7 +30,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/v1/sign-in",
                         "/api/v1/request-sign-up",
-                        "/api/v1/sign-up").permitAll()
+                        "/api/v1/sign-up",
+                        "/api/v1/refresh-token").permitAll()
 
 //                Project
                 .antMatchers("/api/v1/project/get/all").permitAll()
