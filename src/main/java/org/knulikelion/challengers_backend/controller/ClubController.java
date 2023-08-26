@@ -67,14 +67,6 @@ public class ClubController {
     public BaseResponseDto updateClub(HttpServletRequest request,@RequestBody ClubRequestDto clubRequestDto) throws Exception {
         return clubService.updateClub(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),clubRequestDto);
     }
-
-    @PostMapping("/addMember")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
-    })
-    public BaseResponseDto addClubMember(Long userId, Long clubId){
-        return clubService.addMember(userId,clubId);
-    }
     
     @DeleteMapping("/deleteMember")
     @ApiImplicitParams({
@@ -100,12 +92,19 @@ public class ClubController {
         return clubJoinService.createJoinRequest(request.getHeader("X-AUTH-TOKEN"), clubId);
     }
 
-    @PutMapping("/join-requests/{joinRequestId}")
+    @PostMapping("/accept/join-requests/{clubId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public UserClub acceptJoinRequest(@PathVariable Long joinRequestId, @RequestParam("isAccepted") boolean isAccepted){
-        return clubJoinService.acceptJoinRequest(joinRequestId,isAccepted);
+    public BaseResponseDto acceptJoinRequest(@PathVariable Long clubId, HttpServletRequest request,@RequestParam String addUserEmail){
+        return clubJoinService.acceptJoinRequest(clubId,jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),addUserEmail);
+    }
+    @DeleteMapping("/reject/join-requests/{clubId}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public BaseResponseDto rejectJoinRequest(@PathVariable Long clubId, HttpServletRequest request,@RequestParam String rejectUserEmail){
+        return clubJoinService.rejectJoinRequest(clubId,jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),rejectUserEmail);
     }
 
     @GetMapping("/pending/requests/users/{clubId}")
