@@ -16,5 +16,5 @@ public interface ProjectService {
     BaseResponseDto createProject(ProjectRequestDto projectRequestDto, String token);
     BaseResponseDto updateProject(Long id, ProjectRequestDto projectRequestDto, String token);
 
-    List<Project> getProjectsInMonth(YearMonth yearMonth);
+    List<AllProjectResponseDto> getProjectsInMonth(YearMonth yearMonth);
 }

@@ -58,7 +58,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Object getProjectById(Long id) {
-        if(projectDAO.selectProjectById(id).isEmpty()) {
+        if (projectDAO.selectProjectById(id).isEmpty()) {
             BaseResponseDto baseResponseDto = new BaseResponseDto();
 
             baseResponseDto.setSuccess(false);
@@ -139,7 +139,7 @@ public class ProjectServiceImpl implements ProjectService {
     public BaseResponseDto removeProject(Long id) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-        if(projectDAO.selectProjectById(id).isEmpty()) {
+        if (projectDAO.selectProjectById(id).isEmpty()) {
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("프로젝트가 존재하지 않음");
         } else {
@@ -173,7 +173,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = new Project();
 //        사용자를 찾을 수 없다면, 프로젝트 생성을 거부함
         User founduser = userDAO.getByEmail(jwtTokenProvider.getUserEmail(token));
-        if(founduser == null) {
+        if (founduser == null) {
             BaseResponseDto baseResponseDto = new BaseResponseDto();
 
             baseResponseDto.setSuccess(false);
@@ -192,7 +192,7 @@ public class ProjectServiceImpl implements ProjectService {
             project.setCreatedAt(LocalDateTime.now());
             project.setUpdatedAt(LocalDateTime.now());
 //            클럽이 존재하지 않으면, 엔티티의 Club 값을 null로 처리함
-            if(projectRequestDto.getBelongedClubId() == 0) {
+            if (projectRequestDto.getBelongedClubId() == 0) {
                 logger.info("[Log] 클럽 정보를 조회하지 못 함, ID:" + projectRequestDto.getBelongedClubId());
                 project.setClub(null);
             } else {
@@ -274,7 +274,7 @@ public class ProjectServiceImpl implements ProjectService {
 //        최종 수정일 업데이트
         project.setUpdatedAt(LocalDateTime.now());
 
-        if(projectRequestDto.getBelongedClubId() == 0) {
+        if (projectRequestDto.getBelongedClubId() == 0) {
             project.setClub(null);
             logger.info("[Log] 클럽 정보를 조회하지 못 함, ID:" + projectRequestDto.getBelongedClubId());
         } else {
@@ -336,10 +336,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> getProjectsInMonth(YearMonth yearMonth) {
-        List<MonthlyViews> monthlyViewsPage = monthlyViewsRepository.findTop6ByMonthOrderByViewCountDesc(yearMonth);
-        return monthlyViewsPage.stream()
-                .map(MonthlyViews::getProject)
+    public List<AllProjectResponseDto> getProjectsInMonth(YearMonth yearMonth) {
+        List<MonthlyViews> monthlyViews = monthlyViewsRepository.findTop6ByMonthOrderByViewCountDesc(yearMonth);
+
+        return monthlyViews.stream()
+                .map(monthlyViews1 -> AllProjectResponseDto.from(monthlyViews1.getProject()))
                 .collect(Collectors.toList());
     }
 }

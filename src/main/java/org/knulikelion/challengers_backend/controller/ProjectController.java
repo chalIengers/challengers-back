@@ -64,9 +64,9 @@ public class ProjectController {
     }
 
     @GetMapping("/top-viewed/{year}/{month}")
-    public ResponseEntity<List<Project>> getTopViewedProjectsInMonth(@PathVariable int year, @PathVariable int month) {
+    public ResponseEntity<List<AllProjectResponseDto>> getTopViewedProjectsInMonth(@PathVariable int year, @PathVariable int month) {
         YearMonth yearMonth = YearMonth.of(year,month);
-        List<Project> projects = projectService.getProjectsInMonth(yearMonth);
+        List<AllProjectResponseDto> projects = projectService.getProjectsInMonth(yearMonth);
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 }
