@@ -3,6 +3,7 @@ package org.knulikelion.challengers_backend.data.repository;
 import org.knulikelion.challengers_backend.data.entity.MonthlyViews;
 import org.knulikelion.challengers_backend.data.entity.Project;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.expression.spel.ast.OpAnd;
 
@@ -14,5 +15,5 @@ public interface MonthlyViewsRepository extends JpaRepository<MonthlyViews, Long
 
     Optional<MonthlyViews> findByProjectAndMonth(Project project, YearMonth month);
 
-    List<MonthlyViews> findByMonthOrderByViewCountDesc(YearMonth month);
+    Page<MonthlyViews> findByMonthOrderByViewCountDesc(YearMonth month, Pageable pageable);
 }

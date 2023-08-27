@@ -9,6 +9,8 @@ import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,9 +66,14 @@ public class ProjectController {
     }
 
     @GetMapping("/top-viewed/{year}/{month}")
-    public ResponseEntity<List<AllProjectResponseDto>> getTopViewedProjectsInMonth(@PathVariable int year, @PathVariable int month) {
+        public ResponseEntity<Page<AllProjectResponseDto>> getTopViewedProjectsInMonth(
+                @PathVariable int year,
+                @PathVariable int month,
+                @RequestParam(defaultValue = "0")int page,
+                @RequestParam(defaultValue = "6") int size) {
         YearMonth yearMonth = YearMonth.of(year,month);
-        List<AllProjectResponseDto> projects = projectService.getProjectsInMonth(yearMonth);
+        Pageable pageable= PageRequest.of(page,size);
+            Page<AllProjectResponseDto> projects = projectService.getProjectsInMonth(yearMonth,pageable);
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 }
