@@ -5,12 +5,17 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
+import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.YearMonth;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/project")
@@ -56,5 +61,12 @@ public class ProjectController {
     })
     public BaseResponseDto updateProject(@RequestBody ProjectRequestDto projectRequestDto, Long projectId, HttpServletRequest request) {
         return projectService.updateProject(projectId, projectRequestDto, request.getHeader("X-AUTH-TOKEN"));
+    }
+
+    @GetMapping("/top-viewed/{year}/{month}")
+    public ResponseEntity<List<Project>> getTopViewedProjectsInMonth(@PathVariable int year, @PathVariable int month) {
+        YearMonth yearMonth = YearMonth.of(year,month);
+        List<Project> projects = projectService.getProjectsInMonth(yearMonth);
+        return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 }

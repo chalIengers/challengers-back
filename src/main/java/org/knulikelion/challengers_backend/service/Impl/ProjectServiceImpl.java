@@ -8,6 +8,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.repository.MonthlyViewsRepository;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -31,6 +34,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ClubDAO clubDAO;
     private final UserDAO userDAO;
+    private final MonthlyViewsRepository monthlyViewsRepository;
 
     @Autowired
     public ProjectServiceImpl(
@@ -40,8 +44,8 @@ public class ProjectServiceImpl implements ProjectService {
             ProjectTechStackDAO projectTechStackDAO,
             JwtTokenProvider jwtTokenProvider,
             ClubDAO clubDAO,
-            UserDAO userDAO
-    ) {
+            UserDAO userDAO,
+            MonthlyViewsRepository monthlyViewsRepository) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
         this.projectLinkDAO = projectLinkDAO;
@@ -49,6 +53,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.jwtTokenProvider = jwtTokenProvider;
         this.clubDAO = clubDAO;
         this.userDAO = userDAO;
+        this.monthlyViewsRepository = monthlyViewsRepository;
     }
 
     @Override
@@ -328,5 +333,13 @@ public class ProjectServiceImpl implements ProjectService {
                 .build();
 
         return baseResponseDto;
+    }
+
+    @Override
+    public List<Project> getProjectsInMonth(YearMonth yearMonth) {
+        List<MonthlyViews> monthlyViewsPage = monthlyViewsRepository.findTop6ByMonthOrderByViewCountDesc(yearMonth);
+        return monthlyViewsPage.stream()
+                .map(MonthlyViews::getProject)
+                .collect(Collectors.toList());
     }
 }
