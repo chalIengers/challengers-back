@@ -15,7 +15,7 @@ import java.util.Map;
 public class ProjectCrewController {
     private final ProjectCrewService projectCrewService;
 
-    public ProjectCrewController(ProjectCrewService projectCrewService, ProjectCrewRepository projectCrewRepository) {
+    public ProjectCrewController(ProjectCrewService projectCrewService) {
         this.projectCrewService = projectCrewService;
     }
 
@@ -30,6 +30,7 @@ public class ProjectCrewController {
     public Object getCrewById(@PathVariable Long id) {
         return projectCrewService.getProjectCrewById(id);
     }
+
     @GetMapping("/position/{projectId}")
     @ApiOperation(value = "포지션 별 crew 조회")
     public Map<String, Object> getCrewsGroupedByPosition(@PathVariable Long projectId) {
