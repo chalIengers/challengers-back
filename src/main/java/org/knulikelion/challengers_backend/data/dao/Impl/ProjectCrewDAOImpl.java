@@ -2,11 +2,13 @@ package org.knulikelion.challengers_backend.data.dao.Impl;
 
 import org.knulikelion.challengers_backend.data.dao.ProjectCrewDAO;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
+import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
 import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,24 +29,47 @@ public class ProjectCrewDAOImpl implements ProjectCrewDAO {
     }
 
     @Override
-    public List<ProjectCrewResponseDto> getCrew(Long id) {
+    public List<ProjectCrewResponseDto> getCrew(Long crewId) {
         return projectCrewRepository
-                .findAllByProjectId(id)
+                .findAllByProjectId(crewId)
                 .stream()
                 .map(ProjectCrewResponseDto::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Map<String, List<ProjectCrewResponseDto>> getCrews(Long id) {
-        List<ProjectCrewResponseDto> crews = projectCrewRepository.findAllByProjectId(id)
+    public Map<String, List<ProjectCrewResponseDto>> getCrews(Long projectId) {
+        Optional<ProjectCrew> projectCrew = selectById(projectId);
+
+        if(!projectCrew.isPresent()) {
+            return Collections.emptyMap();
+        }else {
+            ProjectCrew getProjectCrew = projectCrew.get();
+
+            Project project = getProjectCrew.getProject();
+
+            List<ProjectCrewResponseDto> crewsInProject = projectCrewRepository.findAllByProjectId(project.getId())
+                    .stream()
+                    .map(crew -> new ProjectCrewResponseDto(crew))
+                    .collect(Collectors.toList());
+
+            Map<String, List<ProjectCrewResponseDto>> crewsGroupedByPosition
+                    = crewsInProject.stream().collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
+
+            return crewsGroupedByPosition;
+        }
+    }
+
+    /*@Override
+    public Map<String, List<ProjectCrewResponseDto>> getCrews(Long crewId) {
+        List<ProjectCrewResponseDto> crews = projectCrewRepository.findAllByProjectId(crewId)
                 .stream()
                 .map(ProjectCrewResponseDto::new)
                 .collect(Collectors.toList());
 
         return crews.stream().collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
     }
-
+*/
     @Override
     public void removeCrew(Long projectId) {
         List<ProjectCrew> selectedCrew = projectCrewRepository.findAllByProjectId(projectId);
@@ -56,8 +81,8 @@ public class ProjectCrewDAOImpl implements ProjectCrewDAO {
     }
 
     @Override
-    public Optional<ProjectCrew> selectById(Long id) {
-        return projectCrewRepository.findById(id);
+    public Optional<ProjectCrew> selectById(Long crewId) {
+        return projectCrewRepository.findById(crewId);
     }
 
     @Override

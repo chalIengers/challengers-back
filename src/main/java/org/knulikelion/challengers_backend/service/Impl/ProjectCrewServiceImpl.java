@@ -62,10 +62,62 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
         return resultResponseDto;
     }
 
-    @Override
-    public Object getCrewsGroupedByPosition(Long id) {
 
-        Optional<ProjectCrew> optionalProjectCrew = projectCrewDAO.selectById(id);
+    @Override
+    public Object getCrewsGroupedByPosition(Long crewId) {
+
+        Map<String,List<ProjectCrewResponseDto>> crewsGroupedByPosition = projectCrewDAO.getCrews(crewId);
+
+        if(crewsGroupedByPosition.isEmpty()) {
+            BaseResponseDto responseDto = new BaseResponseDto();
+
+            responseDto.setSuccess(false);
+            responseDto.setMsg("팀원 조회 불가");
+
+            return responseDto;
+        }else {
+            return crewsGroupedByPosition;
+        }
+    }
+
+
+   /* @Override
+    public Object getCrewsGroupedByPosition(Long crewId) {
+        Map<String, List<ProjectCrewResponseDto>> crewsByPosition = projectCrewDAO.getCrews(crewId);
+
+        if(crewsByPosition.isEmpty()) {
+            BaseResponseDto responseDto = new BaseResponseDto();
+            responseDto.setSuccess(false);
+            responseDto.setMsg("팀원 조회 불가");
+            return responseDto;
+        }else {
+            Optional<ProjectCrew> optionalProjectCrew = projectCrewDAO.selectById(crewId);
+
+            if(!optionalProjectCrew.isPresent()) {
+                BaseResponseDto responseDto = new BaseResponseDto();
+                responseDto.setSuccess(false);
+                responseDto.setMsg("팀원 조회 불가.");
+                return responseDto;
+            }
+
+            ProjectCrew getProjectCrew = optionalProjectCrew.get();
+            ProjectCrewResponseDto projectCrewResponseDto = new ProjectCrewResponseDto();
+            projectCrewResponseDto.setId(getProjectCrew.getId());
+            projectCrewResponseDto.setName(getProjectCrew.getProjectCrewName());
+            projectCrewResponseDto.setRole(getProjectCrew.getProjectCrewRole());
+            projectCrewResponseDto.setPosition(getProjectCrew.getProjectCrewPosition());
+
+            Map<String,Object> objectMap = new HashMap<>();
+            objectMap.put("individual", projectCrewResponseDto);
+            objectMap.put("grouped", crewsByPosition);
+
+            return objectMap;
+        }
+    }*/
+    /*@Override
+    public Object getCrewsGroupedByPosition(Long crewId) {
+
+        Optional<ProjectCrew> optionalProjectCrew = projectCrewDAO.selectById(crewId);
 
         if (!optionalProjectCrew.isPresent()) {
             BaseResponseDto responseDto = new BaseResponseDto();
@@ -98,11 +150,11 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
             return responseMap;
 
         }
-    }
+    }*/
 
     @Override
-    public Object getProjectCrewById(Long id) {
-        if (projectCrewDAO.selectById(id).isEmpty()) {
+    public Object getProjectCrewById(Long crewId) {
+        if (projectCrewDAO.selectById(crewId).isEmpty()) {
             BaseResponseDto resultResponseDto = new BaseResponseDto();
 
             resultResponseDto.setSuccess(false);
@@ -110,7 +162,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
 
             return resultResponseDto;
         } else {
-            ProjectCrew getProjectCrew = projectCrewDAO.selectById(id).get();
+            ProjectCrew getProjectCrew = projectCrewDAO.selectById(crewId).get();
             ProjectCrewResponseDto projectCrewResponseDto = new ProjectCrewResponseDto();
             projectCrewResponseDto.setId(getProjectCrew.getId());
             projectCrewResponseDto.setName(getProjectCrew.getProjectCrewName());
@@ -121,9 +173,9 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
         }
     }
     @Override
-    public BaseResponseDto updateProjectCrew(Long id, ProjectCrewRequestDto projectCrewRequestDto) {
+    public BaseResponseDto updateProjectCrew(Long crewId, ProjectCrewRequestDto projectCrewRequestDto) {
 
-        Optional<ProjectCrew> projectCrewOptional = projectCrewDAO.selectById(id);
+        Optional<ProjectCrew> projectCrewOptional = projectCrewDAO.selectById(crewId);
         if(projectCrewOptional.isEmpty()) {
             BaseResponseDto resultResponseDto = new BaseResponseDto();
             resultResponseDto.setSuccess(false);
@@ -131,7 +183,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
             return resultResponseDto;
         }
         ProjectCrew projectCrew = projectCrewOptional.get();
-        projectCrew.setId(id);
+        projectCrew.setId(crewId);
         projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
         projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
         projectCrew.setProjectCrewPosition(projectCrew.getProjectCrewPosition());
@@ -147,14 +199,14 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
     }
 
     @Override
-    public BaseResponseDto removeProjectCrew(Long id) {
+    public BaseResponseDto removeProjectCrew(Long crewId) {
         BaseResponseDto resultResponseDto = new BaseResponseDto();
 
-        if(projectCrewDAO.selectById(id).isEmpty()) {
+        if(projectCrewDAO.selectById(crewId).isEmpty()) {
             resultResponseDto.setSuccess(false);
             resultResponseDto.setMsg("팀원 조회 불가");
         }else {
-            projectCrewDAO.removeCrew(id);
+            projectCrewDAO.removeCrew(crewId);
             resultResponseDto.setSuccess(true);
             resultResponseDto.setMsg("팀원 삭제 완료");
         }
