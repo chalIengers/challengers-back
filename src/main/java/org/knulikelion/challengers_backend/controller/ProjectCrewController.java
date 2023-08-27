@@ -27,8 +27,8 @@ public class ProjectCrewController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "crew 조회")
-    public Object getCrewById(@PathVariable Long id) {
-        return projectCrewService.getProjectCrewById(id);
+    public Object getCrewById(@PathVariable Long crewId) {
+        return projectCrewService.getProjectCrewById(crewId);
     }
 
     @GetMapping("/position/{projectId}")
@@ -37,7 +37,7 @@ public class ProjectCrewController {
         return (Map<String, Object>) projectCrewService.getCrewsGroupedByPosition(projectId);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{crewId}")
     @ApiOperation(value = "crew 수정")
     public BaseResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto,@PathVariable Long crewId) {
         return projectCrewService.updateProjectCrew(crewId,projectCrewRequestDto);
