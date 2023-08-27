@@ -6,6 +6,7 @@ import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestWithCodeDto;
 import org.knulikelion.challengers_backend.data.dto.request.TokenRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.TokenResponseDto;
@@ -30,8 +31,13 @@ public class SignController {
         this.signService = signService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
+    @GetMapping(value = "/verify/account")
+    public BaseResponseDto verifyAccount(@RequestParam String account){
+        return signService.verifyEmail(account);
+    }
+
     @PostMapping(value = "/request-sign-up")
-    public ResultResponseDto requestSignUp(@RequestBody SignUpRequestDto signUpRequestDto){
+    public BaseResponseDto requestSignUp(@RequestBody SignUpRequestDto signUpRequestDto){
         return signService.sendCode(signUpRequestDto);
     }
 
