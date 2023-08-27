@@ -60,16 +60,6 @@ public class ProjectCrewDAOImpl implements ProjectCrewDAO {
         }
     }
 
-    /*@Override
-    public Map<String, List<ProjectCrewResponseDto>> getCrews(Long crewId) {
-        List<ProjectCrewResponseDto> crews = projectCrewRepository.findAllByProjectId(crewId)
-                .stream()
-                .map(ProjectCrewResponseDto::new)
-                .collect(Collectors.toList());
-
-        return crews.stream().collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
-    }
-*/
     @Override
     public void removeCrew(Long projectId) {
         List<ProjectCrew> selectedCrew = projectCrewRepository.findAllByProjectId(projectId);
