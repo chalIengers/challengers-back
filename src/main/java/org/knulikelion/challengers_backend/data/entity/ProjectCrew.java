@@ -13,7 +13,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @ToString
 @Table(name = "project_crew")
-
 public class ProjectCrew extends BaseEntity{
 
     @Id
