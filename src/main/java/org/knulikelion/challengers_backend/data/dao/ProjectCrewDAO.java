@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface ProjectCrewDAO {
     ProjectCrew createCrew(ProjectCrew projectCrew);
-    List<ProjectCrewResponseDto> getCrew(Long id);
-    Map<String,List<ProjectCrewResponseDto>> getCrews(Long id);
-    void removeCrew(Long projectId);
-    Optional<ProjectCrew> selectById(Long id);
+    List<ProjectCrewResponseDto> getCrew(Long crewId);
+    Map<String,List<ProjectCrewResponseDto>> getCrews(Long projectId);
+    void removeCrew(Long crewId);
+    Optional<ProjectCrew> selectById(Long crewId);
     ProjectCrew updateCrew(ProjectCrew projectCrew);
 }
