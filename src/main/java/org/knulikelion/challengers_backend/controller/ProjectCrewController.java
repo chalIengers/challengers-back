@@ -38,13 +38,13 @@ public class ProjectCrewController {
 
     @PutMapping("/{id}")
     @ApiOperation(value = "crew 수정")
-    public BaseResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto,@PathVariable Long id) {
-        return projectCrewService.updateProjectCrew(id,projectCrewRequestDto);
+    public BaseResponseDto updateCrewById(@RequestBody ProjectCrewRequestDto projectCrewRequestDto,@PathVariable Long crewId) {
+        return projectCrewService.updateProjectCrew(crewId,projectCrewRequestDto);
     }
 
     @DeleteMapping
     @ApiOperation(value = "crew 삭제")
-    public BaseResponseDto removeCrewById(Long id) {
-        return projectCrewService.removeProjectCrew(id);
+    public BaseResponseDto removeCrewById(Long crewId) {
+        return projectCrewService.removeProjectCrew(crewId);
     }
 }
