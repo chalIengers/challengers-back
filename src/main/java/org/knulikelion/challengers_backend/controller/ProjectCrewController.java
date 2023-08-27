@@ -4,7 +4,6 @@ package org.knulikelion.challengers_backend.controller;
 import io.swagger.annotations.ApiOperation;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
 import org.knulikelion.challengers_backend.service.ProjectCrewService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +16,6 @@ public class ProjectCrewController {
 
     public ProjectCrewController(ProjectCrewService projectCrewService) {
         this.projectCrewService = projectCrewService;
-    }
-
-    @PostMapping
-    @ApiOperation(value = "crew 추가")
-    public BaseResponseDto createCrew(@RequestBody ProjectCrewRequestDto projectCrewResponseDto) {
-        return projectCrewService.createProjectCrew(projectCrewResponseDto);
     }
 
     @GetMapping("/{id}")
