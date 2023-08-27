@@ -14,5 +14,5 @@ public interface MonthlyViewsRepository extends JpaRepository<MonthlyViews, Long
 
     Optional<MonthlyViews> findByProjectAndMonth(Project project, YearMonth month);
 
-    List<MonthlyViews> findTop6ByMonthOrderByViewCountDesc(YearMonth month);
+    List<MonthlyViews> findByMonthOrderByViewCountDesc(YearMonth month);
 }

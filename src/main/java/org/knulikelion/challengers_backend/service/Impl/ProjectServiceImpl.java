@@ -337,7 +337,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<AllProjectResponseDto> getProjectsInMonth(YearMonth yearMonth) {
-        List<MonthlyViews> monthlyViews = monthlyViewsRepository.findTop6ByMonthOrderByViewCountDesc(yearMonth);
+        List<MonthlyViews> monthlyViews = monthlyViewsRepository.findByMonthOrderByViewCountDesc(yearMonth);
 
         return monthlyViews.stream()
                 .map(monthlyViews1 -> AllProjectResponseDto.from(monthlyViews1.getProject()))
