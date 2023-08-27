@@ -7,28 +7,22 @@ import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
-import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
 import org.knulikelion.challengers_backend.service.ProjectCrewService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectCrewServiceImpl implements ProjectCrewService {
     private final ProjectDAO projectDAO;
     private final ProjectCrewDAO projectCrewDAO;
 
-    private final ProjectCrewRepository projectCrewRepository;
-
-    public ProjectCrewServiceImpl(ProjectDAO projectDAO, ProjectCrewDAO projectCrewDAO, ProjectCrewRepository projectCrewRepository) {
+    public ProjectCrewServiceImpl(ProjectDAO projectDAO, ProjectCrewDAO projectCrewDAO) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
-        this.projectCrewRepository = projectCrewRepository;
     }
 
     @Override
@@ -54,7 +48,7 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
         projectCrew.setCreatedAt(LocalDateTime.now());
         projectCrew.setUpdatedAt(LocalDateTime.now());
 
-        ProjectCrew createdProjectCrew = projectCrewDAO.createCrew(projectCrew);
+        projectCrewDAO.createCrew(projectCrew);
         BaseResponseDto resultResponseDto = new BaseResponseDto();
         resultResponseDto.setSuccess(true);
         resultResponseDto.setMsg("팀원 생성 완료");
