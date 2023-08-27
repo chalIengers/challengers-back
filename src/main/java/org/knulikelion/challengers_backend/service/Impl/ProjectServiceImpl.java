@@ -8,6 +8,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.repository.MonthlyViewsRepository;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -31,6 +34,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ClubDAO clubDAO;
     private final UserDAO userDAO;
+    private final MonthlyViewsRepository monthlyViewsRepository;
 
     @Autowired
     public ProjectServiceImpl(
@@ -40,8 +44,8 @@ public class ProjectServiceImpl implements ProjectService {
             ProjectTechStackDAO projectTechStackDAO,
             JwtTokenProvider jwtTokenProvider,
             ClubDAO clubDAO,
-            UserDAO userDAO
-    ) {
+            UserDAO userDAO,
+            MonthlyViewsRepository monthlyViewsRepository) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
         this.projectLinkDAO = projectLinkDAO;
@@ -49,11 +53,12 @@ public class ProjectServiceImpl implements ProjectService {
         this.jwtTokenProvider = jwtTokenProvider;
         this.clubDAO = clubDAO;
         this.userDAO = userDAO;
+        this.monthlyViewsRepository = monthlyViewsRepository;
     }
 
     @Override
     public Object getProjectById(Long id) {
-        if(projectDAO.selectProjectById(id).isEmpty()) {
+        if (projectDAO.selectProjectById(id).isEmpty()) {
             BaseResponseDto baseResponseDto = new BaseResponseDto();
 
             baseResponseDto.setSuccess(false);
@@ -97,6 +102,9 @@ public class ProjectServiceImpl implements ProjectService {
             List<ProjectCrewResponseDto> projectCrews = projectCrewDAO.getCrew(projectResponseDto.getId());
             projectResponseDto.setProjectCrew(projectCrews);
 
+//            프로젝트 조회수 증가.
+            projectDAO.incrementViewCount(id);
+
 //            결과 반환
             return projectResponseDto;
         }
@@ -131,7 +139,7 @@ public class ProjectServiceImpl implements ProjectService {
     public BaseResponseDto removeProject(Long id) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-        if(projectDAO.selectProjectById(id).isEmpty()) {
+        if (projectDAO.selectProjectById(id).isEmpty()) {
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("프로젝트가 존재하지 않음");
         } else {
@@ -165,7 +173,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = new Project();
 //        사용자를 찾을 수 없다면, 프로젝트 생성을 거부함
         User founduser = userDAO.getByEmail(jwtTokenProvider.getUserEmail(token));
-        if(founduser == null) {
+        if (founduser == null) {
             BaseResponseDto baseResponseDto = new BaseResponseDto();
 
             baseResponseDto.setSuccess(false);
@@ -184,7 +192,7 @@ public class ProjectServiceImpl implements ProjectService {
             project.setCreatedAt(LocalDateTime.now());
             project.setUpdatedAt(LocalDateTime.now());
 //            클럽이 존재하지 않으면, 엔티티의 Club 값을 null로 처리함
-            if(projectRequestDto.getBelongedClubId() == 0) {
+            if (projectRequestDto.getBelongedClubId() == 0) {
                 logger.info("[Log] 클럽 정보를 조회하지 못 함, ID:" + projectRequestDto.getBelongedClubId());
                 project.setClub(null);
             } else {
@@ -266,7 +274,7 @@ public class ProjectServiceImpl implements ProjectService {
 //        최종 수정일 업데이트
         project.setUpdatedAt(LocalDateTime.now());
 
-        if(projectRequestDto.getBelongedClubId() == 0) {
+        if (projectRequestDto.getBelongedClubId() == 0) {
             project.setClub(null);
             logger.info("[Log] 클럽 정보를 조회하지 못 함, ID:" + projectRequestDto.getBelongedClubId());
         } else {
@@ -325,5 +333,30 @@ public class ProjectServiceImpl implements ProjectService {
                 .build();
 
         return baseResponseDto;
+    }
+
+    @Override
+    public Page<AllProjectResponseDto> getProjectsInMonth(YearMonth yearMonth, Pageable pageable) {
+        Page<MonthlyViews> monthlyViews = monthlyViewsRepository.findByMonthOrderByViewCountDesc(yearMonth,pageable);
+
+
+        return monthlyViews.map(monthlyView ->{
+            Project temp = monthlyView.getProject();
+            AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
+
+            allProjectResponseDto.setId(temp.getId());
+            allProjectResponseDto.setProjectName(temp.getProjectName());
+            allProjectResponseDto.setProjectDescription(temp.getProjectDescription());
+            allProjectResponseDto.setImageUrl(temp.getImageUrl());
+            allProjectResponseDto.setProjectCategory(temp.getProjectCategory());
+
+            if(temp.getClub()!=null) {
+                allProjectResponseDto.setBelongedClubName(temp.getClub().getClubName());
+            }else {
+                logger.info("[Log]클럽이 존재하지 않음");
+                allProjectResponseDto.setBelongedClubName(null);
+            }
+            return allProjectResponseDto;
+        });
     }
 }

@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "project")
 public class Project extends BaseEntity{
     @Id

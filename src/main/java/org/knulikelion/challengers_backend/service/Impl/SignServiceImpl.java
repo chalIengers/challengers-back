@@ -1,10 +1,12 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignUpRequestWithCodeDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
 import org.knulikelion.challengers_backend.data.entity.User;
@@ -39,20 +41,32 @@ public class SignServiceImpl implements SignService {
         this.mailService = mailService;
     }
 
-
     @Override
-    public ResultResponseDto sendCode(SignUpRequestDto signUpRequestDto) {
+    public BaseResponseDto verifyEmail(String email) {
+        User findUser = userRepository.findByEmail(email+domain);
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+        if(findUser != null){
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("이미 존재하는 계정입니다.");
+        }else{
+            baseResponseDto.setSuccess(true);
+            baseResponseDto.setMsg("회원 가입이 가능합니다.");
+        }
+        return baseResponseDto;
+    }
+    @Override
+    public BaseResponseDto sendCode(SignUpRequestDto signUpRequestDto) {
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
         log.info("[sendCode] 인증 번호 전송 Email : {}", signUpRequestDto.getEmail());
         String approvalNumber = mailService.sendMail(signUpRequestDto.getEmail() + domain);
         log.info("[sendCode] 인증 번호 전송 완료 Email : {}", signUpRequestDto.getEmail());
         emailCodeMap.put(signUpRequestDto.getEmail() + domain, approvalNumber);
 
-        ResultResponseDto resultResponseDto = ResultResponseDto.builder()
-                .code(1)
-                .msg("인증번호를 발송하였습니다.")
-                .build();
+        baseResponseDto.setSuccess(true);
+        baseResponseDto.setMsg("성공적으로 인증 번호를 전송하였습니다.");
 
-        return resultResponseDto;
+        return baseResponseDto;
     }
 
 
@@ -119,4 +133,6 @@ public class SignServiceImpl implements SignService {
 
         return signInResultDto;
     }
+
+
 }

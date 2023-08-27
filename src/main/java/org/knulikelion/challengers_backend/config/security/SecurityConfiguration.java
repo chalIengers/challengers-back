@@ -31,10 +31,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/sign-in",
                         "/api/v1/request-sign-up",
                         "/api/v1/sign-up",
+                        "/api/v1/verify/account",
                         "/api/v1/refresh-token").permitAll()
 
 //                Project
                 .antMatchers("/api/v1/project/get/all").permitAll()
+                .antMatchers("/api/v1/project/get/all/top-viewed/{year}/{month}").permitAll()
                 .antMatchers("/api/v1/project/get").permitAll()
                 .antMatchers("/api/v1/project/create").hasRole("USER")
                 .antMatchers("/api/v1/project/update").hasRole("USER")
@@ -62,8 +64,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/club/updateMember").hasRole("USER")
                 .antMatchers("/api/v1/club/deleteMember").hasRole("USER")
                 .antMatchers("/api/v1/pending/requests/users/{clubId}").hasRole("USER")
-                .antMatchers("/api/v1/club/join/request").hasRole("USER")
-                .antMatchers("/api/v1/club/accpet/join/request").hasRole("USER")
+                .antMatchers("/accept/join-requests/{clubId}").hasRole("USER")
+                .antMatchers("/reject/join-requests/{clubId}").hasRole("USER")
 
 
                 .anyRequest().hasRole("USER")
