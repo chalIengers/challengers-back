@@ -17,15 +17,11 @@ import java.util.Optional;
 
 @Service
 public class ProjectCrewServiceImpl implements ProjectCrewService {
-    private final ProjectDAO projectDAO;
     private final ProjectCrewDAO projectCrewDAO;
 
-    private final ProjectCrewRepository projectCrewRepository;
 
-    public ProjectCrewServiceImpl(ProjectDAO projectDAO, ProjectCrewDAO projectCrewDAO, ProjectCrewRepository projectCrewRepository) {
-        this.projectDAO = projectDAO;
+    public ProjectCrewServiceImpl(ProjectCrewDAO projectCrewDAO) {
         this.projectCrewDAO = projectCrewDAO;
-        this.projectCrewRepository = projectCrewRepository;
     }
 
     @Override
