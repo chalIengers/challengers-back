@@ -65,15 +65,14 @@ public class ProjectController {
         return projectService.updateProject(projectId, projectRequestDto, request.getHeader("X-AUTH-TOKEN"));
     }
 
-    @GetMapping("/top-viewed/{year}/{month}")
-        public ResponseEntity<Page<AllProjectResponseDto>> getTopViewedProjectsInMonth(
+    @GetMapping("/get/all/top-viewed/{year}/{month}")
+        public Page<AllProjectResponseDto> getTopViewedProjectsInMonth(
                 @PathVariable int year,
                 @PathVariable int month,
                 @RequestParam(defaultValue = "0")int page,
                 @RequestParam(defaultValue = "6") int size) {
         YearMonth yearMonth = YearMonth.of(year,month);
         Pageable pageable= PageRequest.of(page,size);
-            Page<AllProjectResponseDto> projects = projectService.getProjectsInMonth(yearMonth,pageable);
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+        return projectService.getProjectsInMonth(yearMonth,pageable);
     }
 }

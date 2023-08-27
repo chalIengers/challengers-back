@@ -339,6 +339,24 @@ public class ProjectServiceImpl implements ProjectService {
     public Page<AllProjectResponseDto> getProjectsInMonth(YearMonth yearMonth, Pageable pageable) {
         Page<MonthlyViews> monthlyViews = monthlyViewsRepository.findByMonthOrderByViewCountDesc(yearMonth,pageable);
 
-        return monthlyViews.map(monthlyView -> AllProjectResponseDto.from(monthlyView.getProject()));
+
+        return monthlyViews.map(monthlyView ->{
+            Project temp = monthlyView.getProject();
+            AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
+
+            allProjectResponseDto.setId(temp.getId());
+            allProjectResponseDto.setProjectName(temp.getProjectName());
+            allProjectResponseDto.setProjectDescription(temp.getProjectDescription());
+            allProjectResponseDto.setImageUrl(temp.getImageUrl());
+            allProjectResponseDto.setProjectCategory(temp.getProjectCategory());
+
+            if(temp.getClub()!=null) {
+                allProjectResponseDto.setBelongedClubName(temp.getClub().getClubName());
+            }else {
+                logger.info("[Log]클럽이 존재하지 않음");
+                allProjectResponseDto.setBelongedClubName(null);
+            }
+            return allProjectResponseDto;
+        });
     }
 }
