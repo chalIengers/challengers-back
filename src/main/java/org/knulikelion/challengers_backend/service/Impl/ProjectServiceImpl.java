@@ -97,6 +97,9 @@ public class ProjectServiceImpl implements ProjectService {
             List<ProjectCrewResponseDto> projectCrews = projectCrewDAO.getCrew(projectResponseDto.getId());
             projectResponseDto.setProjectCrew(projectCrews);
 
+//            프로젝트 조회수 증가.
+            projectDAO.incrementViewCount(id);
+
 //            결과 반환
             return projectResponseDto;
         }

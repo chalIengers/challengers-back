@@ -38,6 +38,16 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
+    public void incrementViewCount(Long id) {
+        Optional<Project> optionalProject = projectRepository.findById(id);
+        if(optionalProject.isPresent()) {
+            Project project = optionalProject.get();
+            project.setViewCount(project.getViewCount() + 1);
+            projectRepository.save(project);
+        }
+    }
+
+    @Override
     public Project createProject(Project project) {
         return projectRepository.save(project);
     }

@@ -38,6 +38,9 @@ public class Project extends BaseEntity{
     @Column(nullable = false)
     private String projectCategory;
 
+    @Column(nullable = false)
+    private Integer viewCount = 0;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
