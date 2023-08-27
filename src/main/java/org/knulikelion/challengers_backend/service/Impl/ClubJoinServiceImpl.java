@@ -1,8 +1,10 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubJoinResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
@@ -11,24 +13,28 @@ import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
+import org.knulikelion.challengers_backend.service.ClubService;
 import org.knulikelion.challengers_backend.service.Exception.ClubJoinNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClubJoinServiceImpl implements ClubJoinService {
 
     private final UserRepository userRepository;
     private final ClubRepository clubRepository;
-    private final UserClubRepository userClubRepository;
     private final ClubJoinRepository clubJoinRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDAO userDAO;
+    private final ClubService clubService;
 
     @Override
     public ClubJoinResponseDto createJoinRequest(String token, Long clubId) {
@@ -42,21 +48,48 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     }
 
     @Override
-    public UserClub acceptJoinRequest(Long joinRequestId, boolean isAccepted) {
-        ClubJoin clubJoin = clubJoinRepository.findById(joinRequestId)
-                .orElseThrow(ClubJoinNotFoundException::new);
+    public BaseResponseDto acceptJoinRequest(Long clubId, String userEmail, String addUserEmail) {
+        User user = userRepository.getByEmail(userEmail);
+        Club club = clubRepository.getById(clubId);
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-        if(isAccepted) {
-            clubJoin.setStatus(JoinRequestStatus.APPROVED);
-            clubJoinRepository.save(clubJoin);
-
-            UserClub userClub = new UserClub(clubJoin.getUser(),clubJoin.getClub());
-            return userClubRepository.save(userClub);
+        if (!club.getClubManager().equals(user)){
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("클럽 멤버 수락 권한이 없습니다.");
         }else {
-            clubJoin.setStatus(JoinRequestStatus.REJECTED);
-            clubJoinRepository.save(clubJoin);
-            return null;
+            User findUser = userRepository.getByEmail(addUserEmail);
+            ClubJoin clubJoin = clubJoinRepository.findByClubIdAndUserId(clubId, findUser.getId());
+            clubJoin.setClub(null);
+            clubJoin.setUser(null);
+
+            clubJoinRepository.delete(clubJoin);
+
+            log.info("clubService [addMember] {} to {}", findUser.getEmail(), club.getClubName());
+            baseResponseDto = clubService.addMember(findUser.getId(), club.getId());
         }
+        return baseResponseDto;
+    }
+
+    @Override
+    public BaseResponseDto rejectJoinRequest(Long clubId, String userEmail, String rejectUserEmail) {
+        User user = userRepository.findByEmail(userEmail);
+        User findUser = userRepository.findByEmail(rejectUserEmail);
+        Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
+
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+        if (!club.getClubManager().equals(user)) {
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("클럽 멤버 수락 권한이 없습니다.");
+        }else {
+            ClubJoin clubJoin = clubJoinRepository.findByClubIdAndUserId(clubId, findUser.getId());
+            clubJoin.setClub(null);
+            clubJoin.setUser(null);
+            clubJoinRepository.delete(clubJoin);
+            baseResponseDto.setSuccess(true);
+            baseResponseDto.setMsg("클럽 멤버 합류를 거절하였습니다.");
+        }
+        return baseResponseDto;
     }
 
     @Override

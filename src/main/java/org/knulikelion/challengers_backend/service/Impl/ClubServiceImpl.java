@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dao.ClubDAO;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
@@ -15,18 +16,15 @@ import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class ClubServiceImpl implements ClubService {
-    private static final Logger logger = LoggerFactory.getLogger(ClubServiceImpl.class);
     private final ClubDAO clubDAO;
     private final ClubRepository clubRepository;
     private final UserClubRepository userClubRepository;
@@ -89,7 +87,7 @@ public class ClubServiceImpl implements ClubService {
 
         return clubLogoResponseDtoList;
     }
-    
+
 
     @Override
     public BaseResponseDto removeClub(Long id) {
@@ -115,7 +113,8 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public BaseResponseDto createClub(ClubCreateRequestDto clubCreateRequestDto) {
+    public BaseResponseDto createClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
+        User user = userRepository.getByEmail(userEmail);
 
         Club club = new Club();
         club.setClubName(clubCreateRequestDto.getClubName());
@@ -123,6 +122,7 @@ public class ClubServiceImpl implements ClubService {
         club.setClubDescription(clubCreateRequestDto.getClubDescription());
         club.setClubForm(clubCreateRequestDto.getClubForm());
         club.setClubApproved(0);
+        club.setClubManager(user);
         club.setCreatedAt(LocalDateTime.now());
         club.setUpdatedAt(LocalDateTime.now());
 
@@ -137,88 +137,81 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public BaseResponseDto updateClub(Long id, ClubRequestDto clubRequestDto) throws Exception {
+    public BaseResponseDto updateClub(String userEmail, ClubRequestDto clubRequestDto){
 
-        Optional<Club> clubOptional = clubDAO.selectClubById(id);
-        if(clubOptional.isEmpty()){
-            BaseResponseDto baseResponseDto = new BaseResponseDto();
+        Optional<Club> findClub = clubRepository.findById(clubRequestDto.getClubId());
+        User user = userRepository.getByEmail(userEmail);
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+        if(findClub.isEmpty()){
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("클럽이 존재하지 않습니다.");
             return baseResponseDto;
         }else {
-            Club club = clubOptional.get();
-            club.setClubName(clubRequestDto.getClubName());
-            club.setLogoUrl(clubRequestDto.getLogoUrl());
-            club.setClubDescription(clubRequestDto.getClubDescription());
-            club.setClubForm(clubRequestDto.getClubForm());
-            club.setClubApproved(clubRequestDto.getClubApproved());
-            club.setUpdatedAt(LocalDateTime.now());
+            Club club = findClub.get();
+            if (club.getClubManager().equals(user)) { /*클럽 매니저만 클럽 수정*/
+                club.setClubDescription(clubRequestDto.getClubDescription());
+                club.setClubForm(clubRequestDto.getClubForm());
+                club.setClubName(clubRequestDto.getClubName());
+                club.setLogoUrl(clubRequestDto.getLogoUrl());
+                club.setUpdatedAt(LocalDateTime.now());
 
-            clubDAO.updateClub(id, club);
-            BaseResponseDto baseResponseDto = new BaseResponseDto();
-            baseResponseDto.setSuccess(true);
-            baseResponseDto.setMsg("클럽 생성 완료");
+                clubRepository.save(club);
+
+                baseResponseDto.setSuccess(true);
+                baseResponseDto.setMsg("클럽 수정을 완료하였습니다.");
+            } else {
+                baseResponseDto.setSuccess(false);
+                baseResponseDto.setMsg("클럽 수정 권한이 없습니다.");
+            }
             return baseResponseDto;
         }
     }
 
     @Override
-    public BaseResponseDto updateMember(Long findUserId, Long updateUserId, Long clubId) {
-        List<UserClub> userClubList = userClubRepository.findAll();
-        User updateUser = userRepository.getById(updateUserId);
-        Club club = clubRepository.getById(clubId);
+    public BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId) {
+        User findUser = userRepository.getByEmail(deleteUserEmail);
+        Optional<Club> findClub = clubRepository.findById(clubId);
         BaseResponseDto baseResponseDto = new BaseResponseDto();
-
-        boolean isUpdated = false;
-        for (UserClub userClub : userClubList) {
-            if (userClub.getClub().getId().equals(clubId) && userClub.getUser().getId().equals(findUserId)) {
-                userClub.setUser(updateUser);
-                userClub.setClub(club);
-                userClubRepository.save(userClub);
-                isUpdated = true;
-                break;
-            }
-        }
-
-        if (isUpdated) {
-            baseResponseDto.setSuccess(true);
-            baseResponseDto.setMsg("클럽 멤버 업데이트 완료");
-        } else {
+        if (findClub.isEmpty()) {
             baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("클럽 멤버 업데이트 실패");
+            baseResponseDto.setMsg("클럽이 존재하지 않음");
+            return baseResponseDto;
         }
 
-        return baseResponseDto;
-    }
+        Club club = findClub.get();
+        User user = userRepository.getByEmail(userEmail);
+        if (club.getClubManager().equals(user)) {
+            UserClub deleteEntity = userClubRepository.findByUserIdAndClubId(findUser.getId(), clubId);
 
-    @Override
-    public BaseResponseDto removeMember(Long findUserId, Long clubId) {
-        List<UserClub> userClubList = userClubRepository.findAll();
-        Long userClubId = null;
-        for (UserClub userClub : userClubList){
-            if((userClub.getClub().getId().equals(clubId)) && (userClub.getUser().getId().equals(findUserId))){
-                userClubId = userClub.getId();
-                break;
+            if (deleteEntity == null) {
+                baseResponseDto.setSuccess(false);
+                baseResponseDto.setMsg("멤버가 존재하지 않음");
+                return baseResponseDto;
+            } else {
+                deleteEntity.setUser(null);
+                deleteEntity.setClub(null);
+                userClubRepository.delete(deleteEntity);
+
+                baseResponseDto.setSuccess(true);
+                baseResponseDto.setMsg("성공적으로 멤버를 삭제했습니다.");
+                return baseResponseDto;
             }
+        }else{
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("클럽 멤버 수정 권한이 없습니다.");
+            return baseResponseDto;
         }
-        if(userClubId!=null){
-            userClubRepository.deleteById(userClubId);
-        }
-        BaseResponseDto baseResponseDto = new BaseResponseDto();
-        baseResponseDto.setSuccess(true);
-        baseResponseDto.setMsg("멤버 삭제 완료");
-
-        return baseResponseDto;
     }
+
 
     @Override
     public BaseResponseDto addMember(Long userId, Long clubId) {
         User user = userRepository.getById(userId);
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
         if (user.getId()==null){
-            BaseResponseDto baseResponseDto = new BaseResponseDto();
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("해당 유저 없음");
-            return baseResponseDto;
         }else{
             Club club = clubRepository.getById(clubId);
 
@@ -227,12 +220,10 @@ public class ClubServiceImpl implements ClubService {
             userClub.setUser(user);
             userClubRepository.save(userClub);
 
-            BaseResponseDto baseResponseDto = new BaseResponseDto();
             baseResponseDto.setSuccess(true);
-            baseResponseDto.setMsg("멤버 추가");
-            return baseResponseDto;
+            baseResponseDto.setMsg("성공적으로 클럽 멤버를 추가하였습니다.");
         }
-
+        return baseResponseDto;
     }
 
     @Override

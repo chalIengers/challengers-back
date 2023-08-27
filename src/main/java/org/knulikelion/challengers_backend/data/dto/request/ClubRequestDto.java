@@ -9,9 +9,9 @@ import lombok.*;
 @ToString
 @Builder
 public class ClubRequestDto {
+    private Long clubId;
     private String clubName;
     private String logoUrl;
     private String clubDescription;
     private String clubForm;
-    private Integer clubApproved;
 }
