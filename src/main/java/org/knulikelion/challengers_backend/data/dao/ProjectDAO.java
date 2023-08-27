@@ -12,4 +12,5 @@ public interface ProjectDAO {
     Project createProject(Project project);
     Project updateProject(Project project);
     void removeProject(Long id);
+    void incrementViewCount(Long id);
 }

@@ -35,6 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 //                Project
                 .antMatchers("/api/v1/project/get/all").permitAll()
+                .antMatchers("/api/v1/project/get/all/top-viewed/{year}/{month}").permitAll()
                 .antMatchers("/api/v1/project/get").permitAll()
                 .antMatchers("/api/v1/project/create").hasRole("USER")
                 .antMatchers("/api/v1/project/update").hasRole("USER")

@@ -107,7 +107,7 @@ public class ClubController {
         return clubJoinService.rejectJoinRequest(clubId,jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),rejectUserEmail);
     }
 
-    @GetMapping("/pending/requests/users/{clubId}")
+    @GetMapping("/join-requests/pending/users/{clubId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
