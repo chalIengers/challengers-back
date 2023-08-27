@@ -5,18 +5,15 @@ import org.knulikelion.challengers_backend.data.dao.ProjectDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectCrewResponseDto;
-import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.data.entity.ProjectCrew;
 import org.knulikelion.challengers_backend.data.repository.ProjectCrewRepository;
 import org.knulikelion.challengers_backend.service.ProjectCrewService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectCrewServiceImpl implements ProjectCrewService {
@@ -30,38 +27,6 @@ public class ProjectCrewServiceImpl implements ProjectCrewService {
         this.projectCrewDAO = projectCrewDAO;
         this.projectCrewRepository = projectCrewRepository;
     }
-
-    @Override
-    public BaseResponseDto createProjectCrew(ProjectCrewRequestDto projectCrewRequestDto) {
-
-        Optional<Project> optionalProject = projectDAO.selectProjectById(projectCrewRequestDto.getProjectId());
-
-
-        if(!optionalProject.isPresent()) {
-            BaseResponseDto responseDto = new BaseResponseDto();
-            responseDto.setSuccess(false);
-            responseDto.setMsg("프로젝트 조회 불가");
-            return responseDto;
-        }
-
-        Project project = optionalProject.get();
-
-        ProjectCrew projectCrew = new ProjectCrew();
-        projectCrew.setProjectCrewName(projectCrewRequestDto.getName());
-        projectCrew.setProjectCrewRole(projectCrewRequestDto.getRole());
-        projectCrew.setProjectCrewPosition(projectCrewRequestDto.getPosition());
-        projectCrew.setProject(project);
-        projectCrew.setCreatedAt(LocalDateTime.now());
-        projectCrew.setUpdatedAt(LocalDateTime.now());
-
-        ProjectCrew createdProjectCrew = projectCrewDAO.createCrew(projectCrew);
-        BaseResponseDto resultResponseDto = new BaseResponseDto();
-        resultResponseDto.setSuccess(true);
-        resultResponseDto.setMsg("팀원 생성 완료");
-
-        return resultResponseDto;
-    }
-
 
     @Override
     public Object getCrewsGroupedByPosition(Long crewId) {
