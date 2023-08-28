@@ -101,7 +101,7 @@ public class ClubJoinServiceImpl implements ClubJoinService {
         for(ClubJoin clubJoin : clubJoins) {
             if(clubJoin.getStatus() == JoinRequestStatus.PENDING) {
                 User user = clubJoin.getUser();
-                PendingUserResponseDto pendingUser = new PendingUserResponseDto(user.getId(),user.getUsername(), user.getEmail());
+                PendingUserResponseDto pendingUser = new PendingUserResponseDto(user.getId(),user.getUserName(), user.getEmail());
                 pendingUsers.add(pendingUser);
             }
         }
