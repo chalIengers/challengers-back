@@ -72,16 +72,32 @@ public class ClubServiceImpl implements ClubService {
         }
     }
 
-  @Override
-  public List<ClubLogoResponseDto> getAllClubLogo(int page, int size) {
+    @Override
+    public List<ClubLogoResponseDto> getAllClubLogo() {
         List<ClubLogoResponseDto> clubLogoResponseDtoList = new ArrayList<>();
-        List<Club> club = clubDAO.getAllClub(page,size);
+        List<Club> clubList = clubDAO.getAllClubs();
 
-        for(Club temp : club) {
-            ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
-            if(!temp.getLogoUrl().isEmpty()) {
-                clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
-                clubLogoResponseDtoList.add(clubLogoResponseDto);
+        if (clubList.size() <= 28) {
+            for(Club temp : clubList) {
+                ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
+                if(!temp.getLogoUrl().isEmpty()) {
+                    clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
+                    clubLogoResponseDtoList.add(clubLogoResponseDto);
+                }
+            }
+        } else {
+            Collections.shuffle(clubList);
+
+            int logoCount = 0;
+            for(Club temp : clubList) {
+                if(logoCount >= 28) break;
+
+                ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
+                if(!temp.getLogoUrl().isEmpty()) {
+                    logoCount++;
+                    clubLogoResponseDto.setLogoUrl(temp.getClubName());
+                    clubLogoResponseDtoList.add(clubLogoResponseDto);
+                }
             }
         }
 
@@ -227,9 +243,27 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public ClubListResponseDto getUsersClub(String email) {
+        User user = userRepository.getByEmail(email);
+        UserClub userClub = userClubRepository.findByUserId(user.getId());
+        Club club = clubRepository.getById(userClub.getClub().getId());
+
+        if(club != null) {
+            ClubListResponseDto clubListResponseDto = new ClubListResponseDto();
+            clubListResponseDto.setId(club.getId());
+            clubListResponseDto.setLogo(club.getLogoUrl());
+            clubListResponseDto.setName(club.getClubName());
+
+            return clubListResponseDto;
+        }
+
+        return null;
+    }
+
+    @Override
     public List<ClubListResponseDto> findAllClubs(int page, int size) {
         return clubRepository.findAll(PageRequest.of(page,size)).stream()
-                .map(club -> new ClubListResponseDto(club.getClubName(),club.getLogoUrl()))
+                .map(club -> new ClubListResponseDto(club.getId(), club.getClubName(), club.getLogoUrl()))
                 .collect(Collectors.toList());
     }
 }
