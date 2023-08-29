@@ -5,10 +5,7 @@ import org.knulikelion.challengers_backend.data.dao.ClubDAO;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubLogoResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
@@ -243,22 +240,30 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public List<ClubListResponseDto> getUsersClub(String email) {
+    public List<UserClubResponseDto> getUsersClub(String email) {
         User user = userRepository.getByEmail(email);
         List<UserClub> userClub = userClubRepository.findByUserId(user.getId());
-        List<ClubListResponseDto> clubListResponseDtoList = new ArrayList<>();
+        List<UserClubResponseDto> userClubResponseDtoList = new ArrayList<>();
 
         if(userClub != null) {
             for(UserClub temp : userClub) {
-                ClubListResponseDto clubListResponseDto = new ClubListResponseDto();
-                clubListResponseDto.setId(temp.getClub().getId());
-                clubListResponseDto.setName(temp.getClub().getClubName());
-                clubListResponseDto.setLogo(temp.getClub().getLogoUrl());
+                UserClubResponseDto userClubResponseDto = new UserClubResponseDto();
+                userClubResponseDto.setId(temp.getClub().getId());
+                userClubResponseDto.setName(temp.getClub().getClubName());
+                userClubResponseDto.setLogo(temp.getClub().getLogoUrl());
 
-                clubListResponseDtoList.add(clubListResponseDto);
+                if(temp.getClub().getClubManager().getId() == user.getId()) {
+                    userClubResponseDto.setManager(true);
+                    userClubResponseDto.setManagerEmail(null);
+                } else {
+                    userClubResponseDto.setManager(false);
+                    userClubResponseDto.setManagerEmail(temp.getClub().getClubManager().getEmail());
+                }
+
+                userClubResponseDtoList.add(userClubResponseDto);
             }
 
-            return clubListResponseDtoList;
+            return userClubResponseDtoList;
         }
 
         return null;

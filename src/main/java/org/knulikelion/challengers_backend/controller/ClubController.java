@@ -41,7 +41,7 @@ public class ClubController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public List<ClubListResponseDto> getUsersClub(HttpServletRequest request) {
+    public List<UserClubResponseDto> getUsersClub(HttpServletRequest request) {
         return clubService.getUsersClub(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")));
     }
   
