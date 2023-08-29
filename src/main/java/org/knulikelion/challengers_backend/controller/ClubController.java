@@ -8,8 +8,6 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.JoinRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
-import org.knulikelion.challengers_backend.data.entity.ClubJoin;
-import org.knulikelion.challengers_backend.data.entity.UserClub;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;

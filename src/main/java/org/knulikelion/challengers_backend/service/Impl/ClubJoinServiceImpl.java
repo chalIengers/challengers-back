@@ -10,19 +10,15 @@ import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponse
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
-import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
-import org.knulikelion.challengers_backend.service.Exception.ClubJoinNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
