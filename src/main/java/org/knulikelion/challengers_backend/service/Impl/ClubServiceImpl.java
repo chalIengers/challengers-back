@@ -95,7 +95,7 @@ public class ClubServiceImpl implements ClubService {
                 ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
                 if(!temp.getLogoUrl().isEmpty()) {
                     logoCount++;
-                    clubLogoResponseDto.setLogoUrl(temp.getClubName());
+                    clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
                     clubLogoResponseDtoList.add(clubLogoResponseDto);
                 }
             }
