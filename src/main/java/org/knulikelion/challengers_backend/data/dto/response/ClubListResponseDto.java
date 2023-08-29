@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 @Builder
 public class ClubListResponseDto {
-
+    private Long id;
     private String name;
     private String logo;
 }

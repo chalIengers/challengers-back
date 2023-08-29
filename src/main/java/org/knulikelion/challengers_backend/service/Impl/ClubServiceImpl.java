@@ -229,7 +229,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public List<ClubListResponseDto> findAllClubs(int page, int size) {
         return clubRepository.findAll(PageRequest.of(page,size)).stream()
-                .map(club -> new ClubListResponseDto(club.getClubName(),club.getLogoUrl()))
+                .map(club -> new ClubListResponseDto(club.getId(), club.getClubName(), club.getLogoUrl()))
                 .collect(Collectors.toList());
     }
 }
