@@ -8,5 +8,5 @@ import java.util.List;
 public interface UserClubRepository extends JpaRepository<UserClub,Long> {
     List<UserClub> findAllByClubId(Long clubId);
     UserClub findByUserIdAndClubId(Long userId, Long ClubId);
-    UserClub findByUserId(Long userId);
+    List<UserClub> findByUserId(Long userId);
 }

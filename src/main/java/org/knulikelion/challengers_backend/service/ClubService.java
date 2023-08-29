@@ -5,6 +5,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ClubLogoResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.UserClubResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface ClubService {
     BaseResponseDto updateClub(String userEmail,ClubRequestDto clubRequestDto) throws Exception;
     BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId);
     BaseResponseDto addMember(Long userId, Long clubId);
-    ClubListResponseDto getUsersClub(String email);
+    List<UserClubResponseDto> getUsersClub(String email);
     List<ClubLogoResponseDto> getAllClubLogo();
     List<ClubListResponseDto> findAllClubs(int page, int size);
 }
