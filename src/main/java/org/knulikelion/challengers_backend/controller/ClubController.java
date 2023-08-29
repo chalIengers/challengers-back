@@ -5,8 +5,10 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
+import org.knulikelion.challengers_backend.data.dto.request.JoinRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
+import org.knulikelion.challengers_backend.data.entity.ClubJoin;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
@@ -94,8 +96,17 @@ public class ClubController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ClubJoinResponseDto createJoinRequest(HttpServletRequest request, @RequestParam Long clubId) {
-        return clubJoinService.createJoinRequest(request.getHeader("X-AUTH-TOKEN"), clubId);
+    public ClubJoinResponseDto createJoinRequest(HttpServletRequest request, @RequestBody JoinRequestDto joinRequest) {
+        return clubJoinService.createJoinRequest(request.getHeader("X-AUTH-TOKEN"), joinRequest.getCludId(), joinRequest.getComment());
+    }
+
+    @GetMapping("/join-requests/{requestId}/comment")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<String> getJoinRequestComment(@PathVariable Long requestId) {
+        String comment = clubJoinService.getJoinRequestComment(requestId);
+        return ResponseEntity.ok(comment);
     }
 
     @PostMapping("/accept/join-requests/{clubId}")

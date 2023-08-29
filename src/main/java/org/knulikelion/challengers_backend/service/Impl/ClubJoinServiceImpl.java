@@ -37,14 +37,25 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     private final ClubService clubService;
 
     @Override
-    public ClubJoinResponseDto createJoinRequest(String token, Long clubId) {
+    public ClubJoinResponseDto createJoinRequest(String token, Long clubId,String comment) {
 
         User user = userRepository.findById(userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId()).orElseThrow(UserNotFoundException::new);
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
 
         ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
+        clubJoin.setComments(comment);
         ClubJoin savedClubJoin = clubJoinRepository.save(clubJoin);
         return new ClubJoinResponseDto(savedClubJoin.getId(), userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId(), clubId,JoinRequestStatus.PENDING);
+    }
+
+    @Override
+    public String getJoinRequestComment(Long requestId) {
+        ClubJoin clubJoin = clubJoinRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid request ID:" + requestId));
+        if(clubJoin.getStatus()!=JoinRequestStatus.PENDING) {
+            throw new IllegalArgumentException("The request is not pending");
+        }
+        return clubJoin.getComments();
     }
 
     @Override
