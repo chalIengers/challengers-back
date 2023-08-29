@@ -18,6 +18,6 @@ public interface ClubService {
     BaseResponseDto updateClub(String userEmail,ClubRequestDto clubRequestDto) throws Exception;
     BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId);
     BaseResponseDto addMember(Long userId, Long clubId);
-    List<ClubLogoResponseDto> getAllClubLogo(int page, int size);
+    List<ClubLogoResponseDto> getAllClubLogo();
     List<ClubListResponseDto> findAllClubs(int page, int size);
 }

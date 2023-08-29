@@ -33,10 +33,8 @@ public class ClubController {
     }
 
     @GetMapping("/get/logo/all")
-    public List<ClubLogoResponseDto> getAllClubLogo(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size) {
-        return clubService.getAllClubLogo(page, size);
+    public List<ClubLogoResponseDto> getAllClubLogo() {
+        return clubService.getAllClubLogo();
     }
   
     @GetMapping("/get")

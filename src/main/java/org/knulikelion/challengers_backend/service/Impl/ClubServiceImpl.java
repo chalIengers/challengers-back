@@ -72,16 +72,32 @@ public class ClubServiceImpl implements ClubService {
         }
     }
 
-  @Override
-  public List<ClubLogoResponseDto> getAllClubLogo(int page, int size) {
+    @Override
+    public List<ClubLogoResponseDto> getAllClubLogo() {
         List<ClubLogoResponseDto> clubLogoResponseDtoList = new ArrayList<>();
-        List<Club> club = clubDAO.getAllClub(page,size);
+        List<Club> clubList = clubDAO.getAllClubs();
 
-        for(Club temp : club) {
-            ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
-            if(!temp.getLogoUrl().isEmpty()) {
-                clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
-                clubLogoResponseDtoList.add(clubLogoResponseDto);
+        if (clubList.size() <= 28) {
+            for(Club temp : clubList) {
+                ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
+                if(!temp.getLogoUrl().isEmpty()) {
+                    clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
+                    clubLogoResponseDtoList.add(clubLogoResponseDto);
+                }
+            }
+        } else {
+            Collections.shuffle(clubList);
+
+            int logoCount = 0;
+            for(Club temp : clubList) {
+                if(logoCount >= 28) break;
+
+                ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
+                if(!temp.getLogoUrl().isEmpty()) {
+                    logoCount++;
+                    clubLogoResponseDto.setLogoUrl(temp.getClubName());
+                    clubLogoResponseDtoList.add(clubLogoResponseDto);
+                }
             }
         }
 
