@@ -36,6 +36,14 @@ public class ClubController {
     public List<ClubLogoResponseDto> getAllClubLogo() {
         return clubService.getAllClubLogo();
     }
+
+    @GetMapping("/get/club/my")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ClubListResponseDto getUsersClub(HttpServletRequest request) {
+        return clubService.getUsersClub(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")));
+    }
   
     @GetMapping("/get")
     public Object getClubById(Long id){

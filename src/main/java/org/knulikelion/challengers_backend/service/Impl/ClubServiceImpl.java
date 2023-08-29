@@ -243,6 +243,24 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public ClubListResponseDto getUsersClub(String email) {
+        User user = userRepository.getByEmail(email);
+        UserClub userClub = userClubRepository.findByUserId(user.getId());
+        Club club = clubRepository.getById(userClub.getClub().getId());
+
+        if(club != null) {
+            ClubListResponseDto clubListResponseDto = new ClubListResponseDto();
+            clubListResponseDto.setId(club.getId());
+            clubListResponseDto.setLogo(club.getLogoUrl());
+            clubListResponseDto.setName(club.getClubName());
+
+            return clubListResponseDto;
+        }
+
+        return null;
+    }
+
+    @Override
     public List<ClubListResponseDto> findAllClubs(int page, int size) {
         return clubRepository.findAll(PageRequest.of(page,size)).stream()
                 .map(club -> new ClubListResponseDto(club.getId(), club.getClubName(), club.getLogoUrl()))
