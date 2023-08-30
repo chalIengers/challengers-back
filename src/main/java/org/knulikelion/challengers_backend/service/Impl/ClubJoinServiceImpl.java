@@ -40,14 +40,22 @@ public class ClubJoinServiceImpl implements ClubJoinService {
 
         ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
         clubJoin.setComments(comment);
+
         ClubJoin savedClubJoin = clubJoinRepository.save(clubJoin);
         return new ClubJoinResponseDto(savedClubJoin.getId(), userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId(), clubId,JoinRequestStatus.PENDING);
     }
 
     @Override
-    public String getJoinRequestComment(Long requestId) {
+    public String getJoinRequestComment(Long requestId,String userEmail) {
         ClubJoin clubJoin = clubJoinRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid request ID:" + requestId));
+        User currentUser = userRepository.findByEmail(userEmail);
+        Club club = clubJoin.getClub();
+        User clubManager = club.getClubManager();
+
+        if(clubManager == null || !clubManager.equals(currentUser)) {
+            throw new IllegalArgumentException("Only the club manager can view the comment.");
+        }
         if(clubJoin.getStatus()!=JoinRequestStatus.PENDING) {
             throw new IllegalArgumentException("The request is not pending");
         }

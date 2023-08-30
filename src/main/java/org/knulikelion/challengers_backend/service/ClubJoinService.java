@@ -11,7 +11,7 @@ public interface ClubJoinService {
 
     ClubJoinResponseDto createJoinRequest(String token, Long clubId, String comment);
 
-    String getJoinRequestComment(Long requestId);
+    String getJoinRequestComment(Long requestId,String UserEmail);
 
     BaseResponseDto acceptJoinRequest(Long clubId, String userEmail, String addUserEmail);
 

@@ -102,8 +102,8 @@ public class ClubController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<String> getJoinRequestComment(@PathVariable Long requestId) {
-        String comment = clubJoinService.getJoinRequestComment(requestId);
+    public ResponseEntity<String> getJoinRequestComment(@PathVariable Long requestId, HttpServletRequest request) {
+        String comment = clubJoinService.getJoinRequestComment(requestId,jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")));
         return ResponseEntity.ok(comment);
     }
 
