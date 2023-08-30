@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.MimetypesFileTypeMap;
+
 @RestController
 @RequestMapping("/api/v1/file")
 public class FileUploadController {
@@ -34,9 +36,21 @@ public class FileUploadController {
     })
     public BaseResponseDto uploadToS3(@RequestParam("file") MultipartFile file) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
+
         try {
+            // 이미지 파일인지 검증
+            MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
+            String mimeType = fileTypeMap.getContentType(file.getOriginalFilename());
+
+            if (!mimeType.startsWith("image/")) {
+                baseResponseDto.setSuccess(false);
+                baseResponseDto.setMsg("이미지 파일만 업로드할 수 있습니다.");
+                return baseResponseDto;
+            }
+
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
+
             PutObjectRequest putObjectRequest = new PutObjectRequest(BUCKET_NAME,
                     file.getOriginalFilename(), file.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead);
@@ -46,12 +60,11 @@ public class FileUploadController {
             baseResponseDto.setSuccess(true);
             baseResponseDto.setMsg(amazonS3Client.getUrl(BUCKET_NAME, file.getOriginalFilename()).toString());
 
-            return baseResponseDto;
         } catch (Exception e) {
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-
-            return baseResponseDto;
         }
+
+        return baseResponseDto;
     }
 }
