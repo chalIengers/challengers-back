@@ -5,10 +5,7 @@ import org.knulikelion.challengers_backend.data.dao.ClubDAO;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubLogoResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
@@ -264,6 +261,14 @@ public class ClubServiceImpl implements ClubService {
     public List<ClubListResponseDto> findAllClubs(int page, int size) {
         return clubRepository.findAll(PageRequest.of(page,size)).stream()
                 .map(club -> new ClubListResponseDto(club.getId(), club.getClubName(), club.getLogoUrl()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserClubResponseDto> getMembersByClubId(Long clubId) {
+        List<UserClub> userClubs = userClubRepository.findByClubId(clubId);
+        return userClubs.stream()
+                .map(userClub -> new UserClubResponseDto(userClub.getUser().getUserName(),userClub.getUser().getEmail()))
                 .collect(Collectors.toList());
     }
 }
