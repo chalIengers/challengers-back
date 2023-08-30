@@ -5,14 +5,13 @@ import lombok.*;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Builder
 public class UserClubResponseDto {
+    private Long id;
     private String name;
-    private String email;
-
-    public UserClubResponseDto(String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
+    private String logo;
+    private boolean isManager;
+    private String managerEmail;
 }
