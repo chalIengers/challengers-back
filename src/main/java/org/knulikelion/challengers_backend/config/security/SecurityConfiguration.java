@@ -66,7 +66,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/pending/requests/users/{clubId}").hasRole("USER")
                 .antMatchers("/accept/join-requests/{clubId}").hasRole("USER")
                 .antMatchers("/reject/join-requests/{clubId}").hasRole("USER")
-                .antMatchers("/api/v1/club//join-requests/{requestId}/comment").hasRole("USER") // 추후 관리자 수정. 예정.
+                .antMatchers("/api/v1/club//join-requests/{requestId}/comment").hasRole("USER")
 
 
                 .anyRequest().hasRole("USER")
