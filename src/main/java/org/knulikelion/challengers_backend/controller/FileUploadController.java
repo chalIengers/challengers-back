@@ -48,6 +48,15 @@ public class FileUploadController {
                 return baseResponseDto;
             }
 
+            // 용량 제한 검증 (10MB)
+            long sizeInMb = file.getSize() / (1024 * 1024);
+
+            if(sizeInMb > 10) {
+                baseResponseDto.setSuccess(false);
+                baseResponseDto.setMsg("파일 용량은 10MB를 초과할 수 없습니다.");
+                return baseResponseDto;
+            }
+
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
 
