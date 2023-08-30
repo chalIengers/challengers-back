@@ -94,7 +94,7 @@ public class ClubController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<List<UserClubResponseDto>> getMembersByClub(@PathVariable Long clubId) {
+    public ResponseEntity<List<ClubMemberResponseDto>> getMembersByClub(@PathVariable Long clubId) {
         return ResponseEntity.ok(clubService.getMembersByClubId(clubId));
     }
 
