@@ -3,6 +3,7 @@ package org.knulikelion.challengers_backend.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
+import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
@@ -34,8 +35,8 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public BaseResponseDto removeUser(HttpServletRequest request,@RequestBody String password){
-        return userService.remove1User(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")), password);
+    public BaseResponseDto removeUser(HttpServletRequest request,@RequestBody UserRemoveRequestDto userRemoveRequestDto){
+        return userService.remove1User(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")), userRemoveRequestDto);
     }
     @PutMapping("/update")
     @ApiImplicitParams({
