@@ -39,22 +39,17 @@ public class ProjectCrewDAOImpl implements ProjectCrewDAO {
 
     @Override
     public Map<String, List<ProjectCrewResponseDto>> getCrews(Long projectId) {
-        Optional<ProjectCrew> projectCrew = selectById(projectId);
+       List<ProjectCrew> projectCrews = selectByProjectId(projectId);
 
-        if(!projectCrew.isPresent()) {
+        if(projectCrews.isEmpty()) {
             return Collections.emptyMap();
         }else {
-            ProjectCrew getProjectCrew = projectCrew.get();
-
-            Project project = getProjectCrew.getProject();
-
-            List<ProjectCrewResponseDto> crewsInProject = projectCrewRepository.findAllByProjectId(project.getId())
-                    .stream()
-                    .map(crew -> new ProjectCrewResponseDto(crew))
+            List<ProjectCrewResponseDto> crewsInproject = projectCrews.stream()
+                    .map(ProjectCrewResponseDto::new)
                     .collect(Collectors.toList());
 
-            Map<String, List<ProjectCrewResponseDto>> crewsGroupedByPosition
-                    = crewsInProject.stream().collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
+            Map<String,List<ProjectCrewResponseDto>> crewsGroupedByPosition
+                    = crewsInproject.stream().collect(Collectors.groupingBy(ProjectCrewResponseDto::getPosition));
 
             return crewsGroupedByPosition;
         }
@@ -85,5 +80,10 @@ public class ProjectCrewDAOImpl implements ProjectCrewDAO {
             return updatedProjectCrew;
         }
         return null;
+    }
+
+    @Override
+    public List<ProjectCrew> selectByProjectId(Long projectId) {
+        return projectCrewRepository.findAllByProjectId(projectId);
     }
 }

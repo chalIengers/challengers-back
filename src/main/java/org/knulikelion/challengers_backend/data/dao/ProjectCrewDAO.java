@@ -14,4 +14,5 @@ public interface ProjectCrewDAO {
     void removeCrew(Long crewId);
     Optional<ProjectCrew> selectById(Long crewId);
     ProjectCrew updateCrew(ProjectCrew projectCrew);
+    List<ProjectCrew> selectByProjectId(Long projectId);
 }
