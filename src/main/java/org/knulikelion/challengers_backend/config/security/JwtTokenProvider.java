@@ -109,6 +109,7 @@ public class JwtTokenProvider {
 
     public boolean validateUserAble(String token){
         User user = userRepository.getByEmail(getUserEmail(token));
+        System.out.println("result : "+user.isUseAble());
         return user.isUseAble();
     }
 
@@ -128,6 +129,7 @@ public class JwtTokenProvider {
         log.info("[validateToken] 토큰 유효 체크 시작");
 
         if(!validateUserAble(token)){
+            log.info("[validateToken] 비활성화된 Token");
             return false;
         }
 
