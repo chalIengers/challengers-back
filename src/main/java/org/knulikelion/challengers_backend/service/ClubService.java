@@ -2,10 +2,7 @@ package org.knulikelion.challengers_backend.service;
 
 import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubListResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubLogoResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.UserClubResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
 
 import java.util.List;
@@ -22,4 +19,5 @@ public interface ClubService {
     List<UserClubResponseDto> getUsersClub(String email);
     List<ClubLogoResponseDto> getAllClubLogo();
     List<ClubListResponseDto> findAllClubs(int page, int size);
+    List<ClubMemberResponseDto> getMembersByClubId(Long clubId);
 }
