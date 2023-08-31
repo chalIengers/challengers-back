@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -99,8 +100,10 @@ public class ProjectServiceImpl implements ProjectService {
             projectResponseDto.setProjectLink(projectLinks);
 
 //            프로젝트에 포함된 크루 불러옴
-            List<ProjectCrewResponseDto> projectCrews = projectCrewDAO.getCrew(projectResponseDto.getId());
+            Map<String,List<ProjectCrewResponseDto>> projectCrews = projectCrewDAO.getCrews(projectResponseDto.getId());
             projectResponseDto.setProjectCrew(projectCrews);
+            /*List<ProjectCrewResponseDto> projectCrews = projectCrewDAO.getCrew(projectResponseDto.getId());
+            projectResponseDto.setProjectCrew(projectCrews);*/
 
 //            프로젝트 조회수 증가.
             projectDAO.incrementViewCount(id);
