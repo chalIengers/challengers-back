@@ -3,13 +3,15 @@ package org.knulikelion.challengers_backend.service.Impl;
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.UserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.User;
+import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,8 +22,13 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
-    public UserServiceImpl(UserDAO userDAO) {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    public UserServiceImpl(UserDAO userDAO, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -55,24 +62,33 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public ResultResponseDto removeUser(Long id) {
-        ResultResponseDto resultResponseDto = new ResultResponseDto();
-
-        if(userDAO.selectUserById(id).isEmpty()){
-            resultResponseDto.setCode(1);
-            resultResponseDto.setMsg("유저가 존재하지 않음");
-        }else{
-            userDAO.removeUser(id);
-            resultResponseDto.setCode(0);
-            resultResponseDto.setMsg("유저 삭제");
+    public BaseResponseDto remove1User(String userEmail, String password) {
+        BaseResponseDto baseResponseDto = new BaseResponseDto();
+        User findUser = userRepository.findByEmail(userEmail);
+        if(findUser == null){
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("유저를 찾을 수 없습니다.");
+            return baseResponseDto;
+        }if(passwordEncoder.matches(password, findUser.getPassword())){
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("비밀 번호가 일치하지 않습니다.");
+            return baseResponseDto;
+        } else {
+            findUser.setUseAble(false);
+            User user = userRepository.save(findUser);
+            log.info("[removeUser] 회원 탈퇴 완료 : {}", user);
         }
-        return resultResponseDto;
+        return baseResponseDto;
+    }
+
+    @Override
+    public BaseResponseDto remove2User(String userEmail, String password) {
+        return null;
     }
 
 
     @Override
     public ResultResponseDto updateUser(Long id, UserRequestDto userRequestDto) throws Exception {
-        LocalDateTime currentTime = LocalDateTime.now();
 
         Optional<User> selectedUser = userDAO.selectUserById(id);
 
