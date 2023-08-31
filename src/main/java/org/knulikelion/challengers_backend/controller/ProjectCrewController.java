@@ -18,7 +18,7 @@ public class ProjectCrewController {
         this.projectCrewService = projectCrewService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{crewId}")
     @ApiOperation(value = "crew 조회")
     public Object getCrewById(@PathVariable Long crewId) {
         return projectCrewService.getProjectCrewById(crewId);
