@@ -56,7 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                Club
                 .antMatchers("/api/v1/club/get/logo/all").permitAll()
                 .antMatchers("/api/v1/club/list").permitAll()
-                .antMatchers("/api/v1/club/get").hasRole("USER")
+                .antMatchers("/api/v1/club/get").permitAll()
                 .antMatchers("/api/v1/club/create").hasRole("USER")
                 .antMatchers("/api/v1/club/update").hasRole("USER")
                 .antMatchers("/api/v1/club/remove").hasRole("USER")
