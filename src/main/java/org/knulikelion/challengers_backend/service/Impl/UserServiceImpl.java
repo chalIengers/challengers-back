@@ -2,6 +2,7 @@ package org.knulikelion.challengers_backend.service.Impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
+import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
@@ -62,14 +63,15 @@ public class UserServiceImpl implements UserService {
         }
     }
     @Override
-    public BaseResponseDto remove1User(String userEmail, String password) {
+    public BaseResponseDto remove1User(String userEmail, UserRemoveRequestDto userRemoveRequestDto) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
         User findUser = userRepository.findByEmail(userEmail);
-        if(findUser == null){
+        if (findUser == null) {
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("유저를 찾을 수 없습니다.");
             return baseResponseDto;
-        }if(passwordEncoder.matches(password, findUser.getPassword())){
+        }
+        if (!passwordEncoder.matches(userRemoveRequestDto.getPassword(), findUser.getPassword())) {
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("비밀 번호가 일치하지 않습니다.");
             return baseResponseDto;
@@ -77,8 +79,10 @@ public class UserServiceImpl implements UserService {
             findUser.setUseAble(false);
             User user = userRepository.save(findUser);
             log.info("[removeUser] 회원 탈퇴 완료 : {}", user);
+            baseResponseDto.setSuccess(true);
+            baseResponseDto.setMsg("회원 탈퇴 완료");
+            return baseResponseDto;
         }
-        return baseResponseDto;
     }
 
     @Override
