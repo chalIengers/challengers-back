@@ -68,7 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/reject/join-requests/{clubId}").hasRole("USER")
 
 
-                .anyRequest().hasRole("USER")
+                .anyRequest().permitAll()
                 .and()
                 .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
                 .and()
