@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.knulikelion.challengers_backend.data.entity.User;
+import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,18 +30,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Value("${springboot.jwt.secret}")
     private String secretKey;
     private final long accessTokenValidMillisecond = 1000L * 60 * 60; /*1시간 토큰 유효*/
     private final long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24 * 14; /*2주 토큰 유효*/
-
-    @PostConstruct
-    protected void init(){
-        log.info("[init] JWT TokenProvider 내 secretKey 초기화 시작");
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
-        log.info("[init] JWT TokenProvider 내 secretKey 초기화 완료");
-    }
 
     /*JWT Token Create*/
 
@@ -111,6 +107,12 @@ public class JwtTokenProvider {
         }
     }
 
+    public boolean validateUserAble(String token){
+        User user = userRepository.getByEmail(getUserEmail(token));
+        System.out.println("result : "+user.isUseAble());
+        return user.isUseAble();
+    }
+
 
     /**
      * HTTP Request Header 에 설정된 토큰 값을 가져옴
@@ -125,6 +127,12 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token){ /*JWT 토큰의 유효성 + 만료일 체크*/
         log.info("[validateToken] 토큰 유효 체크 시작");
+
+        if(!validateUserAble(token)){
+            log.info("[validateToken] 비활성화된 Token");
+            return false;
+        }
+
         try{
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             log.info("[validateToken] 토큰 유효 체크 완료");
