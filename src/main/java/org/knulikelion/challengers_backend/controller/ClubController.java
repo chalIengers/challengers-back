@@ -7,7 +7,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.JoinRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
-import org.knulikelion.challengers_backend.data.entity.Club;
+import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/club")
@@ -106,15 +105,6 @@ public class ClubController {
         return clubJoinService.createJoinRequest(request.getHeader("X-AUTH-TOKEN"), joinRequest.getCludId(), joinRequest.getComment());
     }
 
-    @GetMapping("/join-requests/comment/{requestId}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
-    })
-    public ResponseEntity<String> getJoinRequestComment(@PathVariable Long requestId, HttpServletRequest request) {
-        String comment = clubJoinService.getJoinRequestComment(requestId,jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")));
-        return ResponseEntity.ok(comment);
-    }
-
     @PostMapping("/join-requests/accept/{clubId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
@@ -134,11 +124,8 @@ public class ClubController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<List<PendingUserResponseDto>> getPendingUsers(@PathVariable Long clubId) {
-        Club club = clubService.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException("클럽을 찾을 수 없습니다."));
-        List<PendingUserResponseDto> getPendingUsers = clubJoinService.getPendingRequestUser(club);
+    public ResponseEntity<List<PendingUserResponseDto>> getPendingUsers(HttpServletRequest request,@PathVariable Long clubId) {
+        List<PendingUserResponseDto> getPendingUsers = clubJoinService.getPendingRequestUser(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")), clubId);
         return ResponseEntity.ok(getPendingUsers);
     }
-
 }
