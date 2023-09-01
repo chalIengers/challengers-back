@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubJoinResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
@@ -29,20 +28,35 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     private final ClubRepository clubRepository;
     private final ClubJoinRepository clubJoinRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDAO userDAO;
     private final ClubService clubService;
 
     @Override
-    public ClubJoinResponseDto createJoinRequest(String token, Long clubId,String comment) {
+    public BaseResponseDto createJoinRequest(String token, Long clubId, String comment) {
 
-        User user = userRepository.findById(userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId()).orElseThrow(UserNotFoundException::new);
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
+        User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token));
+        if(user == null){
+            throw new UserNotFoundException("User with email not found");
+        }
 
-        ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
-        clubJoin.setComments(comment);
+        ClubJoin checkRequest = clubJoinRepository.findByClubIdAndUserId(clubId, user.getId());
+        if(checkRequest == null) {
 
-        ClubJoin savedClubJoin = clubJoinRepository.save(clubJoin);
-        return new ClubJoinResponseDto(savedClubJoin.getId(), userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId(), clubId,JoinRequestStatus.PENDING);
+            ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
+            clubJoin.setComments(comment);
+
+            clubJoinRepository.save(clubJoin);
+
+            return BaseResponseDto.builder()
+                    .success(true)
+                    .msg("클럽 가입 요청 완료.")
+                    .build();
+        }else{
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("중복된 요청입니다.")
+                    .build();
+        }
     }
 
     @Override
