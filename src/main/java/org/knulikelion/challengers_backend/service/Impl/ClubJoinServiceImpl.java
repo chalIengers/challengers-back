@@ -95,7 +95,7 @@ public class ClubJoinServiceImpl implements ClubJoinService {
 
         if (!club.getClubManager().equals(user)) {
             baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("클럽 멤버 수락 권한이 없습니다.");
+            baseResponseDto.setMsg("클럽 멤버 거절 권한이 없습니다.");
         }else {
             ClubJoin clubJoin = clubJoinRepository.findByClubIdAndUserId(clubId, findUser.getId());
             clubJoin.setClub(null);
