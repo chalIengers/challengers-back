@@ -23,6 +23,9 @@ public class ClubJoin {
     @Column(name = "accepted", nullable = false)
     private boolean accepted = false;
 
+    @Column(name = "comments")
+    private String comments;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

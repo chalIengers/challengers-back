@@ -10,19 +10,15 @@ import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponse
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
-import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
-import org.knulikelion.challengers_backend.service.Exception.ClubJoinNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,14 +33,33 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     private final ClubService clubService;
 
     @Override
-    public ClubJoinResponseDto createJoinRequest(String token, Long clubId) {
+    public ClubJoinResponseDto createJoinRequest(String token, Long clubId,String comment) {
 
         User user = userRepository.findById(userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId()).orElseThrow(UserNotFoundException::new);
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
 
         ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
+        clubJoin.setComments(comment);
+
         ClubJoin savedClubJoin = clubJoinRepository.save(clubJoin);
         return new ClubJoinResponseDto(savedClubJoin.getId(), userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId(), clubId,JoinRequestStatus.PENDING);
+    }
+
+    @Override
+    public String getJoinRequestComment(Long requestId,String userEmail) {
+        ClubJoin clubJoin = clubJoinRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid request ID:" + requestId));
+        User currentUser = userRepository.findByEmail(userEmail);
+        Club club = clubJoin.getClub();
+        User clubManager = club.getClubManager();
+
+        if(clubManager == null || !clubManager.equals(currentUser)) {
+            throw new IllegalArgumentException("Only the club manager can view the comment.");
+        }
+        if(clubJoin.getStatus()!=JoinRequestStatus.PENDING) {
+            throw new IllegalArgumentException("The request is not pending");
+        }
+        return clubJoin.getComments();
     }
 
     @Override

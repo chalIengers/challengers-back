@@ -275,4 +275,12 @@ public class ClubServiceImpl implements ClubService {
                 .map(club -> new ClubListResponseDto(club.getId(), club.getClubName(), club.getLogoUrl()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<ClubMemberResponseDto> getMembersByClubId(Long clubId) {
+        List<UserClub> userClubs = userClubRepository.findByClubId(clubId);
+        return userClubs.stream()
+                .map(userClub -> new ClubMemberResponseDto(userClub.getUser().getUserName(),userClub.getUser().getEmail()))
+                .collect(Collectors.toList());
+    }
 }
