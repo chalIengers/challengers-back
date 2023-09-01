@@ -102,7 +102,7 @@ public class ClubController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ClubJoinResponseDto createJoinRequest(HttpServletRequest request, @RequestBody JoinRequestDto joinRequest) {
+    public BaseResponseDto createJoinRequest(HttpServletRequest request, @RequestBody JoinRequestDto joinRequest) {
         return clubJoinService.createJoinRequest(request.getHeader("X-AUTH-TOKEN"), joinRequest.getCludId(), joinRequest.getComment());
     }
 
