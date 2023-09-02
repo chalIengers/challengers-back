@@ -53,6 +53,7 @@ public class ProjectDAOImpl implements ProjectDAO {
                 MonthlyViews newMonthlyviews = new MonthlyViews();
                 newMonthlyviews.setProject(project);
                 newMonthlyviews.setMonth(currentYearMonth);
+                newMonthlyviews.setViewCount(0);
                 return monthlyViewsRepository.save(newMonthlyviews);
             });
             monthlyViews.setViewCount(monthlyViews.getViewCount() + 1);

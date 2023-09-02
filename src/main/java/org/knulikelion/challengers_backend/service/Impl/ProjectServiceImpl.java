@@ -9,6 +9,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequ
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.MonthlyViewsRepository;
+import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -36,6 +36,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ClubDAO clubDAO;
     private final UserDAO userDAO;
     private final MonthlyViewsRepository monthlyViewsRepository;
+    private final ProjectRepository projectRepository;
 
     @Autowired
     public ProjectServiceImpl(
@@ -46,7 +47,7 @@ public class ProjectServiceImpl implements ProjectService {
             JwtTokenProvider jwtTokenProvider,
             ClubDAO clubDAO,
             UserDAO userDAO,
-            MonthlyViewsRepository monthlyViewsRepository) {
+            MonthlyViewsRepository monthlyViewsRepository, ProjectRepository projectRepository) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
         this.projectLinkDAO = projectLinkDAO;
@@ -55,6 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.clubDAO = clubDAO;
         this.userDAO = userDAO;
         this.monthlyViewsRepository = monthlyViewsRepository;
+        this.projectRepository = projectRepository;
     }
 
     @Override
@@ -141,11 +143,14 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public BaseResponseDto removeProject(Long id) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
+        Optional<Project> projectList = projectRepository.findById(id);
 
-        if (projectDAO.selectProjectById(id).isEmpty()) {
+        if (projectList.isEmpty()) {
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("프로젝트가 존재하지 않음");
         } else {
+            Project project = projectList.get();
+
 //            프로젝트에 포함된 기술 스텍 모두 삭제
             logger.info("[Log] 포함된 기술 스텍 전체 삭제");
             projectTechStackDAO.removeTechStack(id);
@@ -157,6 +162,22 @@ public class ProjectServiceImpl implements ProjectService {
 //            프로젝트에 포함된 크루 모두 삭제
             logger.info("[Log] 포함된 크루 전체 삭제");
             projectCrewDAO.removeCrew(id);
+
+            logger.info("[Log] MonthlyViews 삭제");
+            if (monthlyViewsRepository.findByProject(project) != null) {
+                MonthlyViews monthlyViews = monthlyViewsRepository.findByProject(project);
+                monthlyViewsRepository.delete(monthlyViews);
+            }
+
+            if(project.getUser()!=null) {
+                logger.info("[Log] 프로젝트 생성자 삭제");
+                project.setUser(null);
+            }
+
+            if(project.getClub()!=null) {
+                logger.info("[Log] 소속 클럽 삭제");
+                project.setClub(null);
+            }
 
 //            프로젝트 삭제
             logger.info("[Log] 포함된 프로젝트 삭제");
@@ -241,6 +262,12 @@ public class ProjectServiceImpl implements ProjectService {
                 projectTechStackDAO.createTechStack(projectTechStack);
                 logger.info("[Log] 새로운 프로젝트 기술 스텍 생성됨:" + projectTechStackRequestDto.getName());
             }
+//            프로젝트 월간 조회수 생성
+            MonthlyViews monthlyView = new MonthlyViews();
+            monthlyView.setMonth(YearMonth.now());
+            monthlyView.setProject(createdProject);
+            monthlyView.setViewCount(0);
+            monthlyViewsRepository.save(monthlyView);
 
 //            프로젝트 생성 프로세스 완료
             BaseResponseDto baseResponseDto = BaseResponseDto.builder()

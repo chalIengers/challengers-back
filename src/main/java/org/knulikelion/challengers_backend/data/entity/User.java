@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +38,10 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false,unique = true)
     private String email; /*서비스 내에서 사용할 uid*/
+
+    @Column
+    @ColumnDefault("true")
+    private boolean useAble;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

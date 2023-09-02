@@ -3,9 +3,7 @@ package org.knulikelion.challengers_backend.service.Impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
-import org.knulikelion.challengers_backend.data.dao.UserDAO;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubJoinResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
@@ -14,6 +12,7 @@ import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
+import org.knulikelion.challengers_backend.service.Exception.UnauthorizedException;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -29,37 +28,35 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     private final ClubRepository clubRepository;
     private final ClubJoinRepository clubJoinRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDAO userDAO;
     private final ClubService clubService;
 
     @Override
-    public ClubJoinResponseDto createJoinRequest(String token, Long clubId,String comment) {
+    public BaseResponseDto createJoinRequest(String token, Long clubId, String comment) {
 
-        User user = userRepository.findById(userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId()).orElseThrow(UserNotFoundException::new);
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
-
-        ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
-        clubJoin.setComments(comment);
-
-        ClubJoin savedClubJoin = clubJoinRepository.save(clubJoin);
-        return new ClubJoinResponseDto(savedClubJoin.getId(), userDAO.getByEmail(jwtTokenProvider.getUserEmail(token)).getId(), clubId,JoinRequestStatus.PENDING);
-    }
-
-    @Override
-    public String getJoinRequestComment(Long requestId,String userEmail) {
-        ClubJoin clubJoin = clubJoinRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid request ID:" + requestId));
-        User currentUser = userRepository.findByEmail(userEmail);
-        Club club = clubJoin.getClub();
-        User clubManager = club.getClubManager();
-
-        if(clubManager == null || !clubManager.equals(currentUser)) {
-            throw new IllegalArgumentException("Only the club manager can view the comment.");
+        User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token));
+        if (user == null) {
+            throw new UserNotFoundException("User with email not found");
         }
-        if(clubJoin.getStatus()!=JoinRequestStatus.PENDING) {
-            throw new IllegalArgumentException("The request is not pending");
+
+        ClubJoin checkRequest = clubJoinRepository.findByClubIdAndUserId(clubId, user.getId());
+        if (checkRequest == null) {
+
+            ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
+            clubJoin.setComments(comment);
+
+            clubJoinRepository.save(clubJoin);
+
+            return BaseResponseDto.builder()
+                    .success(true)
+                    .msg("클럽 가입 요청 완료.")
+                    .build();
+        } else {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("중복된 요청입니다.")
+                    .build();
         }
-        return clubJoin.getComments();
     }
 
     @Override
@@ -68,10 +65,10 @@ public class ClubJoinServiceImpl implements ClubJoinService {
         Club club = clubRepository.getById(clubId);
         BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-        if (!club.getClubManager().equals(user)){
+        if (!club.getClubManager().equals(user)) {
             baseResponseDto.setSuccess(false);
             baseResponseDto.setMsg("클럽 멤버 수락 권한이 없습니다.");
-        }else {
+        } else {
             User findUser = userRepository.getByEmail(addUserEmail);
             ClubJoin clubJoin = clubJoinRepository.findByClubIdAndUserId(clubId, findUser.getId());
             clubJoin.setClub(null);
@@ -95,8 +92,8 @@ public class ClubJoinServiceImpl implements ClubJoinService {
 
         if (!club.getClubManager().equals(user)) {
             baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("클럽 멤버 수락 권한이 없습니다.");
-        }else {
+            baseResponseDto.setMsg("클럽 멤버 거절 권한이 없습니다.");
+        } else {
             ClubJoin clubJoin = clubJoinRepository.findByClubIdAndUserId(clubId, findUser.getId());
             clubJoin.setClub(null);
             clubJoin.setUser(null);
@@ -108,18 +105,29 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     }
 
     @Override
-    public List<PendingUserResponseDto> getPendingRequestUser(Club club) {
+    public List<PendingUserResponseDto> getPendingRequestUser(String userEmail, Long clubId) {
 
-        List<ClubJoin> clubJoins = club.getClubJoins();
-        List<PendingUserResponseDto> pendingUsers = new ArrayList<>();
-
-        for(ClubJoin clubJoin : clubJoins) {
-            if(clubJoin.getStatus() == JoinRequestStatus.PENDING) {
-                User user = clubJoin.getUser();
-                PendingUserResponseDto pendingUser = new PendingUserResponseDto(user.getId(),user.getUserName(), user.getEmail());
-                pendingUsers.add(pendingUser);
-            }
+        User user = userRepository.findByEmail(userEmail);
+        if(user == null){
+            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
         }
-        return pendingUsers;
+
+        Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
+
+        if(club.getClubManager().equals(user)) {
+            List<ClubJoin> clubJoins = club.getClubJoins();
+            List<PendingUserResponseDto> pendingUsers = new ArrayList<>();
+
+            for (ClubJoin clubJoin : clubJoins) {
+                if (clubJoin.getStatus() == JoinRequestStatus.PENDING) {
+                    User findUser = clubJoin.getUser();
+                    PendingUserResponseDto pendingUser = new PendingUserResponseDto(findUser.getUserName(), findUser.getEmail(), clubJoin.getComments());
+                    pendingUsers.add(pendingUser);
+                }
+            }
+            return pendingUsers;
+        }else{
+            throw new UnauthorizedException("클럽 매니저 권한이 없습니다.");
+        }
     }
 }

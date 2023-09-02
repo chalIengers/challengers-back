@@ -1,10 +1,16 @@
 package org.knulikelion.challengers_backend.data.repository;
 
+import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.Project;
+import org.knulikelion.challengers_backend.data.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Page<Project> findAll(Pageable pageable);
+    List<Project> findAllByUser(User user);
+    List<Project> findAllByClubAndUser(Club club,User user);
 }
