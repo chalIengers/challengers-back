@@ -238,6 +238,12 @@ public class ProjectServiceImpl implements ProjectService {
                 projectTechStackDAO.createTechStack(projectTechStack);
                 logger.info("[Log] 새로운 프로젝트 기술 스텍 생성됨:" + projectTechStackRequestDto.getName());
             }
+//            프로젝트 월간 조회수 생성
+            MonthlyViews monthlyView = new MonthlyViews();
+            monthlyView.setMonth(YearMonth.now());
+            monthlyView.setProject(createdProject);
+            monthlyView.setViewCount(0);
+            monthlyViewsRepository.save(monthlyView);
 
 //            프로젝트 생성 프로세스 완료
             BaseResponseDto baseResponseDto = BaseResponseDto.builder()
