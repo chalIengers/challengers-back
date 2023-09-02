@@ -13,6 +13,8 @@ import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubService;
+import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
+import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -107,27 +109,35 @@ public class ClubServiceImpl implements ClubService {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
 
         if(clubDAO.selectClubById(id).isEmpty()){
-            baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("클럽이 존재하지 않음");
+            throw new ClubNotFoundException("해당 클럽이 존재하지 않습니다.");
         }else{
+//            클럽 매니저 삭제
+            Club club = clubDAO.selectClubById(id).get();
+            club.setClubManager(null);
+
 //            UserClub 매핑 값 삭제
             List<UserClub> selectedMapping = userClubRepository.findAllByClubId(id);
-            for (UserClub userClub : selectedMapping) {
-                userClub.setUser(null);
-                userClub.setClub(null);
-                userClubRepository.delete(userClub);
+            if(!selectedMapping.isEmpty()) {
+                for (UserClub userClub : selectedMapping) {
+                    userClub.setUser(null);
+                    userClub.setClub(null);
+                    userClubRepository.delete(userClub);
+                }
             }
 //            클럽 삭제
             clubRepository.deleteById(id);
         }
         baseResponseDto.setSuccess(true);
-        baseResponseDto.setMsg("클럽 삭제 됨");
+        baseResponseDto.setMsg("클럽이 정상적으로 삭제 되었습니다.");
         return baseResponseDto;
     }
 
     @Override
     public BaseResponseDto createClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
-        User user = userRepository.getByEmail(userEmail);
+        User user = userRepository.findByEmail(userEmail);
+        if(user == null){
+            throw new UserNotFoundException("해당 유저를 찾을 수 없습니다.");
+        }
 
         Club club = new Club();
         club.setClubName(clubCreateRequestDto.getClubName());
@@ -139,14 +149,15 @@ public class ClubServiceImpl implements ClubService {
         club.setCreatedAt(LocalDateTime.now());
         club.setUpdatedAt(LocalDateTime.now());
 
-        clubDAO.createClub(club);
+        Club createdClub = clubDAO.createClub(club);
 
-        BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+        // 클럽 생성자 멤버 추가
+        addMember(user.getId(), createdClub.getId());
+
+        return BaseResponseDto.builder()
                 .success(true)
                 .msg("클럽 생성이 완료되었습니다.")
                 .build();
-
-        return baseResponseDto;
     }
 
     @Override
@@ -223,18 +234,22 @@ public class ClubServiceImpl implements ClubService {
         User user = userRepository.getById(userId);
         BaseResponseDto baseResponseDto = new BaseResponseDto();
         if (user.getId()==null){
-            baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("해당 유저 없음");
-        }else{
-            Club club = clubRepository.getById(clubId);
+            throw new UserNotFoundException("해당 유저를 찾을 수 없습니다.");
+        }else {
+            Optional<Club> club = clubRepository.findById(clubId);
 
-            UserClub userClub = new UserClub();
-            userClub.setClub(club);
-            userClub.setUser(user);
-            userClubRepository.save(userClub);
+            if (club.isEmpty()) {
+                throw new ClubNotFoundException("해당 클럽을 찾을 수 없습니다.");
+            } else {
 
-            baseResponseDto.setSuccess(true);
-            baseResponseDto.setMsg("성공적으로 클럽 멤버를 추가하였습니다.");
+                UserClub userClub = new UserClub();
+                userClub.setClub(club.get());
+                userClub.setUser(user);
+                userClubRepository.save(userClub);
+
+                baseResponseDto.setSuccess(true);
+                baseResponseDto.setMsg("성공적으로 클럽 멤버를 추가하였습니다.");
+            }
         }
         return baseResponseDto;
     }

@@ -16,4 +16,5 @@ public interface MonthlyViewsRepository extends JpaRepository<MonthlyViews, Long
     Optional<MonthlyViews> findByProjectAndMonth(Project project, YearMonth month);
 
     Page<MonthlyViews> findByMonthOrderByViewCountDesc(YearMonth month, Pageable pageable);
+    MonthlyViews findByProject(Project project);
 }
