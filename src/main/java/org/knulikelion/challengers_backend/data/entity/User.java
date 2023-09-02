@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "clubs")
 @Builder
 @Entity
 @Table(name = "user")

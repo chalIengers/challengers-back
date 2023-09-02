@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "user")
 @Builder
 public class UserClub {
     @Id
@@ -15,15 +15,10 @@ public class UserClub {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",nullable = true)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "club_id",nullable = true)
+    @JoinColumn(name = "club_id")
     private Club club;
-
-    public UserClub(User user, Club club) {
-        this.user = user;
-        this.club = club;
-    }
 }
