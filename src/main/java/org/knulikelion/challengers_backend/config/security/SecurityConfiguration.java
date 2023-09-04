@@ -71,6 +71,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 //                Admin
                 .antMatchers("/api/v1/admin/sign").permitAll()
+                .antMatchers("/api/v1/admin/set").permitAll()
                 .antMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
 
