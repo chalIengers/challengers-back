@@ -36,8 +36,10 @@ public class ProjectController {
     @GetMapping("/get/all")
     public Page<AllProjectResponseDto> getAllProjects(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
-        return projectService.getAllProjects(page, size);
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "ALL") String categories,
+            @RequestParam(defaultValue = "NEW") String sort) {
+        return projectService.getAllProject(page, size, categories, sort);
     }
 
     @DeleteMapping("/remove")
