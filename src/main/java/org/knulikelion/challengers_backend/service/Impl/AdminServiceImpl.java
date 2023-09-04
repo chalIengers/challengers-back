@@ -4,6 +4,7 @@ import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.AssignAdministratorRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.NoticeRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
+import org.knulikelion.challengers_backend.data.dto.request.UpdateNoticeRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.NoticeResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignResponseDto;
@@ -14,10 +15,10 @@ import org.knulikelion.challengers_backend.data.repository.AdminNoticeRepository
 import org.knulikelion.challengers_backend.data.repository.ExtraUserMappingRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.AdminService;
-import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,7 +146,6 @@ public class AdminServiceImpl implements AdminService {
 
         for(AdminNotice adminNotice : adminNoticeList) {
             ExtraUserMapping extraUserMapping = extraUserMappingRepository.getByUserId(adminNotice.getUser().getId());
-//            throw new UserNotFoundException("")
 
             noticeResponseDtoList.add(NoticeResponseDto.builder()
                             .title(adminNotice.getTitle())
@@ -176,6 +176,54 @@ public class AdminServiceImpl implements AdminService {
                 .uploadedUserRole(extraUserMapping.getRole())
                 .createdAt(notice.getCreatedAt().toString())
                 .updatedAt(notice.getUpdatedAt().toString())
+                .build();
+    }
+
+    @Override
+    public BaseResponseDto deleteNoti(Long id) {
+        AdminNotice notice = adminNoticeRepository.getById(id);
+        adminNoticeRepository.delete(notice);
+
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("공지사항 삭제가 완료되었습니다.")
+                .build();
+    }
+
+    @Override
+    public BaseResponseDto updateNoti(UpdateNoticeRequestDto updateNoticeRequestDto, String email) {
+        AdminNotice notice = adminNoticeRepository.getById(updateNoticeRequestDto.getId());
+
+        if(notice == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("해당 공지사항을 찾을 수 없습니다.")
+                    .build();
+        }
+
+        if(updateNoticeRequestDto.getContent() == null && updateNoticeRequestDto.getTitle() == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("수정 사항을 입력하지 않았습니다.")
+                    .build();
+        }
+
+        if(userRepository.getByEmail(email).getId() != notice.getUser().getId()) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("해당 공지사항 작성자가 아닙니다.")
+                    .build();
+        }
+
+        notice.setTitle(updateNoticeRequestDto.getTitle());
+        notice.setContent(updateNoticeRequestDto.getContent());
+        notice.setUpdatedAt(LocalDateTime.now());
+
+        adminNoticeRepository.save(notice);
+
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("공지사항 업데이트가 완료되었습니다.")
                 .build();
     }
 }
