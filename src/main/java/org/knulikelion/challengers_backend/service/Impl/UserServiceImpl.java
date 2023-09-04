@@ -116,12 +116,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseResponseDto remove2User(String userEmail, String password) {
-        return null;
-    }
-
-
-    @Override
     public ResultResponseDto updateUser(Long id, UserRequestDto userRequestDto) throws Exception {
 
         Optional<User> selectedUser = userDAO.selectUserById(id);
