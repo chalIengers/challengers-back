@@ -2,11 +2,14 @@ package org.knulikelion.challengers_backend.service.Impl;
 
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.AssignAdministratorRequestDto;
+import org.knulikelion.challengers_backend.data.dto.request.NoticeRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignResponseDto;
+import org.knulikelion.challengers_backend.data.entity.AdminNotice;
 import org.knulikelion.challengers_backend.data.entity.ExtraUserMapping;
 import org.knulikelion.challengers_backend.data.entity.User;
+import org.knulikelion.challengers_backend.data.repository.AdminNoticeRepository;
 import org.knulikelion.challengers_backend.data.repository.ExtraUserMappingRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.AdminService;
@@ -19,12 +22,18 @@ public class AdminServiceImpl implements AdminService {
     private final ExtraUserMappingRepository extraUserMappingRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AdminNoticeRepository adminNoticeRepository;
 
-    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, ExtraUserMappingRepository extraUserMappingRepository) {
+    public AdminServiceImpl(UserRepository userRepository,
+                            PasswordEncoder passwordEncoder,
+                            JwtTokenProvider jwtTokenProvider,
+                            ExtraUserMappingRepository extraUserMappingRepository,
+                            AdminNoticeRepository adminNoticeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.extraUserMappingRepository = extraUserMappingRepository;
+        this.adminNoticeRepository = adminNoticeRepository;
     }
 
     @Override
@@ -90,5 +99,47 @@ public class AdminServiceImpl implements AdminService {
                 .success(true)
                 .msg("관리자 권한 추가가 완료되었습니다.")
                 .build();
+    }
+
+    @Override
+    public BaseResponseDto postNoti(NoticeRequestDto noticeRequestDto, String email) {
+        User user = userRepository.getByEmail(email);
+
+        if(user == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("해당 사용자를 찾을 수 없습니다.")
+                    .build();
+        }
+
+        if(noticeRequestDto.getTitle() == null && noticeRequestDto.getContent() == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("제목 또는 공지사항에 빈 내용이 입력되었습니다.")
+                    .build();
+        }
+
+        AdminNotice adminNotice = AdminNotice.builder()
+                .user(user)
+                .title(noticeRequestDto.getTitle())
+                .content(noticeRequestDto.getContent())
+                .build();
+
+        adminNoticeRepository.save(adminNotice);
+
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("공지사항 등록이 완료되었습니다.")
+                .build();
+    }
+
+    @Override
+    public String getAllNoti() {
+        return null;
+    }
+
+    @Override
+    public String getNotiDetail(Long id) {
+        return null;
     }
 }
