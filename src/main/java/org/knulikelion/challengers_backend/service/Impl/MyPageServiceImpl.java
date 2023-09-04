@@ -47,7 +47,7 @@ public class MyPageServiceImpl implements MyPageService {
                              ProjectRepository projectRepository,
                              ProjectService projectService,
                              EmailVerificationRepository emailVerificationRepository,
-                            MailService mailService,) {
+                            MailService mailService) {
         this.userRepository = userRepository;
         this.userClubRepository = userClubRepository;
         this.passwordEncoder = passwordEncoder;
