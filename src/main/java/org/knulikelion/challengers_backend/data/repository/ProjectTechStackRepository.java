@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ProjectTechStackRepository extends JpaRepository<ProjectTechStack, Long> {
     List<ProjectTechStack> findAllByProjectId(Long projectId);
+    List<ProjectTechStack> findAll();
 }
