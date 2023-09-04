@@ -13,6 +13,7 @@ import org.knulikelion.challengers_backend.service.AdminService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -44,7 +45,10 @@ public class AdminController {
     }
 
     @GetMapping(value = "/notice/all")
-    public String getAllNoti() {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public List<NoticeResponseDto> getAllNoti() {
         return adminService.getAllNoti();
     }
 

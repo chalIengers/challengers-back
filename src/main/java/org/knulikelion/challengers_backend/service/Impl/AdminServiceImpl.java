@@ -14,8 +14,12 @@ import org.knulikelion.challengers_backend.data.repository.AdminNoticeRepository
 import org.knulikelion.challengers_backend.data.repository.ExtraUserMappingRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.AdminService;
+import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -135,8 +139,27 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public String getAllNoti() {
-        return null;
+    public List<NoticeResponseDto> getAllNoti() {
+        List<AdminNotice> adminNoticeList = adminNoticeRepository.findAll();
+        List<NoticeResponseDto> noticeResponseDtoList = new ArrayList<>();
+
+        for(AdminNotice adminNotice : adminNoticeList) {
+            ExtraUserMapping extraUserMapping = extraUserMappingRepository.getByUserId(adminNotice.getUser().getId());
+//            throw new UserNotFoundException("")
+
+            noticeResponseDtoList.add(NoticeResponseDto.builder()
+                            .title(adminNotice.getTitle())
+                            .content(adminNotice.getContent())
+                            .uploadedUserName(extraUserMapping.getUser().getUserName())
+                            .uploadedUserRole(extraUserMapping.getRole())
+                            .uploadedUserProfileUrl(extraUserMapping.getProfileUrl())
+                            .updatedAt(adminNotice.getUpdatedAt().toString())
+                            .createdAt(adminNotice.getCreatedAt().toString())
+                            .id(adminNotice.getId())
+                    .build());
+        }
+
+        return noticeResponseDtoList;
     }
 
     @Override
