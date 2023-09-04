@@ -54,6 +54,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/user/remove").hasRole("USER")
                 .antMatchers("/api/v1/user/update").hasRole("USER")
 
+//                MyPage
+                .antMatchers("/api/v1/mypage/**").hasRole("USER")
+
 //                Club
                 .antMatchers("/api/v1/club/get/logo/all").permitAll()
                 .antMatchers("/api/v1/club/list").permitAll()
