@@ -77,43 +77,6 @@ public class UserServiceImpl implements UserService {
             return userResponseDto;
         }
     }
-    @Override
-    public BaseResponseDto remove1User(String userEmail, UserRemoveRequestDto userRemoveRequestDto) {
-        BaseResponseDto baseResponseDto = new BaseResponseDto();
-        User findUser = userRepository.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
-        if (!passwordEncoder.matches(userRemoveRequestDto.getPassword(), findUser.getPassword())) {
-            baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("비밀 번호가 일치하지 않습니다.");
-            return baseResponseDto;
-        } else {
-            // 프로젝트 생성자라면 프로젝트 삭제
-            List<Project> projectList = projectRepository.findAllByUser(findUser);
-            if(!projectList.isEmpty()){
-                for(Project temp : projectList){
-                    projectService.removeProject(temp.getId());
-                }
-            }
-
-            // 클럽 생성자라면 클럽 삭제
-            List<Club> clubList = clubRepository.findAllByClubManager(findUser);
-            if(!clubList.isEmpty()){
-                for(Club temp : clubList){
-                    clubService.removeClub(temp.getId());
-                }
-            }
-            // 유저 계정 비활성화
-            findUser.setUseAble(false);
-
-            User user = userRepository.save(findUser);
-            log.info("[removeUser] 회원 탈퇴 완료 : {}", user);
-            baseResponseDto.setSuccess(true);
-            baseResponseDto.setMsg("회원 탈퇴 완료");
-            return baseResponseDto;
-        }
-    }
 
     @Override
     public ResultResponseDto updateUser(Long id, UserRequestDto userRequestDto) throws Exception {
