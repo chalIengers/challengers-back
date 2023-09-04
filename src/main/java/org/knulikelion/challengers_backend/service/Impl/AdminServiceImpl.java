@@ -5,6 +5,7 @@ import org.knulikelion.challengers_backend.data.dto.request.AssignAdministratorR
 import org.knulikelion.challengers_backend.data.dto.request.NoticeRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.NoticeResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignResponseDto;
 import org.knulikelion.challengers_backend.data.entity.AdminNotice;
 import org.knulikelion.challengers_backend.data.entity.ExtraUserMapping;
@@ -139,7 +140,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public String getNotiDetail(Long id) {
-        return null;
+    public NoticeResponseDto getNotiDetail(Long id) {
+        AdminNotice notice = adminNoticeRepository.getById(id);
+        ExtraUserMapping extraUserMapping = extraUserMappingRepository.getByUserId(notice.getUser().getId());
+
+        return NoticeResponseDto.builder()
+                .id(notice.getId())
+                .title(notice.getTitle())
+                .content(notice.getContent())
+                .uploadedUserName(notice.getUser().getUserName())
+                .uploadedUserProfileUrl(extraUserMapping.getProfileUrl())
+                .uploadedUserRole(extraUserMapping.getRole())
+                .createdAt(notice.getCreatedAt().toString())
+                .updatedAt(notice.getUpdatedAt().toString())
+                .build();
     }
 }

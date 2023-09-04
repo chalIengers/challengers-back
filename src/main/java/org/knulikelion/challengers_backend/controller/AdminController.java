@@ -7,6 +7,7 @@ import org.knulikelion.challengers_backend.data.dto.request.AssignAdministratorR
 import org.knulikelion.challengers_backend.data.dto.request.NoticeRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.NoticeResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignResponseDto;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,10 @@ public class AdminController {
     }
 
     @GetMapping(value = "/notice/get")
-    public String getNotiDetail() {
-        return null;
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public NoticeResponseDto getNotiDetail(Long id) {
+        return adminService.getNotiDetail(id);
     }
 }
