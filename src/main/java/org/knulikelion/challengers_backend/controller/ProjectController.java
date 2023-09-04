@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.ProjectTechStackResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Project;
+import org.knulikelion.challengers_backend.data.entity.ProjectTechStack;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -74,5 +76,11 @@ public class ProjectController {
         YearMonth yearMonth = YearMonth.of(year,month);
         Pageable pageable= PageRequest.of(page,size);
         return projectService.getProjectsInMonth(yearMonth,pageable);
+    }
+
+    @GetMapping("/tech-stacks")
+    public ResponseEntity<List<ProjectTechStackResponseDto>> getAllProjectTechStacks() {
+        List<ProjectTechStackResponseDto> techStacks = projectService.getProjectTechStacks();
+        return ResponseEntity.ok(techStacks);
     }
 }
