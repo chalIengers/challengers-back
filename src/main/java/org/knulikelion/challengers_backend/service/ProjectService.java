@@ -14,6 +14,9 @@ import java.util.List;
 
 public interface ProjectService {
     Object getProjectById(Long id);
+
+    Page<AllProjectResponseDto> getAllProject(int page, int size, String categories, String sort);
+
     Page<AllProjectResponseDto> getAllProjects(int page, int size);
     BaseResponseDto removeProject(Long id);
     BaseResponseDto createProject(ProjectRequestDto projectRequestDto, String token);
