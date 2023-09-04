@@ -10,6 +10,7 @@ import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.MonthlyViewsRepository;
 import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
+import org.knulikelion.challengers_backend.data.repository.ProjectTechStackRepository;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -37,6 +39,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserDAO userDAO;
     private final MonthlyViewsRepository monthlyViewsRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectTechStackRepository projectTechStackRepository;
 
     @Autowired
     public ProjectServiceImpl(
@@ -47,7 +50,7 @@ public class ProjectServiceImpl implements ProjectService {
             JwtTokenProvider jwtTokenProvider,
             ClubDAO clubDAO,
             UserDAO userDAO,
-            MonthlyViewsRepository monthlyViewsRepository, ProjectRepository projectRepository) {
+            MonthlyViewsRepository monthlyViewsRepository, ProjectRepository projectRepository, ProjectTechStackRepository projectTechStackRepository) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
         this.projectLinkDAO = projectLinkDAO;
@@ -57,6 +60,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.userDAO = userDAO;
         this.monthlyViewsRepository = monthlyViewsRepository;
         this.projectRepository = projectRepository;
+        this.projectTechStackRepository = projectTechStackRepository;
     }
 
     @Override
@@ -388,5 +392,13 @@ public class ProjectServiceImpl implements ProjectService {
             }
             return allProjectResponseDto;
         });
+    }
+
+    @Override
+    public List<ProjectTechStackResponseDto> getProjectTechStacks() {
+        List<ProjectTechStack> techStacks = projectTechStackRepository.findAll();
+        return techStacks.stream()
+                .map(ProjectTechStackResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
