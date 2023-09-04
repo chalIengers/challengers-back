@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -119,29 +121,79 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-
     @Override
-    public Page<AllProjectResponseDto> getAllProjects(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Project> projects = projectDAO.getAllProjects(pageable);
+    public Page<AllProjectResponseDto> getAllProject(int page, int size, String categories, String sort) {
+        String category = getCategory(categories);
+        String sortValue = sort.toUpperCase();
+        Page<Project> projects;
 
-        return projects.map(temp -> {
-            AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
-            allProjectResponseDto.setId(temp.getId());
-            allProjectResponseDto.setProjectName(temp.getProjectName());
-            allProjectResponseDto.setProjectDescription(temp.getProjectDescription());
-            allProjectResponseDto.setImageUrl(temp.getImageUrl());
-            allProjectResponseDto.setProjectCategory(temp.getProjectCategory());
-
-            if (temp.getClub() != null) {
-                allProjectResponseDto.setBelongedClubName(temp.getClub().getClubName());
+        if (sortValue.equals("POPULAR")) {
+            Page<MonthlyViews> monthlyViews;
+            if (!category.equals("ALL")) {
+                Specification<MonthlyViews> spec = (root, query, cb) -> cb.equal(root.get("project").get("projectCategory"), category);
+                monthlyViews = monthlyViewsRepository.findAll(spec,
+                        PageRequest.of(page, size,
+                                Sort.by(Sort.Direction.DESC,"viewCount")));
+                return monthlyViews.map(monthlyView -> mapToAllProjectResponseDto(monthlyView.getProject()));
             } else {
-                logger.info("[Log] 클럽이 존재하지 않음");
-                allProjectResponseDto.setBelongedClubName(null);
+                monthlyViews = monthlyViewsRepository.findAll(
+                        PageRequest.of(page,size,
+                                Sort.by(Sort.Direction.DESC,"viewCount")));
+                return monthlyViews.map(monthlyView -> mapToAllProjectResponseDto(monthlyView.getProject()));
             }
 
-            return allProjectResponseDto;
-        });
+        } else {
+            if (!category.equals("ALL")) {
+                Specification<Project> spec = (root, query, cb) -> cb.equal(root.get("projectCategory"), category);
+                projects = projectRepository.findAll(spec,
+                        PageRequest.of(page,size,
+                                Sort.by(Sort.Direction.DESC,"createdAt")));
+            } else {
+                projects = projectRepository.findAll(
+                        PageRequest.of(page,size,
+                                Sort.by(Sort.Direction.DESC,"createdAt")));
+            }
+
+            return projects.map(this::mapToAllProjectResponseDto);
+        }
+    }
+
+    private AllProjectResponseDto mapToAllProjectResponseDto(Project temp) {
+        AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
+
+        allProjectResponseDto.setId(temp.getId());
+        allProjectResponseDto.setProjectName(temp.getProjectName());
+        allProjectResponseDto.setProjectDescription(temp.getProjectDescription());
+        allProjectResponseDto.setImageUrl(temp.getImageUrl());
+        allProjectResponseDto.setProjectCategory(temp.getProjectCategory());
+
+        if (temp.getClub() != null) {
+            allProjectResponseDto.setBelongedClubName(temp.getClub().getClubName());
+        } else {
+            logger.info("[Log] 클럽이 존재하지 않음");
+            allProjectResponseDto.setBelongedClubName(null);
+        }
+
+        return allProjectResponseDto;
+    }
+
+    private String getCategory(String categories) {
+        if (categories == null || categories.trim().isEmpty()) {
+            return "ALL";
+        }
+
+        switch (categories.toUpperCase()) {
+            case "WEB":
+                return "웹 서비스";
+            case "APP":
+                return "앱 서비스";
+            case "ETC":
+                return "기타 서비스";
+            case "ALL":
+                return "ALL";
+            default:
+                throw new IllegalArgumentException("잘못된 분류 값입니다: "+ categories);
+        }
     }
 
     @Override

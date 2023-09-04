@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordWithCodeRequestDto;
+import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.MyPageResponseDto;
 import org.knulikelion.challengers_backend.service.MyPageService;
@@ -32,6 +33,7 @@ public class MyPageController {
         return ResponseEntity.ok(myPageService.getInfo(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN"))));
     }
 
+
     @PostMapping("/change-Password")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
@@ -54,5 +56,15 @@ public class MyPageController {
     })
     public ResponseEntity<Boolean> verifyPassword(HttpServletRequest request,String password){
         return ResponseEntity.ok(myPageService.checkPassword(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),password));
+      
+    @DeleteMapping("/unregister")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> unRegister(HttpServletRequest request, @RequestBody UserRemoveRequestDto userRemoveRequestDto) {
+        return ResponseEntity.ok(myPageService.unRegister(
+                jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),
+                userRemoveRequestDto
+        ));
     }
 }
