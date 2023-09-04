@@ -1,6 +1,8 @@
 package org.knulikelion.challengers_backend.controller;
 
+import org.knulikelion.challengers_backend.data.dto.request.AssignAdministratorRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignResponseDto;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,5 +22,10 @@ public class AdminController {
     @PostMapping(value = "/sign")
     public SignResponseDto signIn(@RequestBody SignInRequestDto signInRequestDto) throws RuntimeException {
         return adminService.signIn(signInRequestDto);
+    }
+
+    @PostMapping(value = "/set")
+    public BaseResponseDto assignAdministrator(@RequestBody AssignAdministratorRequestDto assignAdministratorRequestDto) {
+        return adminService.assignAdministrator(assignAdministratorRequestDto);
     }
 }
