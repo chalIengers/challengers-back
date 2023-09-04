@@ -197,11 +197,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Page<AllProjectResponseDto> getAllProjects(int page, int size) {
-        return null;
-    }
-
-    @Override
     public BaseResponseDto removeProject(Long id) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
         Optional<Project> projectList = projectRepository.findById(id);
