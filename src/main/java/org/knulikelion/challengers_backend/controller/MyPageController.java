@@ -3,12 +3,12 @@ package org.knulikelion.challengers_backend.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
+import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.MyPageResponseDto;
 import org.knulikelion.challengers_backend.service.MyPageService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,5 +29,16 @@ public class MyPageController {
     })
     public ResponseEntity<MyPageResponseDto> getInfo(HttpServletRequest request) {
         return ResponseEntity.ok(myPageService.getInfo(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN"))));
+    }
+
+    @DeleteMapping("/unregister")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> unRegister(HttpServletRequest request, @RequestBody UserRemoveRequestDto userRemoveRequestDto) {
+        return ResponseEntity.ok(myPageService.unRegister(
+                jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),
+                userRemoveRequestDto
+        ));
     }
 }
