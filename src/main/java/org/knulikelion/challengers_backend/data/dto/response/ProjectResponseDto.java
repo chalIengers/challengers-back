@@ -17,7 +17,7 @@ public class ProjectResponseDto {
     private String projectDescription;
     private String projectDetail;
     private String imageUrl;
-    private Integer projectStatus;
+    private String projectStatus;
     private String ProjectPeriod;
     private List<ProjectTechStackResponseDto> projectTechStack;
     private List<ProjectLinkResponseDto> projectLink;
