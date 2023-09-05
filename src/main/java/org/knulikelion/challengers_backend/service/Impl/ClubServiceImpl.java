@@ -15,7 +15,9 @@ import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -285,10 +287,9 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public List<ClubListResponseDto> findAllClubs(int page, int size) {
-        return clubRepository.findAll(PageRequest.of(page,size)).stream()
-                .map(club -> new ClubListResponseDto(club.getId(), club.getClubName(), club.getLogoUrl()))
-                .collect(Collectors.toList());
+    public Page<ClubListResponseDto> findAllClubs(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        return clubRepository.findAll(pageable).map(club -> new ClubListResponseDto(club.getId(),club.getClubName(),club.getLogoUrl()));
     }
 
     @Override
