@@ -2,10 +2,8 @@ package org.knulikelion.challengers_backend.service;
 
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.AllProjectTechStacksResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.ProjectTechStackResponseDto;
-import org.knulikelion.challengers_backend.data.entity.Project;
-import org.knulikelion.challengers_backend.data.entity.ProjectTechStack;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,5 +17,5 @@ public interface ProjectService {
     BaseResponseDto createProject(ProjectRequestDto projectRequestDto, String token);
     BaseResponseDto updateProject(Long id, ProjectRequestDto projectRequestDto, String token);
     Page<AllProjectResponseDto> getProjectsInMonth(YearMonth yearMonth, Pageable pageable);
-    List<ProjectTechStackResponseDto> getProjectTechStacks();
+    List<AllProjectTechStacksResponseDto> getProjectTechStacks();
 }

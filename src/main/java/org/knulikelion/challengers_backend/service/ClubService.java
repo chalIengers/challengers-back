@@ -4,6 +4,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,6 @@ public interface ClubService {
     BaseResponseDto addMember(Long userId, Long clubId);
     List<UserClubResponseDto> getUsersClub(String email);
     List<ClubLogoResponseDto> getAllClubLogo();
-    List<ClubListResponseDto> findAllClubs(int page, int size);
+    Page<ClubListResponseDto> findAllClubs(int page, int size);
     List<ClubMemberResponseDto> getMembersByClubId(Long clubId);
 }

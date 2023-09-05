@@ -10,6 +10,7 @@ import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,9 +83,9 @@ public class ClubController {
 
     @GetMapping("/list")
     @ResponseBody
-    public List<ClubListResponseDto> findAllClubs(
+    public Page<ClubListResponseDto> findAllClubs(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size) {
+            @RequestParam(defaultValue = "11") int size) {
         return clubService.findAllClubs(page,size);
     }
 

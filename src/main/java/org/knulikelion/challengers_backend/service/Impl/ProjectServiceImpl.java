@@ -465,10 +465,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectTechStackResponseDto> getProjectTechStacks() {
+    public List<AllProjectTechStacksResponseDto> getProjectTechStacks() {
         List<ProjectTechStack> techStacks = projectTechStackRepository.findAll();
         return techStacks.stream()
-                .map(ProjectTechStackResponseDto::new)
+                .map(tech -> new AllProjectTechStacksResponseDto(tech.getTechStackName()))
                 .collect(Collectors.toList());
     }
 }
