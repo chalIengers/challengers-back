@@ -2,6 +2,7 @@ package org.knulikelion.challengers_backend.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,7 +33,8 @@ public class Project extends BaseEntity{
     private String projectDetail;
 
     @Column(nullable = false)
-    private Integer projectStatus;
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus status = ProjectStatus.MAINTENCE;
 
     @Column(nullable = false)
     private String projectPeriod;
