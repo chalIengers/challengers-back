@@ -23,7 +23,7 @@ public class ClubJoin {
     @Column(name = "accepted", nullable = false)
     private boolean accepted = false;
 
-    @Column(name = "comments")
+    @Column(columnDefinition = "LONGTEXT")
     private String comments;
 
     @ManyToOne
