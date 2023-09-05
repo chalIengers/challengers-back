@@ -8,6 +8,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.data.repository.MonthlyViewsRepository;
 import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
 import org.knulikelion.challengers_backend.data.repository.ProjectTechStackRepository;
@@ -84,7 +85,17 @@ public class ProjectServiceImpl implements ProjectService {
             projectResponseDto.setProjectDescription(selectedProject.getProjectDescription());
             projectResponseDto.setProjectDetail(selectedProject.getProjectDetail());
             projectResponseDto.setImageUrl(selectedProject.getImageUrl());
-            projectResponseDto.setProjectStatus(selectedProject.getProjectStatus());
+
+            if(selectedProject.getStatus() == ProjectStatus.ACTIVE) {
+                projectResponseDto.setProjectStatus("활성");
+            } else if(selectedProject.getStatus() == ProjectStatus.INACTIVE) {
+                projectResponseDto.setProjectStatus("종료");
+            } else if(selectedProject.getStatus() == ProjectStatus.MAINTENCE) {
+                projectResponseDto.setProjectStatus("점검");
+            } else {
+                projectResponseDto.setProjectStatus("점검");
+            }
+
             projectResponseDto.setProjectPeriod(selectedProject.getProjectPeriod());
             projectResponseDto.setProjectCategory(selectedProject.getProjectCategory());
             projectResponseDto.setCreatedAt(String.valueOf(selectedProject.getCreatedAt()));
@@ -266,7 +277,14 @@ public class ProjectServiceImpl implements ProjectService {
             project.setImageUrl(projectRequestDto.getImageUrl());
             project.setProjectDescription(projectRequestDto.getProjectDescription());
             project.setProjectDetail(projectRequestDto.getProjectDetail());
-            project.setProjectStatus(projectRequestDto.getProjectStatus());
+
+//            프로젝트 상태 설정
+            if(projectRequestDto.getStatus() == null) {
+                project.setStatus(ProjectStatus.MAINTENCE);
+            } else {
+                project.setStatus(projectRequestDto.getStatus());
+            }
+
             project.setProjectPeriod(projectRequestDto.getProjectPeriod());
             project.setProjectCategory(projectRequestDto.getProjectCategory());
             project.setCreatedAt(LocalDateTime.now());
@@ -354,7 +372,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setImageUrl(projectRequestDto.getImageUrl());
         project.setProjectDescription(projectRequestDto.getProjectDescription());
         project.setProjectDetail(projectRequestDto.getProjectDetail());
-        project.setProjectStatus(projectRequestDto.getProjectStatus());
+        project.setStatus(projectRequestDto.getStatus());
         project.setProjectPeriod(projectRequestDto.getProjectPeriod());
         project.setProjectCategory(projectRequestDto.getProjectCategory());
 //        최종 수정일 업데이트
