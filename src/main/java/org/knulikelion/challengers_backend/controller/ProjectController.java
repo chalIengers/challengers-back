@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.AllProjectResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.AllProjectTechStacksResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ProjectTechStackResponseDto;
 import org.knulikelion.challengers_backend.service.ProjectService;
@@ -78,8 +79,8 @@ public class ProjectController {
     }
 
     @GetMapping("/tech-stacks")
-    public ResponseEntity<List<ProjectTechStackResponseDto>> getAllProjectTechStacks() {
-        List<ProjectTechStackResponseDto> techStacks = projectService.getProjectTechStacks();
+    public ResponseEntity<List<AllProjectTechStacksResponseDto>> getAllProjectTechStacks() {
+        List<AllProjectTechStacksResponseDto> techStacks = projectService.getProjectTechStacks();
         return ResponseEntity.ok(techStacks);
     }
 }
