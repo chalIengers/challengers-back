@@ -74,6 +74,31 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public ClubResponseDto getClubDetailById(Long id) {
+        if (clubDAO.selectClubById(id).isEmpty()){
+            throw new RuntimeException("클럽이 존재하지 않음");
+
+        } else{
+            Club selectedClub = clubDAO.selectClubById(id).get();
+            ClubResponseDto clubResponseDto = new ClubResponseDto();
+            clubResponseDto.setId(selectedClub.getId());
+            clubResponseDto.setClubName(selectedClub.getClubName());
+            clubResponseDto.setLogoUrl(selectedClub.getLogoUrl());
+            clubResponseDto.setClubDescription(selectedClub.getClubDescription());
+            clubResponseDto.setClubForm(selectedClub.getClubForm());
+            clubResponseDto.setClubApproved(selectedClub.getClubApproved());
+            clubResponseDto.setCreatedAt(String.valueOf(selectedClub.getCreatedAt()));
+            clubResponseDto.setUpdatedAt(String.valueOf(selectedClub.getUpdatedAt()));
+            if(!clubDAO.getUsersByClubId(id).isEmpty()){
+                clubResponseDto.setClubMembers(clubDAO.getUsersByClubId(id));
+            }else{
+                clubResponseDto.setClubMembers(null);
+            }
+            return clubResponseDto;
+        }
+    }
+
+    @Override
     public List<ClubLogoResponseDto> getAllClubLogo() {
         List<ClubLogoResponseDto> clubLogoResponseDtoList = new ArrayList<>();
         List<Club> clubList = clubDAO.getAllClubs();
