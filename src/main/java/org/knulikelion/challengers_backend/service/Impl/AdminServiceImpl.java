@@ -1,20 +1,22 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
-import org.knulikelion.challengers_backend.data.dto.request.AssignAdministratorRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.NoticeRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.UpdateNoticeRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.NoticeResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.SignResponseDto;
+import org.knulikelion.challengers_backend.data.dto.request.*;
+import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.AdminNotice;
+import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.ExtraUserMapping;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.repository.AdminNoticeRepository;
+import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.ExtraUserMappingRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.AdminService;
+import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,16 +30,19 @@ public class AdminServiceImpl implements AdminService {
     private final ExtraUserMappingRepository extraUserMappingRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ClubRepository clubRepository;
     private final AdminNoticeRepository adminNoticeRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
                             JwtTokenProvider jwtTokenProvider,
+                            ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
                             AdminNoticeRepository adminNoticeRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.clubRepository = clubRepository;
         this.extraUserMappingRepository = extraUserMappingRepository;
         this.adminNoticeRepository = adminNoticeRepository;
     }
@@ -225,5 +230,129 @@ public class AdminServiceImpl implements AdminService {
                 .success(true)
                 .msg("공지사항 업데이트가 완료되었습니다.")
                 .build();
+    }
+
+    @Override
+    public BaseResponseDto changeName(String email, String name) {
+        User user = userRepository.getByEmail(email);
+
+        if(user == null) {
+            throw new UserNotFoundException("사용자를 찾을 수 없음");
+        }
+
+        if(user.getUserName().equals(name)) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("현재 이름과 일치합니다.")
+                    .build();
+        }
+
+        user.setUserName(name);
+
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("이름 변경이 완료되었습니다.")
+                .build();
+    }
+
+    @Override
+    public BaseResponseDto changeProfile(String email, String url) {
+        User user = userRepository.getByEmail(email);
+        ExtraUserMapping extraUserMapping = extraUserMappingRepository.getByUserId(user.getId());
+
+        if(user == null) {
+            throw new UserNotFoundException("사용자를 찾을 수 없음");
+        }
+
+        extraUserMapping.setProfileUrl(url);
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("프로필 사진 변경이 완료되었습니다.")
+                .build();
+    }
+
+    @Override
+    public BaseResponseDto changePw(ChangePasswordRequestDto changePasswordRequestDto, String email) {
+        User user = userRepository.getByEmail(email);
+
+        if(user == null) {
+            throw new UserNotFoundException("사용자를 찾을 수 없음");
+        }
+
+        if(!passwordEncoder.matches(changePasswordRequestDto.getUserPw(), user.getPassword())) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("사용자의 비밀번호가 일치하지 않습니다.")
+                    .build();
+        }
+
+        if(!passwordEncoder.matches(changePasswordRequestDto.getChangePw(), user.getPassword())) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("현재 비밀번호와 일치합니다.")
+                    .build();
+        }
+
+        user.setPassword(passwordEncoder.encode(changePasswordRequestDto.getChangePw()));
+        userRepository.save(user);
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("비밀번호 변경이 완료되었습니다.")
+                .build();
+    }
+
+    @Override
+    public BaseResponseDto changeRole(String role, String email) {
+        User user = userRepository.getByEmail(email);
+        ExtraUserMapping extraUserMapping = extraUserMappingRepository.getByUserId(user.getId());
+
+        if(user == null) {
+            throw new UserNotFoundException("사용자를 찾을 수 없음");
+        }
+
+        if(role.equals(extraUserMapping.getRole())) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("역할이 변경되지 않았습니다.")
+                    .build();
+        }
+
+        extraUserMapping.setRole(role);
+        extraUserMappingRepository.save(extraUserMapping);
+
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("역할 변경이 완료되었습니다.")
+                .build();
+    }
+
+    @Override
+    public Page<AdminClubResponseDto> getAllClubs(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt"));
+        Page<Club> clubPage = clubRepository.findAll(pageRequest);
+
+        List<AdminClubResponseDto> adminClubResponseDtoList = new ArrayList<>();
+
+        for (Club temp : clubPage.getContent()) {
+            if(temp.getClubManager() == null) {
+                adminClubResponseDtoList.add(
+                        AdminClubResponseDto.builder()
+                                .id(temp.getId())
+                                .clubName(temp.getClubName())
+                                .masterName(null)
+                                .masterEmail(null)
+                                .build());
+            } else {
+                adminClubResponseDtoList.add(
+                        AdminClubResponseDto.builder()
+                                .id(temp.getId())
+                                .clubName(temp.getClubName())
+                                .masterName(temp.getClubManager().getUserName())
+                                .masterEmail(temp.getClubManager().getEmail())
+                                .build());
+            }
+        }
+
+        return new PageImpl<>(adminClubResponseDtoList, pageRequest, clubPage.getTotalElements());
     }
 }

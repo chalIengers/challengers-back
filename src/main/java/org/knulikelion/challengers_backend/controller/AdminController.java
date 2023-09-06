@@ -3,14 +3,11 @@ package org.knulikelion.challengers_backend.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
-import org.knulikelion.challengers_backend.data.dto.request.AssignAdministratorRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.NoticeRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.SignInRequestDto;
-import org.knulikelion.challengers_backend.data.dto.request.UpdateNoticeRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.NoticeResponseDto;
-import org.knulikelion.challengers_backend.data.dto.response.SignResponseDto;
+import org.knulikelion.challengers_backend.data.dto.request.*;
+import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.service.AdminService;
+import org.knulikelion.challengers_backend.service.ClubService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +19,12 @@ import java.util.List;
 @RequestMapping("/api/v1/admin")
 public class AdminController {
     private final AdminService adminService;
+    private final ClubService clubService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AdminController(AdminService adminService, JwtTokenProvider jwtTokenProvider) {
+    public AdminController(AdminService adminService, ClubService clubService, JwtTokenProvider jwtTokenProvider) {
         this.adminService = adminService;
+        this.clubService = clubService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -77,5 +76,69 @@ public class AdminController {
     })
     public ResponseEntity<BaseResponseDto> updateNoti(@RequestBody UpdateNoticeRequestDto updateNoticeRequestDto, HttpServletRequest request) {
         return ResponseEntity.ok(adminService.updateNoti(updateNoticeRequestDto, jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN"))));
+    }
+
+    @PostMapping(value = "/setting/password")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> changePw(@RequestBody ChangePasswordRequestDto changePasswordRequestDto,
+                                                    HttpServletRequest request) {
+        return ResponseEntity.ok(adminService.changePw(
+                changePasswordRequestDto,
+                jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN"))
+        ));
+    }
+
+    @PostMapping(value = "/setting/role")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> changeRole(String role, HttpServletRequest request) {
+        return ResponseEntity.ok(adminService.changeRole(
+                role,
+                jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN"))
+        ));
+    }
+
+    @PostMapping(value = "/setting/name")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> changeName(HttpServletRequest request, String name) {
+        return ResponseEntity.ok(adminService.changeName(
+                jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),
+                name
+        ));
+    }
+
+    @PostMapping(value = "/setting/profile")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> changeProfileUrl(HttpServletRequest request, String url) {
+        return ResponseEntity.ok(adminService.changeProfile(
+                jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),
+                url
+        ));
+    }
+
+    @GetMapping(value = "/club/all")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Page<AdminClubResponseDto>> getAllClub(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(adminService.getAllClubs(page, size));
+    }
+
+    @GetMapping(value = "/club/get")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<ClubResponseDto> getClubDetail(Long id) {
+        return ResponseEntity.ok(clubService.getClubDetailById(id));
     }
 }
