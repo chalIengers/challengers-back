@@ -468,7 +468,9 @@ public class ProjectServiceImpl implements ProjectService {
     public List<AllProjectTechStacksResponseDto> getProjectTechStacks() {
         List<ProjectTechStack> techStacks = projectTechStackRepository.findAll();
         return techStacks.stream()
-                .map(tech -> new AllProjectTechStacksResponseDto(tech.getTechStackName()))
+                .map(tech -> tech.getTechStackName())
+                .distinct()
+                .map(AllProjectTechStacksResponseDto::new)
                 .collect(Collectors.toList());
     }
 }
