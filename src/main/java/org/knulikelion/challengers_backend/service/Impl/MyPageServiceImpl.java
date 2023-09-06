@@ -220,10 +220,9 @@ public class MyPageServiceImpl implements MyPageService {
 
 //        본인이 운영하고 있는 클럽이 존재하는지 체크
         if(!clubList.isEmpty()) {
-            return BaseResponseDto.builder()
-                    .success(false)
-                    .msg("운영 중인 클럽이 존재합니다.")
-                    .build();
+            for (Club temp : clubList) {
+                clubRepository.deleteById(temp.getId());
+            }
         }
 
 //        관리자 권한을 가진 사용자인지 체크
