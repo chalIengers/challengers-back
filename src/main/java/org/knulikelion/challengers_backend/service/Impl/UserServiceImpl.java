@@ -2,23 +2,13 @@ package org.knulikelion.challengers_backend.service.Impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dao.UserDAO;
-import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.UserRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.UserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.Club;
-import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.data.entity.User;
-import org.knulikelion.challengers_backend.data.repository.ClubRepository;
-import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
-import org.knulikelion.challengers_backend.data.repository.UserRepository;
-import org.knulikelion.challengers_backend.service.ClubService;
-import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
-import org.knulikelion.challengers_backend.service.ProjectService;
 import org.knulikelion.challengers_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,22 +19,10 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final ClubRepository clubRepository;
-    private final ProjectRepository projectRepository;
-    private final ClubService clubService;
-    private final ProjectService projectService;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO, UserRepository userRepository, PasswordEncoder passwordEncoder, ClubRepository clubRepository, ProjectRepository projectRepository, ClubService clubService, ProjectService projectService) {
+    public UserServiceImpl(UserDAO userDAO) {
         this.userDAO = userDAO;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.clubRepository = clubRepository;
-        this.projectRepository = projectRepository;
-        this.clubService = clubService;
-        this.projectService = projectService;
     }
 
     @Override
