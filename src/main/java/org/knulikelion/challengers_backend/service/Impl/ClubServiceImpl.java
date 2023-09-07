@@ -285,9 +285,16 @@ public class ClubServiceImpl implements ClubService {
 
             if (club.isEmpty()) {
                 throw new ClubNotFoundException("해당 클럽을 찾을 수 없습니다.");
-            } else {
+            }
+            UserClub findUserClub = userClubRepository.findByUserIdAndClubId(userId,clubId);
+
+            if(findUserClub != null){
+                baseResponseDto.setSuccess(false);
+                baseResponseDto.setMsg("이미 가입된 유저 입니다.");
+            }else {
 
                 UserClub userClub = new UserClub();
+
                 userClub.setClub(club.get());
                 userClub.setUser(user);
                 userClubRepository.save(userClub);
