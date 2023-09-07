@@ -164,7 +164,7 @@ public class ProjectServiceImpl implements ProjectService {
                     .map(monthlyView -> mapToAllProjectResponseDto(monthlyView.getProject()))
                     .collect(Collectors.toList());
 
-        } else if(sortValue.equals("RECOMMAND")) {
+        } else if(sortValue.equals("RECOMMEND")) {
             Specification<Project> spec = (root , query , cb)->{
                 List<Predicate > predicates= new ArrayList<>();
 
