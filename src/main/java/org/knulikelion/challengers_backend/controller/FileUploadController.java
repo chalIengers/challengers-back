@@ -9,14 +9,13 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.apache.tika.Tika;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.util.UUID;
 
 @RestController
@@ -40,12 +39,12 @@ public class FileUploadController {
 
         try {
             // 이미지 파일인지 검증
-            MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
-            String mimeType = fileTypeMap.getContentType(file.getOriginalFilename());
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file.getBytes());
 
-            if (!mimeType.startsWith("image/")) {
+            if (!(mimeType.equals("image/gif") || mimeType.equals("image/jpeg") || mimeType.equals("image/png") || mimeType.equals("image/bmp"))) {
                 baseResponseDto.setSuccess(false);
-                baseResponseDto.setMsg("이미지 파일만 업로드할 수 있습니다.");
+                baseResponseDto.setMsg("GIF, JPEG, PNG 또는 BMP 이미지 파일만 업로드할 수 있습니다.");
                 return baseResponseDto;
             }
 
@@ -58,6 +57,7 @@ public class FileUploadController {
                 return baseResponseDto;
             }
 
+            // Generate unique name for the file using UUID
             String originalFileName = file.getOriginalFilename();
             String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
             String newFileName = UUID.randomUUID().toString() + extension;
@@ -72,7 +72,7 @@ public class FileUploadController {
             amazonS3Client.putObject(putObjectRequest);
 
             baseResponseDto.setSuccess(true);
-            baseResponseDto.setMsg(amazonS3Client.getUrl(BUCKET_NAME, newFileName).toString());
+            baseResponseDto.setMsg(amazonS3Client.getUrl(BUCKET_NAME,newFileName).toString());
 
         } catch (Exception e) {
             e.printStackTrace();
