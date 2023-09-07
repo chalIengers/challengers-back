@@ -23,7 +23,7 @@ public class Project extends BaseEntity{
     @Column(nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String projectName;
 
     @Column(nullable = false)
