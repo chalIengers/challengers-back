@@ -136,81 +136,106 @@ public class ProjectServiceImpl implements ProjectService {
     public Page<AllProjectResponseDto> getAllProject(int page, int size, String categories, String sort, List<String> techStacks) {
         String category = getCategory(categories);
         String sortValue = sort.toUpperCase();
-        Page<Project> projects;
+        List<AllProjectResponseDto> allProjects;
 
         if (sortValue.equals("POPULAR")) {
-            Page<MonthlyViews> monthlyViews;
-            if (!category.equals("ALL") || !techStacks.isEmpty()) {
-                Specification<MonthlyViews> spec = (root, query, cb) -> {
-                    List<Predicate> predicates = new ArrayList<>();
-                    if (!category.equals("ALL")) {
-                        predicates.add(cb.equal(root.get("project").get("projectCategory"), category));
+            Specification<MonthlyViews> spec = (root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                if (!category.equals("ALL")) {
+                    predicates.add(cb.equal(root.get("project").get("projectCategory"), category));
+                }
+
+                if(!techStacks.isEmpty()) {
+                    List<Predicate> techPredicates= new ArrayList<>();
+                    Join<Project, ProjectTechStack> techJoin = root.join("project").join("techStacks");
+                    for (String tech : techStacks) {
+                        techPredicates.add(cb.equal(techJoin.get("techStackName"), tech));
                     }
+                    predicates.add(cb.or(techPredicates.toArray(new Predicate[0])));
+                }
 
-                    if (!techStacks.isEmpty()) {
-                        Join<Project, ProjectTechStack> techJoin = root.join("project").join("techStacks");
-                        for (String tech : techStacks) {
-                            predicates.add(cb.equal(techJoin.get("techStackName"), tech));
-                        }
-                    }
+                query.distinct(true);
 
-                    return cb.and(predicates.toArray(new Predicate[0]));
-                };
-                monthlyViews = monthlyViewsRepository.findAll(spec,
-                        PageRequest.of(page, size,
-                                Sort.by(Sort.Direction.DESC,"viewCount")));
-            } else {
-                monthlyViews = monthlyViewsRepository.findAll(
-                        PageRequest.of(page,size,
-                                Sort.by(Sort.Direction.DESC,"viewCount")));
-            }
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
+            List<MonthlyViews> monthlyViewsList = monthlyViewsRepository.findAll(spec);
 
-            return monthlyViews.getContent().stream()
+            allProjects = monthlyViewsList.stream()
                     .map(monthlyView -> mapToAllProjectResponseDto(monthlyView.getProject()))
-                    .distinct()
-                    .collect(Collectors.collectingAndThen(Collectors.toList(),
-                            list -> new PageImpl<>(list, monthlyViews.getPageable(), list.size())));
+                    .collect(Collectors.toList());
+
+        } else if(sortValue.equals("RECOMMAND")) {
+            Specification<Project> spec = (root , query , cb)->{
+                List<Predicate > predicates= new ArrayList<>();
+
+                if(!category.equals( "ALL" )){
+                    predicates.add(cb.equal(root.get( "projectCategory" ),category));
+                }
+
+                if(!techStacks.isEmpty()) {
+                    Predicate[] techPredicates = new Predicate[techStacks.size()];
+                    int i = 0;
+
+                    for(String tech : techStacks){
+                        Join<Project , ProjectTechStack > techJoin= root.join( "techStacks" );
+                        techPredicates[i++] = cb.equal(techJoin.get( "techStackName" ), tech);
+                    }
+
+                    predicates.add(cb.or(techPredicates));
+                }
+
+                query.distinct(true);
+
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
+
+            Sort sortParam = Sort.by(Sort.Direction.DESC, "updateCount");
+            List<Project> projectsList= projectRepository.findAll(spec, sortParam);
+
+            allProjects = projectsList.stream()
+                    .map(this::mapToAllProjectResponseDto)
+                    .collect(Collectors.toList());
 
         } else {
 
-            if (!category.equals("ALL") || !techStacks.isEmpty()) {
-                Specification<Project> spec = (root, query, cb) ->{
-                    List<Predicate> predicates = new ArrayList<>();
+            Specification<Project> spec = (root , query , cb)->{
+                List<Predicate > predicates= new ArrayList<>();
 
-                    if (!category.equals("ALL")) {
-                        predicates.add(cb.equal(root.get("projectCategory"), category));
+                if(!category.equals( "ALL" )){
+                    predicates.add(cb.equal(root.get( "projectCategory" ),category));
+                }
+
+                if(!techStacks.isEmpty()) {
+                    List<Predicate> techPredicates= new ArrayList<>();
+                    for(String tech : techStacks){
+                        Join<Project , ProjectTechStack > techJoin= root.join( "techStacks" );
+                        techPredicates.add(cb.equal(techJoin.get( "techStackName" ), tech));
                     }
+                    predicates.add(cb.or(techPredicates.toArray(new Predicate[0])));
+                }
 
+                query.distinct(true);
 
-                    if(!techStacks.isEmpty()) {
-                        Predicate[] techPredicates= new Predicate[techStacks.size()];
-                        int i=0;
-                        for(String tech : techStacks){
-                            Join<Project , ProjectTechStack > techJoin= root.join( "techStacks" );
-                            techPredicates[i++]=cb.equal(techJoin.get( "techStackName" ), tech);
-                        }
-                        predicates.add(cb.or(techPredicates));
-                    }
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
 
-                    return cb.and(predicates.toArray(new Predicate[0]));
-                };
+            List<Project> projectsList= projectRepository.findAll(spec);
 
-                projects= projectRepository.findAll(spec,
-                        PageRequest.of(page,size,
-                                Sort.by(Sort.Direction.DESC,"createdAt")));
-            } else {
-
-                projects= projectRepository.findAll(
-                        PageRequest.of(page,size,
-                                Sort.by(Sort.Direction.DESC,"createdAt")));
-
-            }
-            return projects.getContent().stream()
+            allProjects = projectsList.stream()
                     .map(this::mapToAllProjectResponseDto)
-                    .distinct()
-                    .collect(Collectors.collectingAndThen(Collectors.toList(),
-                            list -> new PageImpl<>(list, projects.getPageable(), list.size())));
+                    .collect(Collectors.toList());
         }
+
+        if (page < 0) {
+            throw new IllegalArgumentException("Page index must not be less than zero.");
+        }
+
+        int start = Math.min(page * size, allProjects.size());
+        int end = Math.min(start + size, allProjects.size());
+
+        return new PageImpl<>(allProjects.subList(start, end),
+                PageRequest.of(page,size),
+                allProjects.size());
     }
 
     private AllProjectResponseDto mapToAllProjectResponseDto(Project temp) {
