@@ -361,7 +361,7 @@ public class ClubServiceImpl implements ClubService {
         }else{
             return ResponseEntity.ok(BaseResponseDto.builder()
                     .success(true)
-                    .msg(user.getUserName()+"님의 "+clubCreateRequestDto.getClubName()+" 클럽은 생성 가능합니다!")
+                    .msg(user.getUserName())
                     .build());
         }
     }
