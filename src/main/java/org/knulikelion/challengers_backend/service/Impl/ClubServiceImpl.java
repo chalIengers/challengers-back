@@ -355,7 +355,7 @@ public class ClubServiceImpl implements ClubService {
         if(club != null){
             return new ResponseEntity<>(BaseResponseDto.builder()
                     .success(false)
-                    .msg("중복된 클럽 클럽이름입니다!")
+                    .msg("중복된 클럽이름입니다!")
                     .build(),
                     HttpStatus.BAD_REQUEST);
         }else{
