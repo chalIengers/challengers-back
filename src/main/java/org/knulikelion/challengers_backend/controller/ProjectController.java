@@ -37,22 +37,19 @@ public class ProjectController {
     }
 
     @GetMapping("/get/all")
-    public ResponseEntity<Page<AllProjectResponseDto>> getAllProject(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) String categories,
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) List<String> techStacks
-    ){
-        // If techStacks is null, initialize it as an empty list
-        if (techStacks == null) {
-            techStacks = new ArrayList<>();
+    public ResponseEntity<Page<AllProjectResponseDto>> getAllProjects(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "ALL") String categories,
+            @RequestParam(required = false) List<String> techStack,
+            @RequestParam(defaultValue = "NEW") String sort) {
+        if (techStack == null) {
+            techStack = new ArrayList<>();
         }
 
-        Page<AllProjectResponseDto> result = projectService.getAllProject(page, size, categories, sort, techStacks);
-        return new ResponseEntity<>(result , HttpStatus.OK);
+        Page<AllProjectResponseDto> result = projectService.getAllProject(page, size, categories, sort, techStack);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
 
     @DeleteMapping("/remove")
     @ApiImplicitParams({
