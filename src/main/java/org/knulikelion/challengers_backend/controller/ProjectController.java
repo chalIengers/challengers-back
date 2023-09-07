@@ -39,8 +39,9 @@ public class ProjectController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "ALL") String categories,
+            @RequestParam(required = false) List<String> techStack,
             @RequestParam(defaultValue = "NEW") String sort) {
-        return projectService.getAllProject(page, size, categories, sort);
+        return projectService.getAllProject(page, size, categories, sort, techStack);
     }
 
     @DeleteMapping("/remove")
