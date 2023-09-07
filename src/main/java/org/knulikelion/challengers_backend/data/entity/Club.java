@@ -17,7 +17,7 @@ public class Club extends BaseEntity {
     @Column(name = "club_id")
     private Long id;
 
-    @Column(nullable = false, name = "club_name")
+    @Column(nullable = false, name = "club_name",unique = true)
     private String clubName;
 
     @Column(name = "logo_url")

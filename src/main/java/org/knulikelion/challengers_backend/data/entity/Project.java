@@ -5,7 +5,6 @@ import lombok.*;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -41,6 +40,9 @@ public class Project extends BaseEntity{
 
     @Column(nullable = false)
     private String projectCategory;
+
+    @Column(nullable = true)
+    private int updateCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
