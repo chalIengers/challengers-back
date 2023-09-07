@@ -147,9 +147,11 @@ public class ProjectServiceImpl implements ProjectService {
                         predicates.add(cb.equal(root.get("project").get("projectCategory"), category));
                     }
 
-                    Join<Project, ProjectTechStack> techJoin = root.join("project").join("techStacks");
-                    for (String tech : techStacks) {
-                        predicates.add(cb.equal(techJoin.get("techStackName"), tech));
+                    if (!techStacks.isEmpty()) {
+                        Join<Project, ProjectTechStack> techJoin = root.join("project").join("techStacks");
+                        for (String tech : techStacks) {
+                            predicates.add(cb.equal(techJoin.get("techStackName"), tech));
+                        }
                     }
 
                     return cb.and(predicates.toArray(new Predicate[0]));
@@ -179,15 +181,16 @@ public class ProjectServiceImpl implements ProjectService {
                         predicates.add(cb.equal(root.get("projectCategory"), category));
                     }
 
-                    Predicate[] techPredicates = new Predicate[techStacks.size()];
-                    int i = 0;
 
-                    for(String tech : techStacks){
-                        Join<Project , ProjectTechStack > techJoin= root.join( "techStacks" );
-                        techPredicates[i++] = cb.equal(techJoin.get( "techStackName" ), tech);
+                    if(!techStacks.isEmpty()) {
+                        Predicate[] techPredicates= new Predicate[techStacks.size()];
+                        int i=0;
+                        for(String tech : techStacks){
+                            Join<Project , ProjectTechStack > techJoin= root.join( "techStacks" );
+                            techPredicates[i++]=cb.equal(techJoin.get( "techStackName" ), tech);
+                        }
+                        predicates.add(cb.or(techPredicates));
                     }
-
-                    predicates.add(cb.or(techPredicates));
 
                     return cb.and(predicates.toArray(new Predicate[0]));
                 };
@@ -195,7 +198,6 @@ public class ProjectServiceImpl implements ProjectService {
                 projects= projectRepository.findAll(spec,
                         PageRequest.of(page,size,
                                 Sort.by(Sort.Direction.DESC,"createdAt")));
-
             } else {
 
                 projects= projectRepository.findAll(
@@ -203,7 +205,6 @@ public class ProjectServiceImpl implements ProjectService {
                                 Sort.by(Sort.Direction.DESC,"createdAt")));
 
             }
-
             return projects.getContent().stream()
                     .map(this::mapToAllProjectResponseDto)
                     .distinct()
