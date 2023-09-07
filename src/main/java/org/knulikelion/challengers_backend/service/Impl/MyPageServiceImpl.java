@@ -4,6 +4,7 @@ package org.knulikelion.challengers_backend.service.Impl;
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordWithCodeRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.UnregisterValidateResponseDto;
 import org.knulikelion.challengers_backend.data.entity.EmailVerification;
 import org.knulikelion.challengers_backend.data.repository.EmailVerificationRepository;
 import org.knulikelion.challengers_backend.service.MailService;
@@ -186,14 +187,41 @@ public class MyPageServiceImpl implements MyPageService {
         }
     }
 
+    @Override
+    public UnregisterValidateResponseDto validateUnRegister(String email) {
+        UnregisterValidateResponseDto unregisterValidateResponseDto = new UnregisterValidateResponseDto();
+        User user = userRepository.getByEmail(email);
+        List<Club> clubList = clubRepository.findAllByClubManager(user);
 
+        unregisterValidateResponseDto.setValidateUser(true);
+        unregisterValidateResponseDto.setNotAdministrator(true);
+        unregisterValidateResponseDto.setMemberEmpty(true);
+
+        if(user == null) {
+            unregisterValidateResponseDto.setValidateUser(false);
+        }
+
+//        운영 중인 클럽에 본인 제외 다른 멤버가 존재하는지 체크
+        for (Club club : clubList) {
+            List<UserClub> isMember = userClubRepository.findAllByClubId(club.getId());
+            for (UserClub userClub : isMember) {
+                if(!userClub.getUser().getId().equals(user.getId())) {
+                    unregisterValidateResponseDto.setMemberEmpty(false);
+                }
+            }
+        }
+
+//        관리자 권한을 가진 사용자인지 체크
+        if(user.getRoles().contains("ROLE_ADMIN")) {
+            unregisterValidateResponseDto.setNotAdministrator(false);
+        }
+
+        return unregisterValidateResponseDto;
+    }
+
+    @Override
     public BaseResponseDto unRegister(String email, UserRemoveRequestDto userRemoveRequestDto) {
         User user = userRepository.getByEmail(email);
-
-//        해당 사용자가 존재하는 사용자인지 체크
-        if(user == null) {
-            throw new UserNotFoundException("해당 사용자를 찾을 수 없습니다.");
-        }
 
 //        회원 탈퇴를 진행하기 위한 현재 비밀번호 체크
         if(!passwordEncoder.matches(userRemoveRequestDto.getPassword(), user.getPassword())) {
@@ -205,32 +233,11 @@ public class MyPageServiceImpl implements MyPageService {
 
         List<Club> clubList = clubRepository.findAllByClubManager(user);
 
-//        운영 중인 클럽에 본인 제외 다른 멤버가 존재하는지 체크
-        for (Club club : clubList) {
-            List<UserClub> isMember = userClubRepository.findAllByClubId(club.getId());
-            for (UserClub userClub : isMember) {
-                if(!userClub.getUser().getId().equals(user.getId())) {
-                    return BaseResponseDto.builder()
-                            .success(false)
-                            .msg("운영하고 있는 클럽에 다른 멤버가 존재합니다.")
-                            .build();
-                }
-            }
-        }
-
 //        본인이 운영하고 있는 클럽이 존재하는지 체크
         if(!clubList.isEmpty()) {
             for (Club temp : clubList) {
                 clubRepository.deleteById(temp.getId());
             }
-        }
-
-//        관리자 권한을 가진 사용자인지 체크
-        if(user.getRoles().contains("ROLE_ADMIN")) {
-            return BaseResponseDto.builder()
-                    .success(false)
-                    .msg("관리자 권한을 가진 사용자는 탈퇴할 수 없습니다.")
-                    .build();
         }
 
         List<Project> projectList = projectRepository.findAllByUser(user);
