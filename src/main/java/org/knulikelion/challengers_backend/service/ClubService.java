@@ -5,6 +5,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,4 +22,5 @@ public interface ClubService {
     List<ClubLogoResponseDto> getAllClubLogo();
     Page<ClubListResponseDto> findAllClubs(int page, int size);
     List<ClubMemberResponseDto> getMembersByClubId(Long clubId);
+    ResponseEntity<BaseResponseDto> verifyCreateClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto);
 }
