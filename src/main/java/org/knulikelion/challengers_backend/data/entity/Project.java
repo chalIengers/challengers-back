@@ -5,6 +5,7 @@ import lombok.*;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -51,4 +52,7 @@ public class Project extends BaseEntity{
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "club_id")
     private Club club;
+
+    @OneToMany(mappedBy = "project")
+    private List<ProjectTechStack> techStacks;
 }
