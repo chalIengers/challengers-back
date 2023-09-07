@@ -162,31 +162,47 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public BaseResponseDto createClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
+    public ResponseEntity<BaseResponseDto> createClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
         User user = userRepository.findByEmail(userEmail);
-        if(user == null){
-            throw new UserNotFoundException("해당 유저를 찾을 수 없습니다.");
+        Club findClub = clubRepository.findByClubName(clubCreateRequestDto.getClubName());
+        if (user == null) {
+            return new ResponseEntity<>(
+                    BaseResponseDto.builder()
+                            .success(false)
+                            .msg("회원을 찾을 수 없습니다!")
+                            .build(),
+                    HttpStatus.BAD_REQUEST
+            );
         }
+        if (findClub != null) {
+            return new ResponseEntity<>(
+                    BaseResponseDto.builder()
+                            .success(false)
+                            .msg("중복된 클럽 클럽이름입니다!")
+                            .build(),
+                    HttpStatus.BAD_REQUEST
+            );
+        } else {
+            Club club = new Club();
+            club.setClubName(clubCreateRequestDto.getClubName());
+            club.setLogoUrl(clubCreateRequestDto.getLogoUrl());
+            club.setClubDescription(clubCreateRequestDto.getClubDescription());
+            club.setClubForm(clubCreateRequestDto.getClubForm());
+            club.setClubApproved(0);
+            club.setClubManager(user);
+            club.setCreatedAt(LocalDateTime.now());
+            club.setUpdatedAt(LocalDateTime.now());
 
-        Club club = new Club();
-        club.setClubName(clubCreateRequestDto.getClubName());
-        club.setLogoUrl(clubCreateRequestDto.getLogoUrl());
-        club.setClubDescription(clubCreateRequestDto.getClubDescription());
-        club.setClubForm(clubCreateRequestDto.getClubForm());
-        club.setClubApproved(0);
-        club.setClubManager(user);
-        club.setCreatedAt(LocalDateTime.now());
-        club.setUpdatedAt(LocalDateTime.now());
+            Club createdClub = clubDAO.createClub(club);
 
-        Club createdClub = clubDAO.createClub(club);
+            // 클럽 생성자 멤버 추가
+            addMember(user.getId(), createdClub.getId());
 
-        // 클럽 생성자 멤버 추가
-        addMember(user.getId(), createdClub.getId());
-
-        return BaseResponseDto.builder()
-                .success(true)
-                .msg("클럽 생성이 완료되었습니다.")
-                .build();
+            return ResponseEntity.ok(BaseResponseDto.builder()
+                    .success(true)
+                    .msg("클럽 생성이 완료되었습니다.")
+                    .build());
+        }
     }
 
     @Override

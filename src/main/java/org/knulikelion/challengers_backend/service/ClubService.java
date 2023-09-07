@@ -14,7 +14,7 @@ public interface ClubService {
     Optional<Club> findById(Long id);
     Object getClubById(Long id);
     BaseResponseDto removeClub(Long id);
-    BaseResponseDto createClub(String userEmail ,ClubCreateRequestDto clubCreateRequestDto);
+    ResponseEntity<BaseResponseDto> createClub(String userEmail ,ClubCreateRequestDto clubCreateRequestDto);
     BaseResponseDto updateClub(String userEmail,ClubRequestDto clubRequestDto) throws Exception;
     BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId);
     BaseResponseDto addMember(Long userId, Long clubId);
