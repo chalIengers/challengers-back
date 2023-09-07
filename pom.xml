@@ -17,6 +17,11 @@
         <java.version>11</java.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.27</version>
+        </dependency>
         <!--Swagger Dependency-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -8,6 +8,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordWithCo
 import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.MyPageResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.UnregisterValidateResponseDto;
 import org.knulikelion.challengers_backend.service.MyPageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,15 @@ public class MyPageController {
     })
     public ResponseEntity<Boolean> verifyPassword(HttpServletRequest request,String password) {
         return ResponseEntity.ok(myPageService.checkPassword(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")), password));
+    }
+
+    @GetMapping("/validate-unregister")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<UnregisterValidateResponseDto> validateUnregister(HttpServletRequest request) {
+        return ResponseEntity.ok(myPageService.validateUnRegister(jwtTokenProvider.getUserEmail(
+                request.getHeader("X-AUTH-TOKEN"))));
     }
       
     @DeleteMapping("/unregister")

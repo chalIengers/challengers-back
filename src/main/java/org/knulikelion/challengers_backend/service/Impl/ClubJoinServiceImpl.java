@@ -8,6 +8,7 @@ import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponse
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
+import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.ClubJoinService;
 import org.knulikelion.challengers_backend.service.ClubService;
@@ -27,6 +28,7 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     private final UserRepository userRepository;
     private final ClubRepository clubRepository;
     private final ClubJoinRepository clubJoinRepository;
+    private final UserClubRepository userClubRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final ClubService clubService;
 
@@ -35,13 +37,34 @@ public class ClubJoinServiceImpl implements ClubJoinService {
 
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
         User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token));
+
+        List<Club> foundClub = clubRepository.findAllByClubManager(user);
+        for(Club temp : foundClub) {
+            if(temp.getId().equals(clubId)) {
+                return BaseResponseDto.builder()
+                        .success(false)
+                        .msg("클럽 생성자는 가입을 요청할 수 없습니다.")
+                        .build();
+            }
+        }
+
+        List<UserClub> userClubList = userClubRepository.findByUserId(user.getId());
+
+        for(UserClub userClub : userClubList) {
+            if(userClub.getClub().getId().equals(clubId)) {
+                return BaseResponseDto.builder()
+                        .success(false)
+                        .msg("이미 가입된 클럽입니다.")
+                        .build();
+            }
+        }
+
         if (user == null) {
             throw new UserNotFoundException("User with email not found");
         }
 
         ClubJoin checkRequest = clubJoinRepository.findByClubIdAndUserId(clubId, user.getId());
         if (checkRequest == null) {
-
             ClubJoin clubJoin = new ClubJoin(user, club, JoinRequestStatus.PENDING);
             clubJoin.setComments(comment);
 
