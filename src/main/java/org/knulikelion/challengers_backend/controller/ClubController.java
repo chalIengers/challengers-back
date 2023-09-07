@@ -128,4 +128,11 @@ public class ClubController {
         List<PendingUserResponseDto> getPendingUsers = clubJoinService.getPendingRequestUser(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")), clubId);
         return ResponseEntity.ok(getPendingUsers);
     }
+    @PostMapping("/verify-club")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> verifyClubCreate(HttpServletRequest request, @RequestBody ClubCreateRequestDto clubCreateRequestDto){
+        return clubService.verifyCreateClub(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")), clubCreateRequestDto);
+    }
 }
