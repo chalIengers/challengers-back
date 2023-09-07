@@ -18,6 +18,8 @@ import org.knulikelion.challengers_backend.service.Exception.UserNotFoundExcepti
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -323,5 +325,28 @@ public class ClubServiceImpl implements ClubService {
         return userClubs.stream()
                 .map(userClub -> new ClubMemberResponseDto(userClub.getUser().getUserName(),userClub.getUser().getEmail()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ResponseEntity<BaseResponseDto> verifyCreateClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
+        User user = userRepository.findByEmail(userEmail);
+        if(user == null){
+            throw new UserNotFoundException("해당 유저를 찾을 수 없습니다!");
+        }
+
+        Club club = clubRepository.findByClubName(clubCreateRequestDto.getClubName());
+
+        if(club != null){
+            return new ResponseEntity<>(BaseResponseDto.builder()
+                    .success(false)
+                    .msg("중복된 클럽 클럽이름입니다!")
+                    .build(),
+                    HttpStatus.BAD_REQUEST);
+        }else{
+            return ResponseEntity.ok(BaseResponseDto.builder()
+                    .success(true)
+                    .msg(user.getUserName()+"님의 "+clubCreateRequestDto.getClubName()+" 클럽은 생성 가능합니다!")
+                    .build());
+        }
     }
 }
