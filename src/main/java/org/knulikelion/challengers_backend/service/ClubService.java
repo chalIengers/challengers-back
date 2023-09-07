@@ -18,6 +18,9 @@ public interface ClubService {
     BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId);
     BaseResponseDto addMember(Long userId, Long clubId);
     List<UserClubResponseDto> getUsersClub(String email);
+
+    ClubResponseDto getClubDetailById(Long id);
+
     List<ClubLogoResponseDto> getAllClubLogo();
     Page<ClubListResponseDto> findAllClubs(int page, int size);
     List<ClubMemberResponseDto> getMembersByClubId(Long clubId);
