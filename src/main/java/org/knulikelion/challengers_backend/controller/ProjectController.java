@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,12 +37,18 @@ public class ProjectController {
     }
 
     @GetMapping("/get/all")
-    public Page<AllProjectResponseDto> getAllProjects(
+    public ResponseEntity<Page<AllProjectResponseDto>> getAllProjects(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "ALL") String categories,
+            @RequestParam(required = false) List<String> techStack,
             @RequestParam(defaultValue = "NEW") String sort) {
-        return projectService.getAllProject(page, size, categories, sort);
+        if (techStack == null) {
+            techStack = new ArrayList<>();
+        }
+
+        Page<AllProjectResponseDto> result = projectService.getAllProject(page, size, categories, sort, techStack);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/remove")
