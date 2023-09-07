@@ -14,5 +14,5 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     Page<Club> findAll(Pageable pageable);
 
-
+    Club findByClubName(String clubName);
 }
