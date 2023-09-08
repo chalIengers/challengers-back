@@ -397,4 +397,20 @@ public class AdminServiceImpl implements AdminService {
             return allProjectResponseDto;
         });
     }
+
+//       대시 보드
+    @Override
+    public Long countUsers() {
+        return userRepository.count();
+    }
+
+    @Override
+    public Long countClubs() {
+        return clubRepository.count();
+    }
+
+    @Override
+    public Long countProjects() {
+        return projectRepository.count();
+    }
 }
