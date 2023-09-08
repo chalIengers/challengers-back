@@ -207,4 +207,20 @@ public class AdminController {
         return ResponseEntity.ok(adminService.countTodayProjects());
     }
 
+    @GetMapping("/count/today/clubs")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getTodayClubs() {
+        return ResponseEntity.ok(adminService.countTodayClubs());
+    }
+
+    @GetMapping("/count/today/users")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getTodayUsers() {
+        return ResponseEntity.ok(adminService.countTodayUsers());
+    }
+
 }

@@ -416,9 +416,24 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public long countTodayProjects() {
+    public Long countTodayProjects() {
         LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime end = start.plusDays(1);
         return projectRepository.countByCreatedAtBetween(start,end);
     }
+
+    @Override
+    public Long countTodayClubs() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return clubRepository.countByCreatedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countTodayUsers() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return userRepository.countByCreatedAtBetween(start,end);
+    }
 }
+
