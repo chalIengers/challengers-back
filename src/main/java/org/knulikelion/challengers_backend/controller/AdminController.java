@@ -5,8 +5,10 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
+import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.knulikelion.challengers_backend.service.ClubService;
+import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +22,14 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     private final ClubService clubService;
+    private final ProjectService projectService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AdminController(AdminService adminService, ClubService clubService, JwtTokenProvider jwtTokenProvider) {
+    public AdminController(AdminService adminService, ClubService clubService,
+                           ProjectService projectService, JwtTokenProvider jwtTokenProvider) {
         this.adminService = adminService;
         this.clubService = clubService;
+        this.projectService = projectService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -140,5 +145,32 @@ public class AdminController {
     })
     public ResponseEntity<ClubResponseDto> getClubDetail(Long id) {
         return ResponseEntity.ok(clubService.getClubDetailById(id));
+    }
+
+    @PutMapping(value = "/project/status")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> changeProjectStatus(Long projectId, ProjectStatus status) {
+        return ResponseEntity.ok(adminService.changeProjectStatus(projectId, status));
+    }
+
+    @DeleteMapping(value = "/project/delete")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> forceDeleteProject(Long projectId) {
+        return ResponseEntity.ok(projectService.removeProject(projectId));
+    }
+
+    @GetMapping(value = "/project/all")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Page<AllProjectResponseDto>> getAllProject(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(adminService.getAllProject(page, size));
     }
 }
