@@ -244,7 +244,7 @@ public class MyPageServiceImpl implements MyPageService {
 
 //        회원 탈퇴를 진행하기 위한 현재 비밀번호 체크
         if(!passwordEncoder.matches(userRemoveRequestDto.getPassword(), user.getPassword())) {
-            unregisterValidateResponseDto.setSuccess(false);
+            unregisterValidateResponseDto.setMatchPassword(false);
         }
 
         List<Club> clubList = clubRepository.findAllByClubManager(user);
