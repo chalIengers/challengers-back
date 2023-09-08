@@ -58,6 +58,15 @@ public class MyPageController {
     public ResponseEntity<Boolean> verifyPassword(HttpServletRequest request,String password) {
         return ResponseEntity.ok(myPageService.checkPassword(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")), password));
     }
+
+    @GetMapping("/validate-unregister")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<UnregisterValidateResponseDto> validateUnregister(HttpServletRequest request) {
+        return ResponseEntity.ok(myPageService.validateUnRegister(jwtTokenProvider.getUserEmail(
+                request.getHeader("X-AUTH-TOKEN"))));
+    }
       
     @DeleteMapping("/unregister")
     @ApiImplicitParams({

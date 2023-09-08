@@ -188,6 +188,47 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
+    public UnregisterValidateResponseDto validateUnRegister(String email) {
+        UnregisterValidateResponseDto unregisterValidateResponseDto = new UnregisterValidateResponseDto();
+        User user = userRepository.getByEmail(email);
+        List<Club> clubList = clubRepository.findAllByClubManager(user);
+
+        unregisterValidateResponseDto.setSuccess(false);
+        unregisterValidateResponseDto.setValidateUser(true);
+        unregisterValidateResponseDto.setNotAdministrator(true);
+        unregisterValidateResponseDto.setMemberEmpty(true);
+        unregisterValidateResponseDto.setMatchPassword(true);
+
+        if(user == null) {
+            unregisterValidateResponseDto.setValidateUser(false);
+        }
+
+//        운영 중인 클럽에 본인 제외 다른 멤버가 존재하는지 체크
+        for (Club club : clubList) {
+            List<UserClub> isMember = userClubRepository.findAllByClubId(club.getId());
+            for (UserClub userClub : isMember) {
+                if(!userClub.getUser().getId().equals(user.getId())) {
+                    unregisterValidateResponseDto.setMemberEmpty(false);
+                }
+            }
+        }
+
+//        관리자 권한을 가진 사용자인지 체크
+        if(user.getRoles().contains("ROLE_ADMIN")) {
+            unregisterValidateResponseDto.setNotAdministrator(false);
+        }
+
+        if(unregisterValidateResponseDto.isValidateUser() && unregisterValidateResponseDto.isMatchPassword()
+        && unregisterValidateResponseDto.isNotAdministrator() && unregisterValidateResponseDto.isMemberEmpty()) {
+            unregisterValidateResponseDto.setSuccess(true);
+        } else {
+            unregisterValidateResponseDto.setSuccess(false);
+        }
+
+        return unregisterValidateResponseDto;
+    }
+
+    @Override
     public UnregisterValidateResponseDto unRegister(String email, UserRemoveRequestDto userRemoveRequestDto) {
         User user = userRepository.getByEmail(email);
         UnregisterValidateResponseDto unregisterValidateResponseDto = new UnregisterValidateResponseDto();

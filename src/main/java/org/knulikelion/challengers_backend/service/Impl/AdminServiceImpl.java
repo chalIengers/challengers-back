@@ -3,20 +3,12 @@ package org.knulikelion.challengers_backend.service.Impl;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
-import org.knulikelion.challengers_backend.data.entity.AdminNotice;
-import org.knulikelion.challengers_backend.data.entity.Club;
-import org.knulikelion.challengers_backend.data.entity.ExtraUserMapping;
-import org.knulikelion.challengers_backend.data.entity.User;
-import org.knulikelion.challengers_backend.data.repository.AdminNoticeRepository;
-import org.knulikelion.challengers_backend.data.repository.ClubRepository;
-import org.knulikelion.challengers_backend.data.repository.ExtraUserMappingRepository;
-import org.knulikelion.challengers_backend.data.repository.UserRepository;
+import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
+import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,19 +24,22 @@ public class AdminServiceImpl implements AdminService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ClubRepository clubRepository;
     private final AdminNoticeRepository adminNoticeRepository;
+    private final ProjectRepository projectRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
                             JwtTokenProvider jwtTokenProvider,
                             ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
-                            AdminNoticeRepository adminNoticeRepository) {
+                            AdminNoticeRepository adminNoticeRepository,
+                            ProjectRepository projectRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.clubRepository = clubRepository;
         this.extraUserMappingRepository = extraUserMappingRepository;
         this.adminNoticeRepository = adminNoticeRepository;
+        this.projectRepository = projectRepository;
     }
 
     @Override
@@ -354,5 +349,52 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return new PageImpl<>(adminClubResponseDtoList, pageRequest, clubPage.getTotalElements());
+    }
+
+    @Override
+    public BaseResponseDto changeProjectStatus(Long projectId, ProjectStatus status) {
+        Project project = projectRepository.getById(projectId);
+        if(project == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("발견된 프로젝트가 없습니다.")
+                    .build();
+        }
+
+        if(status == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("상태를 업데이트 할 수 없습니다.")
+                    .build();
+        } else {
+            project.setStatus(status);
+            return BaseResponseDto.builder()
+                    .success(true)
+                    .msg("상태가 업데이트 되었습니다.")
+                    .build();
+        }
+    }
+
+    @Override
+    public Page<AllProjectResponseDto> getAllProject(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Project> projects = projectRepository.findAll(pageable);
+
+        return projects.map(project -> {
+            AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
+
+            allProjectResponseDto.setId(project.getId());
+            allProjectResponseDto.setProjectName(project.getProjectName());
+            allProjectResponseDto.setProjectCategory(project.getProjectCategory());
+            allProjectResponseDto.setProjectDescription(project.getProjectDescription());
+            allProjectResponseDto.setImageUrl(project.getImageUrl());
+            if(project.getClub() == null) {
+                allProjectResponseDto.setBelongedClubName("소속된 클럽이 없음");
+            } else {
+                allProjectResponseDto.setBelongedClubName(project.getClub().getClubName());
+            }
+
+            return allProjectResponseDto;
+        });
     }
 }

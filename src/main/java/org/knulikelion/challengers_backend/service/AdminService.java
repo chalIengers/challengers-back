@@ -2,6 +2,7 @@ package org.knulikelion.challengers_backend.service;
 
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
+import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface AdminService {
     BaseResponseDto changePw(ChangePasswordRequestDto changePasswordRequestDto, String email);
     BaseResponseDto changeRole(String email, String role);
     Page<AdminClubResponseDto> getAllClubs(int page, int size);
+    BaseResponseDto changeProjectStatus(Long projectId, ProjectStatus status);
+    Page<AllProjectResponseDto> getAllProject(int page, int size);
 }
