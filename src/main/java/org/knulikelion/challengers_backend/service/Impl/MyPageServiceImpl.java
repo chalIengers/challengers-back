@@ -188,20 +188,27 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public UnregisterValidateResponseDto validateUnRegister(String email) {
-        UnregisterValidateResponseDto unregisterValidateResponseDto = new UnregisterValidateResponseDto();
+    public UnregisterValidateResponseDto unRegister(String email, UserRemoveRequestDto userRemoveRequestDto) {
         User user = userRepository.getByEmail(email);
-        List<Club> clubList = clubRepository.findAllByClubManager(user);
-
+        UnregisterValidateResponseDto unregisterValidateResponseDto = new UnregisterValidateResponseDto();
         unregisterValidateResponseDto.setValidateUser(true);
         unregisterValidateResponseDto.setNotAdministrator(true);
         unregisterValidateResponseDto.setMemberEmpty(true);
+        unregisterValidateResponseDto.setMatchPassword(true);
 
+//        존재하는 사용자인지 확인
         if(user == null) {
             unregisterValidateResponseDto.setValidateUser(false);
         }
 
-//        운영 중인 클럽에 본인 제외 다른 멤버가 존재하는지 체크
+//        회원 탈퇴를 진행하기 위한 현재 비밀번호 체크
+        if(!passwordEncoder.matches(userRemoveRequestDto.getPassword(), user.getPassword())) {
+            unregisterValidateResponseDto.setSuccess(false);
+        }
+
+        List<Club> clubList = clubRepository.findAllByClubManager(user);
+
+//        본인이 운영하고 있는 클럽이 존재하는지 체크
         for (Club club : clubList) {
             List<UserClub> isMember = userClubRepository.findAllByClubId(club.getId());
             for (UserClub userClub : isMember) {
@@ -211,59 +218,42 @@ public class MyPageServiceImpl implements MyPageService {
             }
         }
 
-//        관리자 권한을 가진 사용자인지 체크
-        if(user.getRoles().contains("ROLE_ADMIN")) {
-            unregisterValidateResponseDto.setNotAdministrator(false);
-        }
-
-        return unregisterValidateResponseDto;
-    }
-
-    @Override
-    public BaseResponseDto unRegister(String email, UserRemoveRequestDto userRemoveRequestDto) {
-        User user = userRepository.getByEmail(email);
-
-//        회원 탈퇴를 진행하기 위한 현재 비밀번호 체크
-        if(!passwordEncoder.matches(userRemoveRequestDto.getPassword(), user.getPassword())) {
-            return BaseResponseDto.builder()
-                    .success(false)
-                    .msg("사용자의 비밀번호가 일치하지 않습니다.")
-                    .build();
-        }
-
-        List<Club> clubList = clubRepository.findAllByClubManager(user);
-
-//        본인이 운영하고 있는 클럽이 존재하는지 체크
         if(!clubList.isEmpty()) {
             for (Club temp : clubList) {
                 clubRepository.deleteById(temp.getId());
             }
         }
 
+//        관리자 권한을 가진 사용자인지 체크
+        if(user.getRoles().contains("ROLE_ADMIN")) {
+            unregisterValidateResponseDto.setNotAdministrator(false);
+        }
+
         List<Project> projectList = projectRepository.findAllByUser(user);
 
+        if(unregisterValidateResponseDto.isNotAdministrator() && unregisterValidateResponseDto.isMatchPassword()
+        && unregisterValidateResponseDto.isValidateUser() && unregisterValidateResponseDto.isMemberEmpty()) {
 //        본인이 업로드한 프로젝트를 모두 삭제
-        if(!projectList.isEmpty()) {
-            for (Project project : projectList) {
-                projectService.removeProject(project.getId());
+            if(!projectList.isEmpty()) {
+                for (Project project : projectList) {
+                    projectService.removeProject(project.getId());
+                }
             }
-        }
 
 //        다른 클럽에 소속되어 있다면 멤버에서 자동으로 추방
-        List<UserClub> userClubList = userClubRepository.findByUserId(user.getId());
-        if(!userClubList.isEmpty()) {
-            userClubRepository.deleteAll(userClubList);
-        }
+            List<UserClub> userClubList = userClubRepository.findByUserId(user.getId());
+            if(!userClubList.isEmpty()) {
+                userClubRepository.deleteAll(userClubList);
+            }
 
 //        사용자의 모든 권한을 비활성화
-        user.setUseAble(false);
-        userRepository.save(user);
+            user.setUseAble(false);
+            userRepository.save(user);
+            unregisterValidateResponseDto.setSuccess(true);
+        }
 
 //        회원 탈퇴 프로세스 완료
-        return BaseResponseDto.builder()
-                .success(true)
-                .msg("회원 탈퇴가 완료되었습니다.")
-                .build();
+        return unregisterValidateResponseDto;
     }
 
 }

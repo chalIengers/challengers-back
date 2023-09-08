@@ -8,7 +8,9 @@ import lombok.*;
 @ToString
 @Builder
 public class UnregisterValidateResponseDto {
+    private boolean success;
     private boolean validateUser;
     private boolean memberEmpty;
     private boolean notAdministrator;
+    private boolean matchPassword;
 }

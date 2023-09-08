@@ -12,7 +12,6 @@ public interface MyPageService {
     BaseResponseDto changePassword(String email, ChangePasswordWithCodeRequestDto changePasswordWithCodeRequestDto);
     BaseResponseDto sendPwChangeCode(String email,ChangePasswordRequestDto changePasswordRequestDto);
     Boolean checkPassword(String email,String password);
-    UnregisterValidateResponseDto validateUnRegister(String email);
-    BaseResponseDto unRegister(String email, UserRemoveRequestDto userRemoveRequestDto);
+    UnregisterValidateResponseDto unRegister(String email, UserRemoveRequestDto userRemoveRequestDto);
 
 }
