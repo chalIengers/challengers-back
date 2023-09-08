@@ -26,6 +26,7 @@ public class AdminServiceImpl implements AdminService {
     private final ClubRepository clubRepository;
     private final AdminNoticeRepository adminNoticeRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectAuditRepository projectAuditRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
@@ -33,7 +34,7 @@ public class AdminServiceImpl implements AdminService {
                             ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
                             AdminNoticeRepository adminNoticeRepository,
-                            ProjectRepository projectRepository) {
+                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -41,6 +42,7 @@ public class AdminServiceImpl implements AdminService {
         this.extraUserMappingRepository = extraUserMappingRepository;
         this.adminNoticeRepository = adminNoticeRepository;
         this.projectRepository = projectRepository;
+        this.projectAuditRepository = projectAuditRepository;
     }
 
     @Override
@@ -434,6 +436,13 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime end = start.plusDays(1);
         return userRepository.countByCreatedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countDeletedProjects() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return projectAuditRepository.countByDeletedAtBetween(start, end);
     }
 }
 

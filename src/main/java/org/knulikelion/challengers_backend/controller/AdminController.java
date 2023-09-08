@@ -10,11 +10,13 @@ import org.knulikelion.challengers_backend.service.AdminService;
 import org.knulikelion.challengers_backend.service.ClubService;
 import org.knulikelion.challengers_backend.service.ProjectService;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -221,6 +223,14 @@ public class AdminController {
     })
     public ResponseEntity<Long> getTodayUsers() {
         return ResponseEntity.ok(adminService.countTodayUsers());
+    }
+
+    @GetMapping("/deleted/projects")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getDeletedProjects() {
+        return ResponseEntity.ok(adminService.countDeletedProjects());
     }
 
 }
