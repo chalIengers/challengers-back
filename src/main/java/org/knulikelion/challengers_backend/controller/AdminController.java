@@ -173,4 +173,54 @@ public class AdminController {
     ) {
         return ResponseEntity.ok(adminService.getAllProject(page, size));
     }
+
+//  대시 보드
+    @GetMapping("/count/users")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getUsersCount() {
+        return ResponseEntity.ok(adminService.countUsers());
+    }
+
+    @GetMapping("/count/clubs")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getClubsCount() {
+        return ResponseEntity.ok(adminService.countClubs());
+    }
+
+    @GetMapping("/count/projects")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getProjectsCount() {
+        return ResponseEntity.ok(adminService.countProjects());
+    }
+
+    @GetMapping("/count/today/projects")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getTodayProjects() {
+        return ResponseEntity.ok(adminService.countTodayProjects());
+    }
+
+    @GetMapping("/count/today/clubs")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getTodayClubs() {
+        return ResponseEntity.ok(adminService.countTodayClubs());
+    }
+
+    @GetMapping("/count/today/users")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getTodayUsers() {
+        return ResponseEntity.ok(adminService.countTodayUsers());
+    }
+
 }

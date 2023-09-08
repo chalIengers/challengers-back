@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -397,4 +398,42 @@ public class AdminServiceImpl implements AdminService {
             return allProjectResponseDto;
         });
     }
+
+//       대시 보드
+    @Override
+    public Long countUsers() {
+        return userRepository.count();
+    }
+
+    @Override
+    public Long countClubs() {
+        return clubRepository.count();
+    }
+
+    @Override
+    public Long countProjects() {
+        return projectRepository.count();
+    }
+
+    @Override
+    public Long countTodayProjects() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return projectRepository.countByCreatedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countTodayClubs() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return clubRepository.countByCreatedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countTodayUsers() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return userRepository.countByCreatedAtBetween(start,end);
+    }
 }
+

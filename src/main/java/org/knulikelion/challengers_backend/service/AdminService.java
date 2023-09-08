@@ -22,4 +22,15 @@ public interface AdminService {
     Page<AdminClubResponseDto> getAllClubs(int page, int size);
     BaseResponseDto changeProjectStatus(Long projectId, ProjectStatus status);
     Page<AllProjectResponseDto> getAllProject(int page, int size);
+
+//  대시 보드
+    Long countUsers();
+    Long countClubs();
+    Long countProjects();
+
+    Long countTodayProjects();
+
+    Long countTodayClubs();
+
+    Long countTodayUsers();
 }
