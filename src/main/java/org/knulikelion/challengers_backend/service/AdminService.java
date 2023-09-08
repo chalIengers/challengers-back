@@ -21,4 +21,5 @@ public interface AdminService {
     BaseResponseDto changeRole(String email, String role);
     Page<AdminClubResponseDto> getAllClubs(int page, int size);
     BaseResponseDto changeProjectStatus(Long projectId, ProjectStatus status);
+    Page<AllProjectResponseDto> getAllProject(int page, int size);
 }

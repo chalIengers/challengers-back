@@ -8,10 +8,7 @@ import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -376,5 +373,28 @@ public class AdminServiceImpl implements AdminService {
                     .msg("상태가 업데이트 되었습니다.")
                     .build();
         }
+    }
+
+    @Override
+    public Page<AllProjectResponseDto> getAllProject(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Project> projects = projectRepository.findAll(pageable);
+
+        return projects.map(project -> {
+            AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
+
+            allProjectResponseDto.setId(project.getId());
+            allProjectResponseDto.setProjectName(project.getProjectName());
+            allProjectResponseDto.setProjectCategory(project.getProjectCategory());
+            allProjectResponseDto.setProjectDescription(project.getProjectDescription());
+            allProjectResponseDto.setImageUrl(project.getImageUrl());
+            if(project.getClub() == null) {
+                allProjectResponseDto.setBelongedClubName("소속된 클럽이 없음");
+            } else {
+                allProjectResponseDto.setBelongedClubName(project.getClub().getClubName());
+            }
+
+            return allProjectResponseDto;
+        });
     }
 }

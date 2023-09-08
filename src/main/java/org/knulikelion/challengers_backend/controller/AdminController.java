@@ -162,4 +162,15 @@ public class AdminController {
     public ResponseEntity<BaseResponseDto> forceDeleteProject(Long projectId) {
         return ResponseEntity.ok(projectService.removeProject(projectId));
     }
+
+    @GetMapping(value = "/project/all")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Page<AllProjectResponseDto>> getAllProject(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(adminService.getAllProject(page, size));
+    }
 }
