@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -412,5 +413,12 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Long countProjects() {
         return projectRepository.count();
+    }
+
+    @Override
+    public long countTodayProjects() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return projectRepository.countByCreatedAtBetween(start,end);
     }
 }

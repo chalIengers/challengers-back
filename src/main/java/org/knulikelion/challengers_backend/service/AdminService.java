@@ -27,4 +27,6 @@ public interface AdminService {
     Long countUsers();
     Long countClubs();
     Long countProjects();
+
+    long countTodayProjects();
 }
