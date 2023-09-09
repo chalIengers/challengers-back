@@ -7,8 +7,10 @@ import org.knulikelion.challengers_backend.data.dto.request.ClubCreateRequestDto
 import org.knulikelion.challengers_backend.data.dto.request.ClubRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.Club;
+import org.knulikelion.challengers_backend.data.entity.ClubAudit;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
+import org.knulikelion.challengers_backend.data.repository.ClubAuditRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
@@ -32,13 +34,15 @@ public class ClubServiceImpl implements ClubService {
     private final ClubRepository clubRepository;
     private final UserClubRepository userClubRepository;
     private final UserRepository userRepository;
+    private final ClubAuditRepository clubAuditRepository;
 
 
-    public ClubServiceImpl(ClubDAO clubDAO, ClubRepository clubRepository, UserClubRepository userClubRepository, UserRepository userRepository, UserDAO userDAO) {
+    public ClubServiceImpl(ClubDAO clubDAO, ClubRepository clubRepository, UserClubRepository userClubRepository, UserRepository userRepository, UserDAO userDAO, ClubAuditRepository clubAuditRepository) {
         this.clubDAO = clubDAO;
         this.clubRepository = clubRepository;
         this.userClubRepository = userClubRepository;
         this.userRepository = userRepository;
+        this.clubAuditRepository = clubAuditRepository;
     }
 
     @Override
@@ -153,6 +157,14 @@ public class ClubServiceImpl implements ClubService {
                     userClubRepository.delete(userClub);
                 }
             }
+
+//           클럽 삭제 기록 저장.
+            ClubAudit audit = new ClubAudit();
+            audit.setClubId(club.getId());
+            audit.setDeletedAt(LocalDateTime.now());
+
+            clubAuditRepository.save(audit);
+
 //            클럽 삭제
             clubRepository.deleteById(id);
         }

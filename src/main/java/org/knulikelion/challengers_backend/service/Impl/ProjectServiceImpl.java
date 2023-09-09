@@ -10,6 +10,7 @@ import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.data.repository.MonthlyViewsRepository;
+import org.knulikelion.challengers_backend.data.repository.ProjectAuditRepository;
 import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
 import org.knulikelion.challengers_backend.data.repository.ProjectTechStackRepository;
 import org.knulikelion.challengers_backend.service.ProjectService;
@@ -43,6 +44,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final MonthlyViewsRepository monthlyViewsRepository;
     private final ProjectRepository projectRepository;
     private final ProjectTechStackRepository projectTechStackRepository;
+    private final ProjectAuditRepository projectAuditRepository;
 
     @Autowired
     public ProjectServiceImpl(
@@ -53,7 +55,7 @@ public class ProjectServiceImpl implements ProjectService {
             JwtTokenProvider jwtTokenProvider,
             ClubDAO clubDAO,
             UserDAO userDAO,
-            MonthlyViewsRepository monthlyViewsRepository, ProjectRepository projectRepository, ProjectTechStackRepository projectTechStackRepository) {
+            MonthlyViewsRepository monthlyViewsRepository, ProjectRepository projectRepository, ProjectTechStackRepository projectTechStackRepository, ProjectAuditRepository projectAuditRepository) {
         this.projectDAO = projectDAO;
         this.projectCrewDAO = projectCrewDAO;
         this.projectLinkDAO = projectLinkDAO;
@@ -64,6 +66,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.monthlyViewsRepository = monthlyViewsRepository;
         this.projectRepository = projectRepository;
         this.projectTechStackRepository = projectTechStackRepository;
+        this.projectAuditRepository = projectAuditRepository;
     }
 
     @Override
@@ -314,10 +317,17 @@ public class ProjectServiceImpl implements ProjectService {
                 logger.info("[Log] 소속 클럽 삭제");
                 project.setClub(null);
             }
+//            프로젝트 감사 로그 기록.
+            ProjectAudit audit = new ProjectAudit();
+            audit.setProjectId(project.getId());
+            audit.setDeletedAt(LocalDateTime.now());
+            projectAuditRepository.save(audit);
+
 
 //            프로젝트 삭제
             logger.info("[Log] 포함된 프로젝트 삭제");
             projectDAO.removeProject(id);
+
 
 //            결과 값 반환
             logger.info("[Log] 프로젝트 삭제 완료");

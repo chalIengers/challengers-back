@@ -10,4 +10,5 @@ import java.util.List;
 public interface ClubJoinRepository extends JpaRepository<ClubJoin, Long> {
     List<ClubJoin> findByClub(Club club);
     ClubJoin findByClubIdAndUserId(Long clubId, Long userId);
+    List<ClubJoin> findAllByUserId(Long userId);
 }

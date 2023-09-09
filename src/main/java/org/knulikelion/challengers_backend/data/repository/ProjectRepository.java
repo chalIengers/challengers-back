@@ -8,10 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
     Page<Project> findAll(Pageable pageable);
     List<Project> findAllByUser(User user);
     List<Project> findAllByClubAndUser(Club club,User user);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
