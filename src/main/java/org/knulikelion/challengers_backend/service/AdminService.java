@@ -30,15 +30,15 @@ public interface AdminService {
     Long countClubs();
     Long countProjects();
 
-    Long countTodayProjects();
+    Long countTodayAddProjects();
 
-    Long countTodayClubs();
+    Long countTodayAddClubs();
 
-    Long countTodayUsers();
+    Long countTodayAddUsers();
 
-    Long countDeletedProjects();
+    Long countTodayDeletedProjects();
 
-    Long countDeletedClubs();
+    Long countTodayDeletedClubs();
 
-    Long countDeletedUsers();
+    Long countTodayDeletedUsers();
 }

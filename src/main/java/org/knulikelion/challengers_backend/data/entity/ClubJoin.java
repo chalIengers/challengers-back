@@ -3,6 +3,7 @@ package org.knulikelion.challengers_backend.data.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.knulikelion.challengers_backend.data.enums.JoinRequestStatus;
 
 import javax.persistence.*;
 
