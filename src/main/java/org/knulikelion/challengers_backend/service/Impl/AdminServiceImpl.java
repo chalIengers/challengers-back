@@ -30,6 +30,7 @@ public class AdminServiceImpl implements AdminService {
     private final ProjectRepository projectRepository;
     private final ProjectAuditRepository projectAuditRepository;
     private final ClubAuditRepository clubAuditRepository;
+    private final UserAuditRepository userAuditRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
@@ -37,7 +38,7 @@ public class AdminServiceImpl implements AdminService {
                             ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
                             AdminNoticeRepository adminNoticeRepository,
-                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository) {
+                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -47,6 +48,7 @@ public class AdminServiceImpl implements AdminService {
         this.projectRepository = projectRepository;
         this.projectAuditRepository = projectAuditRepository;
         this.clubAuditRepository = clubAuditRepository;
+        this.userAuditRepository = userAuditRepository;
     }
 
     @Override
@@ -455,6 +457,14 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
 
         return clubAuditRepository.countByDeletedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countDeletedUsers() {
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
+
+        return userAuditRepository.countByDeletedAtBetween(start,end);
     }
 }
 
