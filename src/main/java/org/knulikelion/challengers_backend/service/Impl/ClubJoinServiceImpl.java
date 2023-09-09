@@ -6,6 +6,7 @@ import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.enums.JoinRequestStatus;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
