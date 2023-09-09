@@ -181,7 +181,7 @@ public class AdminController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getUsersCount() {
+    public ResponseEntity<Long> getUsersCounts() {
         return ResponseEntity.ok(adminService.countUsers());
     }
 
@@ -189,7 +189,7 @@ public class AdminController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getClubsCount() {
+    public ResponseEntity<Long> getClubsCounts() {
         return ResponseEntity.ok(adminService.countClubs());
     }
 
@@ -197,55 +197,63 @@ public class AdminController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getProjectsCount() {
+    public ResponseEntity<Long> getProjectsCounts() {
         return ResponseEntity.ok(adminService.countProjects());
     }
 
-    @GetMapping("/count/today/projects")
+    @GetMapping("/count/today/add/projects")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getTodayProjects() {
+    public ResponseEntity<Long> getTodayAddProjects() {
         return ResponseEntity.ok(adminService.countTodayAddProjects());
     }
 
-    @GetMapping("/count/today/clubs")
+    @GetMapping("/count/today/add/clubs")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getTodayClubs() {
+    public ResponseEntity<Long> getTodayAddClubs() {
         return ResponseEntity.ok(adminService.countTodayAddClubs());
     }
 
-    @GetMapping("/count/today/users")
+    @GetMapping("/count/today/add/users")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getTodayUsers() {
+    public ResponseEntity<Long> getTodayAddUsers() {
         return ResponseEntity.ok(adminService.countTodayAddUsers());
     }
 
-    @GetMapping("/count/deleted/projects")
+    @GetMapping("/count/today/deleted/projects")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getDeletedProjects() {
+    public ResponseEntity<Long> getTodayDeletedProjects() {
         return ResponseEntity.ok(adminService.countTodayDeletedProjects());
     }
 
-    @GetMapping("/count/deleted/clubs")
+    @GetMapping("/count/today/deleted/clubs")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getDeletedClubs() {
+    public ResponseEntity<Long> getTodayDeletedClubs() {
         return ResponseEntity.ok(adminService.countTodayDeletedClubs());
     }
 
-    @GetMapping("/count/deleted/users")
+    @GetMapping("/count/today/deleted/users")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<Long> getDeletedUsers() {
+    public ResponseEntity<Long> getTodayDeletedUsers() {
         return ResponseEntity.ok(adminService.countTodayDeletedUsers());
+    }
+
+    @GetMapping("/count/all/deleted/users")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Long> getAllDeletedUsers() {
+        return ResponseEntity.ok(adminService.countDeletedUsers());
     }
 }
