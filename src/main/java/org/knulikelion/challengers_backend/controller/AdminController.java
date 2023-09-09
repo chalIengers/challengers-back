@@ -249,7 +249,10 @@ public class AdminController {
         return ResponseEntity.ok(adminService.countTodayDeletedUsers());
     }
 
-    @GetMapping("/count/All/deleted/users")
+    @GetMapping("/count/all/deleted/users")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
     public ResponseEntity<Long> getAllDeletedUsers() {
         return ResponseEntity.ok(adminService.countDeletedUsers());
     }
