@@ -206,7 +206,7 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<Long> getTodayProjects() {
-        return ResponseEntity.ok(adminService.countTodayProjects());
+        return ResponseEntity.ok(adminService.countTodayAddProjects());
     }
 
     @GetMapping("/count/today/clubs")
@@ -214,7 +214,7 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<Long> getTodayClubs() {
-        return ResponseEntity.ok(adminService.countTodayClubs());
+        return ResponseEntity.ok(adminService.countTodayAddClubs());
     }
 
     @GetMapping("/count/today/users")
@@ -222,7 +222,7 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<Long> getTodayUsers() {
-        return ResponseEntity.ok(adminService.countTodayUsers());
+        return ResponseEntity.ok(adminService.countTodayAddUsers());
     }
 
     @GetMapping("/count/deleted/projects")
@@ -230,7 +230,7 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<Long> getDeletedProjects() {
-        return ResponseEntity.ok(adminService.countDeletedProjects());
+        return ResponseEntity.ok(adminService.countTodayDeletedProjects());
     }
 
     @GetMapping("/count/deleted/clubs")
@@ -238,7 +238,7 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<Long> getDeletedClubs() {
-        return ResponseEntity.ok(adminService.countDeletedClubs());
+        return ResponseEntity.ok(adminService.countTodayDeletedClubs());
     }
 
     @GetMapping("/count/deleted/users")
@@ -246,6 +246,6 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<Long> getDeletedUsers() {
-        return ResponseEntity.ok(adminService.countDeletedUsers());
+        return ResponseEntity.ok(adminService.countTodayDeletedUsers());
     }
 }

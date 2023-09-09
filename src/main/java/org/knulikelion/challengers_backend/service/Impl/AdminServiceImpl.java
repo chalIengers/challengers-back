@@ -424,28 +424,28 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Long countTodayProjects() {
+    public Long countTodayAddProjects() {
         LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime end = start.plusDays(1);
         return projectRepository.countByCreatedAtBetween(start,end);
     }
 
     @Override
-    public Long countTodayClubs() {
+    public Long countTodayAddClubs() {
         LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime end = start.plusDays(1);
         return clubRepository.countByCreatedAtBetween(start,end);
     }
 
     @Override
-    public Long countTodayUsers() {
+    public Long countTodayAddUsers() {
         LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime end = start.plusDays(1);
         return userRepository.countByCreatedAtBetween(start,end);
     }
 
     @Override
-    public Long countDeletedProjects() {
+    public Long countTodayDeletedProjects() {
         LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
 
@@ -453,7 +453,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Long countDeletedClubs() {
+    public Long countTodayDeletedClubs() {
         LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
 
@@ -461,7 +461,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Long countDeletedUsers() {
+    public Long countTodayDeletedUsers() {
         LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
 
