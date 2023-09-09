@@ -248,4 +248,9 @@ public class AdminController {
     public ResponseEntity<Long> getDeletedUsers() {
         return ResponseEntity.ok(adminService.countTodayDeletedUsers());
     }
+
+    @GetMapping("/count/All/deleted/users")
+    public ResponseEntity<Long> getAllDeletedUsers() {
+        return ResponseEntity.ok(adminService.countDeletedUsers());
+    }
 }

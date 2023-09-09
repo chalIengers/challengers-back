@@ -467,5 +467,10 @@ public class AdminServiceImpl implements AdminService {
 
         return userAuditRepository.countByDeletedAtBetween(start,end);
     }
+
+    @Override
+    public Long countDeletedUsers() {
+        return userAuditRepository.count();
+    }
 }
 

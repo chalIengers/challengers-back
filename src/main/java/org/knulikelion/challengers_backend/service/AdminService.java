@@ -41,4 +41,6 @@ public interface AdminService {
     Long countTodayDeletedClubs();
 
     Long countTodayDeletedUsers();
+
+    Long countDeletedUsers();
 }
