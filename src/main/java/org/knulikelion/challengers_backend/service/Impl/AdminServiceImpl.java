@@ -12,7 +12,9 @@ import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,8 @@ public class AdminServiceImpl implements AdminService {
     private final AdminNoticeRepository adminNoticeRepository;
     private final ProjectRepository projectRepository;
     private final ProjectAuditRepository projectAuditRepository;
+    private final ClubAuditRepository clubAuditRepository;
+    private final UserAuditRepository userAuditRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
@@ -34,7 +38,7 @@ public class AdminServiceImpl implements AdminService {
                             ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
                             AdminNoticeRepository adminNoticeRepository,
-                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository) {
+                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -43,6 +47,8 @@ public class AdminServiceImpl implements AdminService {
         this.adminNoticeRepository = adminNoticeRepository;
         this.projectRepository = projectRepository;
         this.projectAuditRepository = projectAuditRepository;
+        this.clubAuditRepository = clubAuditRepository;
+        this.userAuditRepository = userAuditRepository;
     }
 
     @Override
@@ -443,6 +449,22 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime end = start.plusDays(1);
         return projectAuditRepository.countByDeletedAtBetween(start, end);
+    }
+
+    @Override
+    public Long countDeletedClubs() {
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
+
+        return clubAuditRepository.countByDeletedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countDeletedUsers() {
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
+
+        return userAuditRepository.countByDeletedAtBetween(start,end);
     }
 }
 

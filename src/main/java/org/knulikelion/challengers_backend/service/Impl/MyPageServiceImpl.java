@@ -5,20 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordWithCodeRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.UnregisterValidateResponseDto;
-import org.knulikelion.challengers_backend.data.entity.EmailVerification;
-import org.knulikelion.challengers_backend.data.repository.EmailVerificationRepository;
+import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.MailService;
 import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.MyPageResponseDto;
-import org.knulikelion.challengers_backend.data.entity.Club;
-import org.knulikelion.challengers_backend.data.entity.Project;
-import org.knulikelion.challengers_backend.data.entity.User;
-import org.knulikelion.challengers_backend.data.entity.UserClub;
-import org.knulikelion.challengers_backend.data.repository.ClubRepository;
-import org.knulikelion.challengers_backend.data.repository.ProjectRepository;
-import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
-import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.knulikelion.challengers_backend.service.MyPageService;
 import org.knulikelion.challengers_backend.service.ProjectService;
@@ -40,6 +32,7 @@ public class MyPageServiceImpl implements MyPageService {
     private final ProjectService projectService;
     private final MailService mailService;
     private final EmailVerificationRepository emailVerificationRepository;
+    private final UserAuditRepository userAuditRepository;
 
     public MyPageServiceImpl(UserRepository userRepository,
                              UserClubRepository userClubRepository,
@@ -48,7 +41,7 @@ public class MyPageServiceImpl implements MyPageService {
                              ProjectRepository projectRepository,
                              ProjectService projectService,
                              EmailVerificationRepository emailVerificationRepository,
-                            MailService mailService) {
+                             MailService mailService, UserAuditRepository userAuditRepository) {
         this.userRepository = userRepository;
         this.userClubRepository = userClubRepository;
         this.passwordEncoder = passwordEncoder;
@@ -57,6 +50,7 @@ public class MyPageServiceImpl implements MyPageService {
         this.projectService = projectService;
         this.emailVerificationRepository = emailVerificationRepository;
         this.mailService = mailService;
+        this.userAuditRepository = userAuditRepository;
     }
 
     @Override
@@ -292,6 +286,14 @@ public class MyPageServiceImpl implements MyPageService {
             userRepository.save(user);
             unregisterValidateResponseDto.setSuccess(true);
         }
+
+//        유저 삭제 기록 저장.
+        UserAudit audit = new UserAudit();
+        audit.setUserId(user.getId());
+        audit.setDeletedAt(LocalDateTime.now());
+
+        userAuditRepository.save(audit);
+
 
 //        회원 탈퇴 프로세스 완료
         return unregisterValidateResponseDto;
