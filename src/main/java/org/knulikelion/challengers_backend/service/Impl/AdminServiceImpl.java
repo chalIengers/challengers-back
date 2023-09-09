@@ -446,8 +446,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Long countDeletedProjects() {
-        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-        LocalDateTime end = start.plusDays(1);
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
+
         return projectAuditRepository.countByDeletedAtBetween(start, end);
     }
 
