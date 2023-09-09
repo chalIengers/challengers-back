@@ -49,14 +49,6 @@ public class ClubController {
         return clubService.getClubById(id);
     }
 
-    @DeleteMapping("/remove")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
-    })
-    public BaseResponseDto removeClubById(Long id){
-        return clubService.removeClub(id);
-    }
-
     @PostMapping("/create")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
@@ -73,11 +65,11 @@ public class ClubController {
         return clubService.updateClub(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),clubRequestDto);
     }
     
-    @DeleteMapping("/deleteMember")
+    @DeleteMapping("/deleteMember/{clubId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public BaseResponseDto removeClubMember(HttpServletRequest request,String userEmail, Long clubId){
+    public BaseResponseDto removeClubMember(HttpServletRequest request, String userEmail, @PathVariable Long clubId){
         return clubService.removeMember(jwtTokenProvider.getUserEmail(request.getHeader("X-AUTH-TOKEN")),userEmail,clubId);
     }
 
