@@ -33,6 +33,7 @@ public class MyPageServiceImpl implements MyPageService {
     private final MailService mailService;
     private final EmailVerificationRepository emailVerificationRepository;
     private final UserAuditRepository userAuditRepository;
+    private final ClubJoinRepository clubJoinRepository;
 
     public MyPageServiceImpl(UserRepository userRepository,
                              UserClubRepository userClubRepository,
@@ -41,7 +42,7 @@ public class MyPageServiceImpl implements MyPageService {
                              ProjectRepository projectRepository,
                              ProjectService projectService,
                              EmailVerificationRepository emailVerificationRepository,
-                             MailService mailService, UserAuditRepository userAuditRepository) {
+                             MailService mailService, UserAuditRepository userAuditRepository, ClubJoinRepository clubJoinRepository) {
         this.userRepository = userRepository;
         this.userClubRepository = userClubRepository;
         this.passwordEncoder = passwordEncoder;
@@ -51,6 +52,7 @@ public class MyPageServiceImpl implements MyPageService {
         this.emailVerificationRepository = emailVerificationRepository;
         this.mailService = mailService;
         this.userAuditRepository = userAuditRepository;
+        this.clubJoinRepository = clubJoinRepository;
     }
 
     @Override
@@ -279,6 +281,18 @@ public class MyPageServiceImpl implements MyPageService {
             List<UserClub> userClubList = userClubRepository.findByUserId(user.getId());
             if(!userClubList.isEmpty()) {
                 userClubRepository.deleteAll(userClubList);
+            }
+
+            /*클럽 가입 요청 다 삭제*/
+            List<ClubJoin> clubJoinList = clubJoinRepository.findAllByUserId(user.getId());
+            if(!clubJoinList.isEmpty()){
+                clubJoinRepository.deleteAll(clubJoinList);
+            }
+
+            /*이메일 인증시 저장한 {사용자 이메일 : 이메일 인증번호} 정보 삭제*/
+            List<EmailVerification> emailVerificationList = emailVerificationRepository.findByEmail(email);
+            if(!emailVerificationList.isEmpty()){
+                emailVerificationRepository.deleteAll(emailVerificationList);
             }
 
 //        사용자의 모든 권한을 비활성화
