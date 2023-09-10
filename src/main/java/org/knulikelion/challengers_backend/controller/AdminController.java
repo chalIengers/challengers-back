@@ -344,4 +344,21 @@ public class AdminController {
     public ResponseEntity<List<ClubAudit>> getLatestClub() {
         return ResponseEntity.ok(adminService.getLatestClub());
    }
+
+   @GetMapping("/latest/created/users")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+    public ResponseEntity<List<UserAuditDto>> getLatestCreatedUsers() {
+        return ResponseEntity.ok(adminService.getLatestCreatedUser());
+   }
+
+   @GetMapping("/latest/deleted/users")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+    public ResponseEntity<List<UserAuditDto>> getLatestDeletedUsers() {
+        return ResponseEntity.ok(adminService.getLatestDeletedUser());
+   }
+
 }

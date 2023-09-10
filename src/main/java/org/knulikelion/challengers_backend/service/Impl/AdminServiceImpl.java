@@ -552,5 +552,37 @@ public class AdminServiceImpl implements AdminService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public List<UserAuditDto> getLatestCreatedUser() {
+        List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            UserAuditDto dto = new UserAuditDto();
+            dto.setUserId(audit.getUserId());
+            dto.setUserName(audit.getUserName());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserAuditDto> getLatestDeletedUser() {
+        List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            UserAuditDto dto = new UserAuditDto();
+            dto.setUserId(audit.getUserId());
+            dto.setUserName(audit.getUserName());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }
 

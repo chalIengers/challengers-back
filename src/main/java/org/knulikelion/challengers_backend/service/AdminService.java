@@ -50,4 +50,6 @@ public interface AdminService {
     List<ClubAudit> getLatestClub();
     List<ClubAuditDto> getLatestCreatedClub();
     List<ClubAuditDto> getLatestDeletedClub();
+    List<UserAuditDto> getLatestCreatedUser();
+    List<UserAuditDto> getLatestDeletedUser();
 }
