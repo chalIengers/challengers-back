@@ -9,6 +9,7 @@ import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final ClubRepository clubRepository;
+    private final UserClubRepository userClubRepository;
     private final AdminNoticeRepository adminNoticeRepository;
     private final ProjectRepository projectRepository;
     private final ProjectAuditRepository projectAuditRepository;
@@ -37,6 +39,7 @@ public class AdminServiceImpl implements AdminService {
                             JwtTokenProvider jwtTokenProvider,
                             ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
+                            UserClubRepository userClubRepository,
                             AdminNoticeRepository adminNoticeRepository,
                             ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository) {
         this.userRepository = userRepository;
@@ -44,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
         this.jwtTokenProvider = jwtTokenProvider;
         this.clubRepository = clubRepository;
         this.extraUserMappingRepository = extraUserMappingRepository;
+        this.userClubRepository = userClubRepository;
         this.adminNoticeRepository = adminNoticeRepository;
         this.projectRepository = projectRepository;
         this.projectAuditRepository = projectAuditRepository;
@@ -237,6 +241,28 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public BaseResponseDto removeClubMember(Long clubId, List<Long> userId) {
+        if(clubRepository.findById(clubId).isPresent()) {
+            for(Long temp : userId) {
+                UserClub userClub = userClubRepository.findByUserIdAndClubId(temp, clubId);
+                if(userClub != null) {
+                    userClubRepository.delete(userClub);
+                }
+            }
+
+            return BaseResponseDto.builder()
+                    .success(true)
+                    .msg("작업이 완료되었습니다.")
+                    .build();
+        } else {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("해당 클럽을 찾을 수 없습니다.")
+                    .build();
+        }
+    }
+
+    @Override
     public BaseResponseDto changeName(String email, String name) {
         User user = userRepository.getByEmail(email);
 
@@ -358,6 +384,32 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return new PageImpl<>(adminClubResponseDtoList, pageRequest, clubPage.getTotalElements());
+    }
+
+    @Override
+    public BaseResponseDto changeClubStatus(Long clubId, String status) {
+        Club club = clubRepository.getById(clubId);
+        String clubStatus = status.toUpperCase();
+
+        if(club == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("작업을 완료할 수 없습니다.")
+                    .build();
+        }
+
+        if(clubStatus.equals("ACCEPT")) {
+            club.setClubApproved(true);
+            clubRepository.save(club);
+        } else {
+            club.setClubApproved(false);
+            clubRepository.save(club);
+        }
+
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("클럽 상태 변경이 완료되었습니다.")
+                .build();
     }
 
     @Override
