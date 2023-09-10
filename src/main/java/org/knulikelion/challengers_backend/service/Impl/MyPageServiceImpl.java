@@ -4,6 +4,7 @@ package org.knulikelion.challengers_backend.service.Impl;
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordWithCodeRequestDto;
+import org.knulikelion.challengers_backend.data.dto.response.ClubAuditDto;
 import org.knulikelion.challengers_backend.data.dto.response.UnregisterValidateResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.enums.EventType;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -228,6 +230,7 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public UnregisterValidateResponseDto unRegister(String email, UserRemoveRequestDto userRemoveRequestDto) {
         User user = userRepository.getByEmail(email);
+        String userName = user.getUserName();
         UnregisterValidateResponseDto unregisterValidateResponseDto = new UnregisterValidateResponseDto();
         unregisterValidateResponseDto.setValidateUser(true);
         unregisterValidateResponseDto.setNotAdministrator(true);
@@ -305,7 +308,9 @@ public class MyPageServiceImpl implements MyPageService {
 //        유저 삭제 기록 저장.
         UserAudit audit = new UserAudit();
         audit.setUserId(user.getId());
+        audit.setUserName(userName);
         audit.setEventType(EventType.DELETED);
+        audit.setCreatedAt(user.getCreatedAt());
         audit.setDeletedAt(LocalDateTime.now());
 
         userAuditRepository.save(audit);
