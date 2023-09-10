@@ -9,6 +9,7 @@ import org.knulikelion.challengers_backend.data.enums.EventType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,7 +31,6 @@ public class ProjectAudit {
     private String createdBy;
 
     private String projectName;
-
 
     @Column(nullable = true)
     private LocalDateTime deletedAt = null;

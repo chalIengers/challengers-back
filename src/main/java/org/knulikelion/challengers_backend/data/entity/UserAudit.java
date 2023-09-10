@@ -17,12 +17,8 @@ public class UserAudit {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long UserId;
-
     private EventType eventType;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime deletedAt;
 }
