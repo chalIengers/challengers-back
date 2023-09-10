@@ -12,18 +12,17 @@ import java.util.Optional;
 
 public interface ClubService {
     Optional<Club> findById(Long id);
-    Object getClubById(Long id);
     BaseResponseDto removeClub(Long id);
     ResponseEntity<BaseResponseDto> createClub(String userEmail ,ClubCreateRequestDto clubCreateRequestDto);
-    BaseResponseDto updateClub(String userEmail,ClubRequestDto clubRequestDto) throws Exception;
+    ResponseEntity<BaseResponseDto> updateClub(String userEmail,ClubRequestDto clubRequestDto) throws Exception;
     BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId);
     BaseResponseDto addMember(Long userId, Long clubId);
     List<UserClubResponseDto> getUsersClub(String email);
-
-    ClubResponseDto getClubDetailById(Long id);
+    Object getClubById(Long id);
+    ResponseEntity<ClubResponseDto> getClubDetailById(Long id);
 
     List<ClubLogoResponseDto> getAllClubLogo();
     Page<ClubListResponseDto> findAllClubs(int page, int size);
-    List<ClubMemberResponseDto> getMembersByClubId(Long clubId);
+    ResponseEntity<List<ClubMemberResponseDto>> getMembersByClubId(Long clubId);
     ResponseEntity<BaseResponseDto> verifyCreateClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto);
 }

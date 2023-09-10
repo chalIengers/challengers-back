@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,9 @@ public class AdminServiceImpl implements AdminService {
     private final UserClubRepository userClubRepository;
     private final AdminNoticeRepository adminNoticeRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectAuditRepository projectAuditRepository;
+    private final ClubAuditRepository clubAuditRepository;
+    private final UserAuditRepository userAuditRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
@@ -35,7 +41,7 @@ public class AdminServiceImpl implements AdminService {
                             ExtraUserMappingRepository extraUserMappingRepository,
                             UserClubRepository userClubRepository,
                             AdminNoticeRepository adminNoticeRepository,
-                            ProjectRepository projectRepository) {
+                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -44,6 +50,9 @@ public class AdminServiceImpl implements AdminService {
         this.userClubRepository = userClubRepository;
         this.adminNoticeRepository = adminNoticeRepository;
         this.projectRepository = projectRepository;
+        this.projectAuditRepository = projectAuditRepository;
+        this.clubAuditRepository = clubAuditRepository;
+        this.userAuditRepository = userAuditRepository;
     }
 
     @Override
@@ -449,4 +458,71 @@ public class AdminServiceImpl implements AdminService {
             return allProjectResponseDto;
         });
     }
+
+//       대시 보드
+    @Override
+    public Long countUsers() {
+        return userRepository.count();
+    }
+
+    @Override
+    public Long countClubs() {
+        return clubRepository.count();
+    }
+
+    @Override
+    public Long countProjects() {
+        return projectRepository.count();
+    }
+
+    @Override
+    public Long countTodayAddProjects() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return projectRepository.countByCreatedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countTodayAddClubs() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return clubRepository.countByCreatedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countTodayAddUsers() {
+        LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime end = start.plusDays(1);
+        return userRepository.countByCreatedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countTodayDeletedProjects() {
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
+
+        return projectAuditRepository.countByDeletedAtBetween(start, end);
+    }
+
+    @Override
+    public Long countTodayDeletedClubs() {
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
+
+        return clubAuditRepository.countByDeletedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countTodayDeletedUsers() {
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(),LocalTime.MAX);
+
+        return userAuditRepository.countByDeletedAtBetween(start,end);
+    }
+
+    @Override
+    public Long countDeletedUsers() {
+        return userAuditRepository.count();
+    }
 }
+
