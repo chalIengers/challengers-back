@@ -2,6 +2,7 @@ package org.knulikelion.challengers_backend.data.entity;
 
 
 import lombok.*;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,6 +19,10 @@ public class UserAudit {
     private Long id;
 
     private Long UserId;
+
+    private EventType eventType;
+
+    private LocalDateTime createdAt;
 
     private LocalDateTime deletedAt;
 }
