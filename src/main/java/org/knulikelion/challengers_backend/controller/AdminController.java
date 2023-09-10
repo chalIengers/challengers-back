@@ -201,7 +201,7 @@ public class AdminController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
-    public ResponseEntity<List<ClubMemberResponseDto>> getAllClubMember(@RequestParam Long clubId) {
+    public ResponseEntity<?> getAllClubMember(@RequestParam Long clubId) {
         return ResponseEntity.ok(clubService.getMembersByClubId(clubId));
     }
 
@@ -214,6 +214,7 @@ public class AdminController {
             @RequestParam(required = true) List<Long> userId
     ) {
         return ResponseEntity.ok(adminService.removeClubMember(clubId, userId));
+    }
       
 //  대시 보드
     @GetMapping("/count/users")
