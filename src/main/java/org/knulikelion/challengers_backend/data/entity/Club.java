@@ -30,7 +30,7 @@ public class Club extends BaseEntity {
     private String clubForm;
 
     @Column(name ="club_approved",nullable = false)
-    private Integer clubApproved;
+    private boolean clubApproved=false;
 
     @ManyToOne
     @JoinColumn(name = "clubManager") /*클럽 생성자 (User 외래키)*/

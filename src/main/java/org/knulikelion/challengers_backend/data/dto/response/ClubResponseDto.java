@@ -16,7 +16,7 @@ public class ClubResponseDto {
     private String logoUrl;
     private String clubDescription;
     private String clubForm;
-    private Integer clubApproved;
+    private boolean clubApproved;
     private String createdAt;
     private String updatedAt;
     private List<User> clubMembers;
