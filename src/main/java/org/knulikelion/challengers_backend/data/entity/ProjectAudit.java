@@ -21,13 +21,17 @@ public class ProjectAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private Long projectId;
 
     private EventType eventType;
 
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime deletedAt;
+    private String createdBy;
+
+    private String projectName;
+
+
+    @Column(nullable = true)
+    private LocalDateTime deletedAt = null;
 }

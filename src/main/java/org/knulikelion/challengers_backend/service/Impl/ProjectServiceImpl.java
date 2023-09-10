@@ -284,6 +284,7 @@ public class ProjectServiceImpl implements ProjectService {
     public BaseResponseDto removeProject(Long id) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
         Optional<Project> projectList = projectRepository.findById(id);
+        String creatorName  = null;
 
         if (projectList.isEmpty()) {
             baseResponseDto.setSuccess(false);
@@ -310,6 +311,8 @@ public class ProjectServiceImpl implements ProjectService {
             }
 
             if(project.getUser()!=null) {
+                User creator = userDAO.getByEmail(project.getUser().getEmail());
+                creatorName = creator.getUserName();
                 logger.info("[Log] 프로젝트 생성자 삭제");
                 project.setUser(null);
             }
@@ -322,7 +325,10 @@ public class ProjectServiceImpl implements ProjectService {
             ProjectAudit audit = new ProjectAudit();
             audit.setProjectId(project.getId());
             audit.setEventType(EventType.DELETED);
+            audit.setCreatedBy(project.getCreatedAt().toString());
             audit.setDeletedAt(LocalDateTime.now());
+            audit.setCreatedBy(creatorName);
+            audit.setProjectName(project.getProjectName());
             projectAuditRepository.save(audit);
 
 
@@ -429,6 +435,8 @@ public class ProjectServiceImpl implements ProjectService {
             audit.setProjectId(project.getId());
             audit.setEventType(EventType.CREATED);
             audit.setCreatedAt(LocalDateTime.now());
+            audit.setCreatedBy(founduser.getUserName());
+            audit.setProjectName(project.getProjectName());
             projectAuditRepository.save(audit);
 
 //            프로젝트 생성 프로세스 완료
