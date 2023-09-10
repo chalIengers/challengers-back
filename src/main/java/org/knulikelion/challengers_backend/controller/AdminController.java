@@ -149,7 +149,7 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<ClubResponseDto> getClubDetail(Long id) {
-        return ResponseEntity.ok(clubService.getClubDetailById(id));
+        return clubService.getClubDetailById(id);
     }
 
     @PutMapping(value = "/project/status")
