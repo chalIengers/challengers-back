@@ -16,6 +16,8 @@ import org.knulikelion.challengers_backend.service.ClubService;
 import org.knulikelion.challengers_backend.service.Exception.ClubNotFoundException;
 import org.knulikelion.challengers_backend.service.Exception.UnauthorizedException;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -84,15 +86,18 @@ public class ClubJoinServiceImpl implements ClubJoinService {
     }
 
     @Override
-    public BaseResponseDto acceptJoinRequest(Long clubId, String userEmail, String addUserEmail) {
+    public ResponseEntity<BaseResponseDto> acceptJoinRequest(Long clubId, String userEmail, String addUserEmail) {
         User user = userRepository.getByEmail(userEmail);
         Club club = clubRepository.getById(clubId);
-        BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-        if (!club.getClubManager().equals(user)) {
-            baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("클럽 멤버 수락 권한이 없습니다.");
-        } else {
+
+        if (!club.getClubManager().equals(user) || club.getClubApproved()!=1) {
+            return new ResponseEntity<>(BaseResponseDto.builder()
+                    .success(false)
+                    .msg("클럽 멤버 수락 권한이 없습니다.")
+                    .build(), HttpStatus.UNAUTHORIZED);
+        }
+        else {
             User findUser = userRepository.getByEmail(addUserEmail);
             ClubJoin clubJoin = clubJoinRepository.findByClubIdAndUserId(clubId, findUser.getId());
             clubJoin.setClub(null);
@@ -101,9 +106,8 @@ public class ClubJoinServiceImpl implements ClubJoinService {
             clubJoinRepository.delete(clubJoin);
 
             log.info("clubService [addMember] {} to {}", findUser.getEmail(), club.getClubName());
-            baseResponseDto = clubService.addMember(findUser.getId(), club.getId());
+            return ResponseEntity.ok(clubService.addMember(findUser.getId(), club.getId()));
         }
-        return baseResponseDto;
     }
 
     @Override
