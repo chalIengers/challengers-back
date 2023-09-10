@@ -1,6 +1,5 @@
 package org.knulikelion.challengers_backend.data.repository;
 
-import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.Project;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.springframework.data.domain.Page;
@@ -14,7 +13,5 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
     Page<Project> findAll(Pageable pageable);
     List<Project> findAllByUser(User user);
-    List<Project> findAllByClubAndUser(Club club,User user);
-
     long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
