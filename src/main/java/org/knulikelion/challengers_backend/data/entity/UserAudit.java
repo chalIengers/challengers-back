@@ -21,4 +21,5 @@ public class UserAudit {
     private EventType eventType;
     private LocalDateTime createdAt;
     private LocalDateTime deletedAt;
+    private String userName;
 }
