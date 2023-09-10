@@ -27,4 +27,9 @@ public class ClubAudit {
     private LocalDateTime createdAt;
 
     private LocalDateTime deletedAt;
+
+    private String createdBy;
+
+    private String clubName;
+
 }
