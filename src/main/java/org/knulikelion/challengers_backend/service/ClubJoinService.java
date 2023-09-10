@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface ClubJoinService {
 
-    BaseResponseDto createJoinRequest(String token, Long clubId, String comment);
+    ResponseEntity<BaseResponseDto> createJoinRequest(String token, Long clubId, String comment);
 
     ResponseEntity<BaseResponseDto> acceptJoinRequest(Long clubId, String userEmail, String addUserEmail);
 
-    BaseResponseDto rejectJoinRequest(Long clubId, String userEmail, String rejectUserEmail);
+    ResponseEntity<BaseResponseDto> rejectJoinRequest(Long clubId, String userEmail, String rejectUserEmail);
 
     List<PendingUserResponseDto> getPendingRequestUser(String userEmail, Long clubId);
 }
