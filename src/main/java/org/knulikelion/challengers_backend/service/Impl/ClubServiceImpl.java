@@ -67,7 +67,7 @@ public class ClubServiceImpl implements ClubService {
             clubResponseDto.setLogoUrl(selectedClub.getLogoUrl());
             clubResponseDto.setClubDescription(selectedClub.getClubDescription());
             clubResponseDto.setClubForm(selectedClub.getClubForm());
-            clubResponseDto.setClubApproved(selectedClub.getClubApproved());
+            clubResponseDto.setClubApproved(selectedClub.isClubApproved());
             clubResponseDto.setCreatedAt(String.valueOf(selectedClub.getCreatedAt()));
             clubResponseDto.setUpdatedAt(String.valueOf(selectedClub.getUpdatedAt()));
             if(!clubDAO.getUsersByClubId(id).isEmpty()){
@@ -80,9 +80,10 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public ClubResponseDto getClubDetailById(Long id) {
-        if (clubDAO.selectClubById(id).isEmpty()){
-            throw new RuntimeException("클럽이 존재하지 않음");
+    public ResponseEntity<ClubResponseDto> getClubDetailById(Long id) {
+        // 클럽이 없거나, 승인이 안된 클럽일 때
+        if (clubDAO.selectClubById(id).isEmpty() || !clubRepository.findById(id).get().isClubApproved()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         } else{
             Club selectedClub = clubDAO.selectClubById(id).get();
@@ -92,7 +93,7 @@ public class ClubServiceImpl implements ClubService {
             clubResponseDto.setLogoUrl(selectedClub.getLogoUrl());
             clubResponseDto.setClubDescription(selectedClub.getClubDescription());
             clubResponseDto.setClubForm(selectedClub.getClubForm());
-            clubResponseDto.setClubApproved(selectedClub.getClubApproved());
+            clubResponseDto.setClubApproved(selectedClub.isClubApproved());
             clubResponseDto.setCreatedAt(String.valueOf(selectedClub.getCreatedAt()));
             clubResponseDto.setUpdatedAt(String.valueOf(selectedClub.getUpdatedAt()));
             if(!clubDAO.getUsersByClubId(id).isEmpty()){
@@ -100,7 +101,7 @@ public class ClubServiceImpl implements ClubService {
             }else{
                 clubResponseDto.setClubMembers(null);
             }
-            return clubResponseDto;
+            return ResponseEntity.ok(clubResponseDto);
         }
     }
 
@@ -112,7 +113,7 @@ public class ClubServiceImpl implements ClubService {
         if (clubList.size() <= 28) {
             for(Club temp : clubList) {
                 ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
-                if(!temp.getLogoUrl().isEmpty()) {
+                if(!temp.getLogoUrl().isEmpty() && temp.isClubApproved()) {
                     clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
                     clubLogoResponseDtoList.add(clubLogoResponseDto);
                 }
@@ -125,7 +126,7 @@ public class ClubServiceImpl implements ClubService {
                 if(logoCount >= 28) break;
 
                 ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
-                if(!temp.getLogoUrl().isEmpty()) {
+                if(!temp.getLogoUrl().isEmpty() && temp.isClubApproved()) {
                     logoCount++;
                     clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
                     clubLogoResponseDtoList.add(clubLogoResponseDto);
@@ -200,7 +201,10 @@ public class ClubServiceImpl implements ClubService {
             club.setLogoUrl(clubCreateRequestDto.getLogoUrl());
             club.setClubDescription(clubCreateRequestDto.getClubDescription());
             club.setClubForm(clubCreateRequestDto.getClubForm());
-            club.setClubApproved(0);
+
+            // 승인 전
+            club.setClubApproved(false);
+
             club.setClubManager(user);
             club.setCreatedAt(LocalDateTime.now());
             club.setUpdatedAt(LocalDateTime.now());
@@ -218,16 +222,18 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public BaseResponseDto updateClub(String userEmail, ClubRequestDto clubRequestDto){
+    public ResponseEntity<BaseResponseDto> updateClub(String userEmail, ClubRequestDto clubRequestDto){
 
         Optional<Club> findClub = clubRepository.findById(clubRequestDto.getClubId());
         User user = userRepository.getByEmail(userEmail);
-        BaseResponseDto baseResponseDto = new BaseResponseDto();
 
-        if(findClub.isEmpty()){
-            baseResponseDto.setSuccess(false);
-            baseResponseDto.setMsg("클럽이 존재하지 않습니다.");
-            return baseResponseDto;
+
+        if(findClub.isEmpty() || !findClub.get().isClubApproved()){
+            return new ResponseEntity<>(BaseResponseDto.builder()
+                    .success(false)
+                    .msg("해당 클럽이 존재하지 않거나, 승인된 클럽이 아닙니다.")
+                    .build(),HttpStatus.UNAUTHORIZED);
+
         }else {
             Club club = findClub.get();
             if (club.getClubManager().equals(user)) { /*클럽 매니저만 클럽 수정*/
@@ -239,13 +245,18 @@ public class ClubServiceImpl implements ClubService {
 
                 clubRepository.save(club);
 
-                baseResponseDto.setSuccess(true);
-                baseResponseDto.setMsg("클럽 수정을 완료하였습니다.");
+                return ResponseEntity.ok(BaseResponseDto.builder()
+                        .success(true)
+                        .msg("클럽 수정을 완료하였습니다.")
+                        .build());
             } else {
-                baseResponseDto.setSuccess(false);
-                baseResponseDto.setMsg("클럽 수정 권한이 없습니다.");
+                return new ResponseEntity<>(
+                        BaseResponseDto.builder()
+                                .success(false)
+                                .msg("클럽 수정 권한이 없습니다.")
+                                .build(),HttpStatus.UNAUTHORIZED
+                );
             }
-            return baseResponseDto;
         }
     }
 
@@ -318,48 +329,65 @@ public class ClubServiceImpl implements ClubService {
         return baseResponseDto;
     }
 
+    // 유저의 클럽
     @Override
     public List<UserClubResponseDto> getUsersClub(String email) {
+
         User user = userRepository.getByEmail(email);
+        if(user == null){
+            throw new UserNotFoundException("[getUserClub] User is not found");
+        }
+
         List<UserClub> userClub = userClubRepository.findByUserId(user.getId());
         List<UserClubResponseDto> userClubResponseDtoList = new ArrayList<>();
 
         if(userClub != null) {
             for(UserClub temp : userClub) {
-                UserClubResponseDto userClubResponseDto = new UserClubResponseDto();
-                userClubResponseDto.setId(temp.getClub().getId());
-                userClubResponseDto.setName(temp.getClub().getClubName());
-                userClubResponseDto.setLogo(temp.getClub().getLogoUrl());
+                // 클럽이 승인 됐을 경우만.
+                if (temp.getClub().isClubApproved()) {
+                    UserClubResponseDto userClubResponseDto = new UserClubResponseDto();
+                    userClubResponseDto.setId(temp.getClub().getId());
+                    userClubResponseDto.setName(temp.getClub().getClubName());
+                    userClubResponseDto.setLogo(temp.getClub().getLogoUrl());
 
-                if(temp.getClub().getClubManager().getId() == user.getId()) {
-                    userClubResponseDto.setManager(true);
-                    userClubResponseDto.setManagerEmail(null);
-                } else {
-                    userClubResponseDto.setManager(false);
-                    userClubResponseDto.setManagerEmail(temp.getClub().getClubManager().getEmail());
+                    if (temp.getClub().getClubManager().getId() == user.getId()) {
+                        userClubResponseDto.setManager(true);
+                        userClubResponseDto.setManagerEmail(null);
+                    } else {
+                        userClubResponseDto.setManager(false);
+                        userClubResponseDto.setManagerEmail(temp.getClub().getClubManager().getEmail());
+                    }
+
+                    userClubResponseDtoList.add(userClubResponseDto);
                 }
-
-                userClubResponseDtoList.add(userClubResponseDto);
             }
 
-            return userClubResponseDtoList;
         }
 
-        return null;
+        return userClubResponseDtoList;
     }
 
     @Override
     public Page<ClubListResponseDto> findAllClubs(int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
-        return clubRepository.findAll(pageable).map(club -> new ClubListResponseDto(club.getId(),club.getClubName(),club.getLogoUrl()));
+        // 승인 된 클럽만 resp
+        return clubRepository.findAllByClubApproved(1,pageable).map(club -> new ClubListResponseDto(club.getId(),club.getClubName(),club.getLogoUrl()));
     }
 
     @Override
-    public List<ClubMemberResponseDto> getMembersByClubId(Long clubId) {
-        List<UserClub> userClubs = userClubRepository.findByClubId(clubId);
-        return userClubs.stream()
-                .map(userClub -> new ClubMemberResponseDto(userClub.getUser().getUserName(),userClub.getUser().getEmail()))
-                .collect(Collectors.toList());
+    public ResponseEntity<List<ClubMemberResponseDto>> getMembersByClubId(Long clubId) {
+        Optional<Club> findClub = clubRepository.findById(clubId);
+
+        // 클럽이 없으면, 404 또는 승인이 안된 클럽이면 권한이 없음
+        if(findClub.isEmpty() || !findClub.get().isClubApproved()){
+            log.error("[getMembersByClubId] : {}",findClub.get().getClubName());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            List<UserClub> userClubs = userClubRepository.findByClubId(clubId);
+            return ResponseEntity.ok(userClubs.stream()
+                    .map(userClub -> new ClubMemberResponseDto(userClub.getUser().getUserName(), userClub.getUser().getEmail()))
+                    .collect(Collectors.toList()));
+        }
     }
 
     @Override

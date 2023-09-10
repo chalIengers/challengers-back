@@ -14,7 +14,10 @@ import java.util.List;
 public interface ClubRepository extends JpaRepository<Club, Long> {
     List<Club> findAllByClubManager(User user);
 
-    Page<Club> findAll(Pageable pageable);
+    // clubApproved 0인 클럽 추출
+    Page<Club> findAllByClubApproved(Integer clubApproved, Pageable pageable);
+
+
 
     Club findByClubName(String clubName);
 
