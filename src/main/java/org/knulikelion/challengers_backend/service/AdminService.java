@@ -44,10 +44,8 @@ public interface AdminService {
     Long countTodayDeletedUsers();
     Long countDeletedUsers();
 //  홈 피드
-    List<UserAudit> getLatestUsers();
     List<ProjectAuditDto> getLatestCreatedProject();
     List<ProjectAuditDto> getLatestDeletedProject();
-    List<ClubAudit> getLatestClub();
     List<ClubAuditDto> getLatestCreatedClub();
     List<ClubAuditDto> getLatestDeletedClub();
     List<UserAuditDto> getLatestCreatedUser();

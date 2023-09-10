@@ -297,14 +297,6 @@ public class AdminController {
     }
 
 //  홈피드
-   @GetMapping("/latest-user-events")
-   @ApiImplicitParams({
-           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
-   })
-    public ResponseEntity<List<UserAudit>> getLatestUser() {
-        return ResponseEntity.ok(adminService.getLatestUsers());
-   }
-
    @GetMapping("/latest/created/projects")
    @ApiImplicitParams({
            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
@@ -336,15 +328,6 @@ public class AdminController {
    public ResponseEntity<List<ClubAuditDto>> getLatestDeletedClubs() {
         return ResponseEntity.ok(adminService.getLatestDeletedClub());
    }
-
-   @GetMapping("/latest-club-events")
-   @ApiImplicitParams({
-           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
-   })
-    public ResponseEntity<List<ClubAudit>> getLatestClub() {
-        return ResponseEntity.ok(adminService.getLatestClub());
-   }
-
    @GetMapping("/latest/created/users")
    @ApiImplicitParams({
            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
