@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,6 +23,10 @@ public class ProjectAudit {
 
     @Column(nullable = false)
     private Long projectId;
+
+    private EventType eventType;
+
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private LocalDateTime deletedAt;
