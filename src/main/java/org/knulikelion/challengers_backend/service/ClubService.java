@@ -15,7 +15,7 @@ public interface ClubService {
     Object getClubById(Long id);
     BaseResponseDto removeClub(Long id);
     ResponseEntity<BaseResponseDto> createClub(String userEmail ,ClubCreateRequestDto clubCreateRequestDto);
-    BaseResponseDto updateClub(String userEmail,ClubRequestDto clubRequestDto) throws Exception;
+    ResponseEntity<BaseResponseDto> updateClub(String userEmail,ClubRequestDto clubRequestDto) throws Exception;
     BaseResponseDto removeMember(String userEmail,String deleteUserEmail, Long clubId);
     BaseResponseDto addMember(Long userId, Long clubId);
     List<UserClubResponseDto> getUsersClub(String email);
@@ -24,6 +24,6 @@ public interface ClubService {
 
     List<ClubLogoResponseDto> getAllClubLogo();
     Page<ClubListResponseDto> findAllClubs(int page, int size);
-    List<ClubMemberResponseDto> getMembersByClubId(Long clubId);
+    ResponseEntity<List<ClubMemberResponseDto>> getMembersByClubId(Long clubId);
     ResponseEntity<BaseResponseDto> verifyCreateClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto);
 }
