@@ -44,12 +44,8 @@ public interface AdminService {
     Long countTodayDeletedUsers();
 
     Long countDeletedUsers();
-
-    List<Project> getLatestProjects();
-    List<Club> getLatestClubs();
-
     List<UserAudit> getLatestUsers();
     List<ProjectAuditDto> getLatestProject();
-    public List<ProjectAuditDto> getLatestDeletedProject();
+    List<ProjectAuditDto> getLatestDeletedProject();
     List<ClubAudit> getLatestClub();
 }

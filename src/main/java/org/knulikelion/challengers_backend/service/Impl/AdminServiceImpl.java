@@ -476,18 +476,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Project> getLatestProjects() {
-        Pageable topFive = PageRequest.of(0,5);
-        return projectRepository.findTopByOrderByIdDesc(topFive);
-    }
-
-    @Override
-    public List<Club> getLatestClubs() {
-        Pageable topFive = PageRequest.of(0,5);
-        return clubRepository.findTopByOrderByIdDesc(topFive);
-    }
-
-    @Override
     public List<UserAudit> getLatestUsers() {
         return userAuditRepository.findTop5ByOrderByCreatedAtDesc();
     }
