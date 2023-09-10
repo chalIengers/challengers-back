@@ -518,5 +518,39 @@ public class AdminServiceImpl implements AdminService {
     public List<ClubAudit> getLatestClub() {
         return clubAuditRepository.findTop5ByOrderByCreatedAtDesc();
     }
+
+    @Override
+    public List<ClubAuditDto> getLatestCreatedClub() {
+        List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            ClubAuditDto dto = new ClubAuditDto();
+            dto.setClubId(audit.getClubId());
+            dto.setProjectName(audit.getClubName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ClubAuditDto> getLatestDeletedClub() {
+        List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            ClubAuditDto dto = new ClubAuditDto();
+            dto.setClubId(audit.getClubId());
+            dto.setProjectName(audit.getClubName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }
 

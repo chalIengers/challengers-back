@@ -321,6 +321,22 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getLatestDeletedProject());
    }
 
+   @GetMapping("/latest/created/clubs")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+   public ResponseEntity<List<ClubAuditDto>> getLatestCreatedClubs() {
+        return ResponseEntity.ok(adminService.getLatestCreatedClub());
+   }
+
+   @GetMapping("/latest/deleted/clubs")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+   public ResponseEntity<List<ClubAuditDto>> getLatestDeletedClubs() {
+        return ResponseEntity.ok(adminService.getLatestDeletedClub());
+   }
+
    @GetMapping("/latest-club-events")
    @ApiImplicitParams({
            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
