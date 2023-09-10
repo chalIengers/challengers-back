@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
@@ -19,6 +20,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +35,7 @@ public class AdminServiceImpl implements AdminService {
     private final ProjectAuditRepository projectAuditRepository;
     private final ClubAuditRepository clubAuditRepository;
     private final UserAuditRepository userAuditRepository;
+    private final AdminHomeFeedRepository adminHomeFeedRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
@@ -40,7 +43,7 @@ public class AdminServiceImpl implements AdminService {
                             ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
                             AdminNoticeRepository adminNoticeRepository,
-                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository) {
+                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository, AdminHomeFeedRepository adminHomeFeedRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -51,6 +54,7 @@ public class AdminServiceImpl implements AdminService {
         this.projectAuditRepository = projectAuditRepository;
         this.clubAuditRepository = clubAuditRepository;
         this.userAuditRepository = userAuditRepository;
+        this.adminHomeFeedRepository = adminHomeFeedRepository;
     }
 
     @Override
@@ -474,6 +478,117 @@ public class AdminServiceImpl implements AdminService {
     public Long countDeletedUsers() {
         return userAuditRepository.count();
     }
+
+    @Override
+    public BaseResponseDto createHomeFeed(AdminHomeFeedRequestDto adminHomeFeedDto,String token) {
+        AdminHomeFeed adminHomeFeed = new AdminHomeFeed();
+        User founduser = userRepository.getByEmail(jwtTokenProvider.getUserEmail(token));
+        if (founduser == null) {
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("존재하지 않는 사용자");
+
+            return baseResponseDto;
+        }else {
+            adminHomeFeed.setName(founduser.getUserName());
+            adminHomeFeed.setRole(founduser.getRoles().toString());
+            adminHomeFeed.setImage(adminHomeFeedDto.getImage());
+            adminHomeFeed.setContents(adminHomeFeedDto.getContents());
+            adminHomeFeed.setCreatedAt(LocalDateTime.now());
+            adminHomeFeedRepository.save(adminHomeFeed);
+
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(true)
+                    .msg("홈피드 생성 완료")
+                    .build();
+            return baseResponseDto;
+        }
+    }
+
+    @Override
+    public Object getHomeFeed(Long id) {
+        Optional<AdminHomeFeed> feed = adminHomeFeedRepository.findById(id);
+        if (feed.isEmpty()) {
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("홈피드가 존재하지 않음");
+            return baseResponseDto;
+        }else {
+            AdminHomeFeed selectedFeed = feed.get();
+            AdminHomeFeedDto feedDto = new AdminHomeFeedDto();
+
+            feedDto.setName(selectedFeed.getName());
+            feedDto.setRole(selectedFeed.getRole());
+            feedDto.setContents(selectedFeed.getContents());
+            feedDto.setImage(selectedFeed.getImage());
+
+            return feedDto;
+        }
+    }
+
+    @Override
+    public List<AdminHomeFeedDto> getAllHomeFeed() {
+        List<AdminHomeFeed> feeds = adminHomeFeedRepository.findAllByOrderByCreatedAtDesc();
+
+        return feeds.stream().map(feed -> {
+            AdminHomeFeedDto dto = new AdminHomeFeedDto();
+            dto.setName(feed.getName());
+            dto.setRole(feed.getRole());
+            dto.setContents(feed.getContents());
+            dto.setImage(feed.getImage());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public BaseResponseDto updateHomeFeed(AdminHomeFeedRequestDto adminHomeFeedRequestDto,Long feedId) {
+        Optional<AdminHomeFeed> feed = adminHomeFeedRepository.findById(feedId);
+
+        if (feed.isEmpty()) {
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("홈피드가 존재하지 않음");
+            return baseResponseDto;
+        }else {
+            AdminHomeFeed selectedFeed = feed.get();
+
+            selectedFeed.setContents(adminHomeFeedRequestDto.getContents());
+            selectedFeed.setImage(adminHomeFeedRequestDto.getImage());
+            adminHomeFeedRepository.save(selectedFeed);
+
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(true)
+                    .msg("홈피드 수정 완료")
+                    .build();
+            return baseResponseDto;
+        }
+    }
+
+    @Override
+    public BaseResponseDto deleteHomeFeed(Long feedId) {
+        Optional<AdminHomeFeed> feed = adminHomeFeedRepository.findById(feedId);
+
+        if(feed.isEmpty()) {
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(false)
+                    .msg("홈피드가 존재하지 않음")
+                    .build();
+            return baseResponseDto;
+        }else {
+            adminHomeFeedRepository.deleteById(feedId);
+
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(true)
+                    .msg("홈 피드 삭제 완료")
+                    .build();
+            return baseResponseDto;
+        }
+
+    }
+
 
     @Override
     public List<ProjectAuditDto> getLatestCreatedProject() {
