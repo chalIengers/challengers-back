@@ -80,9 +80,10 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public ClubResponseDto getClubDetailById(Long id) {
-        if (clubDAO.selectClubById(id).isEmpty()){
-            throw new RuntimeException("클럽이 존재하지 않음");
+    public ResponseEntity<ClubResponseDto> getClubDetailById(Long id) {
+        // 클럽이 없거나, 승인이 안된 클럽일 때
+        if (clubDAO.selectClubById(id).isEmpty() || clubRepository.findById(id).get().getClubApproved() != 1){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         } else{
             Club selectedClub = clubDAO.selectClubById(id).get();
@@ -100,7 +101,7 @@ public class ClubServiceImpl implements ClubService {
             }else{
                 clubResponseDto.setClubMembers(null);
             }
-            return clubResponseDto;
+            return ResponseEntity.ok(clubResponseDto);
         }
     }
 
@@ -112,7 +113,7 @@ public class ClubServiceImpl implements ClubService {
         if (clubList.size() <= 28) {
             for(Club temp : clubList) {
                 ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
-                if(!temp.getLogoUrl().isEmpty()) {
+                if(!temp.getLogoUrl().isEmpty() && temp.getClubApproved() == 1) {
                     clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
                     clubLogoResponseDtoList.add(clubLogoResponseDto);
                 }
@@ -125,7 +126,7 @@ public class ClubServiceImpl implements ClubService {
                 if(logoCount >= 28) break;
 
                 ClubLogoResponseDto clubLogoResponseDto = new ClubLogoResponseDto();
-                if(!temp.getLogoUrl().isEmpty()) {
+                if(!temp.getLogoUrl().isEmpty() && temp.getClubApproved() == 1) {
                     logoCount++;
                     clubLogoResponseDto.setLogoUrl(temp.getLogoUrl());
                     clubLogoResponseDtoList.add(clubLogoResponseDto);
