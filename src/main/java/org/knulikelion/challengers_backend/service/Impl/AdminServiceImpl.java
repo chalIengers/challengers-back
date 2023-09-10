@@ -476,11 +476,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<UserAudit> getLatestUsers() {
-        return userAuditRepository.findTop5ByOrderByCreatedAtDesc();
-    }
-
-    @Override
     public List<ProjectAuditDto> getLatestCreatedProject() {
         List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
 
@@ -513,12 +508,6 @@ public class AdminServiceImpl implements AdminService {
             return dto;
         }).collect(Collectors.toList());
     }
-
-    @Override
-    public List<ClubAudit> getLatestClub() {
-        return clubAuditRepository.findTop5ByOrderByCreatedAtDesc();
-    }
-
     @Override
     public List<ClubAuditDto> getLatestCreatedClub() {
         List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
