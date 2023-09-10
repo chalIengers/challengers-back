@@ -8,6 +8,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ProjectRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectTechStackRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.data.repository.MonthlyViewsRepository;
 import org.knulikelion.challengers_backend.data.repository.ProjectAuditRepository;
@@ -317,9 +318,10 @@ public class ProjectServiceImpl implements ProjectService {
                 logger.info("[Log] 소속 클럽 삭제");
                 project.setClub(null);
             }
-//            프로젝트 감사 로그 기록.
+//            프로젝트 삭제 로그 기록.
             ProjectAudit audit = new ProjectAudit();
             audit.setProjectId(project.getId());
+            audit.setEventType(EventType.DELETED);
             audit.setDeletedAt(LocalDateTime.now());
             projectAuditRepository.save(audit);
 
@@ -421,6 +423,13 @@ public class ProjectServiceImpl implements ProjectService {
             monthlyView.setProject(createdProject);
             monthlyView.setViewCount(0);
             monthlyViewsRepository.save(monthlyView);
+
+//            프로젝트 생성 로그 기록
+            ProjectAudit audit = new ProjectAudit();
+            audit.setProjectId(project.getId());
+            audit.setEventType(EventType.CREATED);
+            audit.setCreatedAt(LocalDateTime.now());
+            projectAuditRepository.save(audit);
 
 //            프로젝트 생성 프로세스 완료
             BaseResponseDto baseResponseDto = BaseResponseDto.builder()
