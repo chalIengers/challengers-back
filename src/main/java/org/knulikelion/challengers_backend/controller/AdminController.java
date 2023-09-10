@@ -305,12 +305,12 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getLatestUsers());
    }
 
-   @GetMapping("/latest-project-events")
+   @GetMapping("/latest/created/projects")
    @ApiImplicitParams({
            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
    })
-    public ResponseEntity<List<ProjectAuditDto>> getLatestProject() {
-        return ResponseEntity.ok(adminService.getLatestProject());
+    public ResponseEntity<List<ProjectAuditDto>> getLatestCreatedProject() {
+        return ResponseEntity.ok(adminService.getLatestCreatedProject());
    }
 
    @GetMapping("/latest/deleted/projects")

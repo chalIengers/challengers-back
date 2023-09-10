@@ -481,7 +481,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<ProjectAuditDto> getLatestProject() {
+    public List<ProjectAuditDto> getLatestCreatedProject() {
         List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
 
         return audits.stream().map(audit -> {
