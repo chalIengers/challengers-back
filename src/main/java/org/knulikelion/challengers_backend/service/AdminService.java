@@ -45,7 +45,14 @@ public interface AdminService {
 
     Long countTodayDeletedUsers();
     Long countDeletedUsers();
+
 //  홈 피드
+
+    BaseResponseDto createHomeFeed(AdminHomeFeedRequestDto adminHomeFeedDto, String token);
+    Object getHomeFeed(Long id);
+    List<AdminHomeFeedDto> getAllHomeFeed();
+    BaseResponseDto updateHomeFeed(AdminHomeFeedRequestDto adminHomeFeedRequestDto,Long feedId);
+    BaseResponseDto deleteHomeFeed(Long feedId);
     List<ProjectAuditDto> getLatestCreatedProject();
     List<ProjectAuditDto> getLatestDeletedProject();
     List<ClubAuditDto> getLatestCreatedClub();

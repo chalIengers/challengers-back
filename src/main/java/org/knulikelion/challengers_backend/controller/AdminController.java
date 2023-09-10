@@ -334,6 +334,49 @@ public class AdminController {
     }
 
 //  홈피드
+
+    @PostMapping("/home/feed/create")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> createHomeFeed(@RequestBody AdminHomeFeedRequestDto adminHomeFeedDto, HttpServletRequest request) {
+        return ResponseEntity.ok(adminService.createHomeFeed(adminHomeFeedDto,request.getHeader("X-AUTH-TOKEN")));
+    }
+
+    @GetMapping("/home/feed/{id}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<Object> getOneHomeFeed(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getHomeFeed(id));
+    }
+
+    @GetMapping("/home/feed/all")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<List<AdminHomeFeedDto>> getAllHomeFeeds() {
+        return ResponseEntity.ok(adminService.getAllHomeFeed());
+    }
+
+    @PutMapping("/home/feed/update/{id}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> updateHomeFeed(AdminHomeFeedRequestDto adminHomeFeedRequestDto,@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.updateHomeFeed(adminHomeFeedRequestDto,id));
+    }
+
+    @DeleteMapping("/home/feed/delete/{id}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> deleteHomeFeed(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.deleteHomeFeed(id));
+    }
+
+
+
    @GetMapping("/latest/created/projects")
    @ApiImplicitParams({
            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
