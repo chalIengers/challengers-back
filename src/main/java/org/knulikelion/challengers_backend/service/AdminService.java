@@ -2,6 +2,7 @@ package org.knulikelion.challengers_backend.service;
 
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
+import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.springframework.data.domain.Page;
 
@@ -43,6 +44,12 @@ public interface AdminService {
     Long countTodayDeletedClubs();
 
     Long countTodayDeletedUsers();
-
     Long countDeletedUsers();
+//  홈 피드
+    List<ProjectAuditDto> getLatestCreatedProject();
+    List<ProjectAuditDto> getLatestDeletedProject();
+    List<ClubAuditDto> getLatestCreatedClub();
+    List<ClubAuditDto> getLatestDeletedClub();
+    List<UserAuditDto> getLatestCreatedUser();
+    List<UserAuditDto> getLatestDeletedUser();
 }

@@ -4,6 +4,7 @@ import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.AdminService;
@@ -19,6 +20,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -523,6 +525,105 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Long countDeletedUsers() {
         return userAuditRepository.count();
+    }
+
+    @Override
+    public List<ProjectAuditDto> getLatestCreatedProject() {
+        List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            ProjectAuditDto dto = new ProjectAuditDto();
+            dto.setProjectId(audit.getProjectId());
+            dto.setProjectName(audit.getProjectName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjectAuditDto> getLatestDeletedProject() {
+        List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            ProjectAuditDto dto = new ProjectAuditDto();
+            dto.setProjectId(audit.getProjectId());
+            dto.setProjectName(audit.getProjectName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+    @Override
+    public List<ClubAuditDto> getLatestCreatedClub() {
+        List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            ClubAuditDto dto = new ClubAuditDto();
+            dto.setClubId(audit.getClubId());
+            dto.setProjectName(audit.getClubName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ClubAuditDto> getLatestDeletedClub() {
+        List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            ClubAuditDto dto = new ClubAuditDto();
+            dto.setClubId(audit.getClubId());
+            dto.setProjectName(audit.getClubName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserAuditDto> getLatestCreatedUser() {
+        List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            UserAuditDto dto = new UserAuditDto();
+            dto.setUserId(audit.getUserId());
+            dto.setUserName(audit.getUserName());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserAuditDto> getLatestDeletedUser() {
+        List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            UserAuditDto dto = new UserAuditDto();
+            dto.setUserId(audit.getUserId());
+            dto.setUserName(audit.getUserName());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
 

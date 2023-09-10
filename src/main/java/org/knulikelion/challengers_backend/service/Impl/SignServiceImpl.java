@@ -10,7 +10,10 @@ import org.knulikelion.challengers_backend.data.dto.response.ResultResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.SignInResponseDto;
 import org.knulikelion.challengers_backend.data.entity.EmailVerification;
 import org.knulikelion.challengers_backend.data.entity.User;
+import org.knulikelion.challengers_backend.data.entity.UserAudit;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.repository.EmailVerificationRepository;
+import org.knulikelion.challengers_backend.data.repository.UserAuditRepository;
 import org.knulikelion.challengers_backend.data.repository.UserRepository;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.knulikelion.challengers_backend.service.MailService;
@@ -28,6 +31,7 @@ import java.util.List;
 @Service
 public class SignServiceImpl implements SignService {
     private final UserRepository userRepository;
+    private final UserAuditRepository userAuditRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationRepository emailVerificationRepository;
@@ -36,7 +40,8 @@ public class SignServiceImpl implements SignService {
 
 
     @Autowired
-    public SignServiceImpl(UserRepository userRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder, EmailVerificationRepository emailVerificationRepository, MailService mailService) {
+    public SignServiceImpl(UserRepository userRepository, UserAuditRepository userAuditRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder, EmailVerificationRepository emailVerificationRepository, MailService mailService) {
+        this.userAuditRepository = userAuditRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
@@ -186,6 +191,15 @@ public class SignServiceImpl implements SignService {
 
                 emailVerificationRepository.delete(emailVerification);
                 userRepository.save(user);
+
+                // 유저 생성 기록 저장.
+                UserAudit audit = new UserAudit();
+                audit.setUserId(user.getId());
+                audit.setUserName(userName);
+                audit.setEventType(EventType.CREATED);
+                audit.setCreatedAt(LocalDateTime.now());
+
+                userAuditRepository.save(audit);
 
                 return ResultResponseDto.builder()
                         .code(1)

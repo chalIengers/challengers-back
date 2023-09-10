@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
+import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.knulikelion.challengers_backend.service.AdminUserManageService;
@@ -331,4 +332,53 @@ public class AdminController {
     public ResponseEntity<BaseResponseDto> reActivateUser(@RequestBody List<String> userEmailList){
         return adminUserManageService.reRegisterUser(userEmailList);
     }
+
+//  홈피드
+   @GetMapping("/latest/created/projects")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+    public ResponseEntity<List<ProjectAuditDto>> getLatestCreatedProject() {
+        return ResponseEntity.ok(adminService.getLatestCreatedProject());
+   }
+
+   @GetMapping("/latest/deleted/projects")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+   public ResponseEntity<List<ProjectAuditDto>> getLatestDeletedProjects() {
+        return ResponseEntity.ok(adminService.getLatestDeletedProject());
+   }
+
+   @GetMapping("/latest/created/clubs")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+   public ResponseEntity<List<ClubAuditDto>> getLatestCreatedClubs() {
+        return ResponseEntity.ok(adminService.getLatestCreatedClub());
+   }
+
+   @GetMapping("/latest/deleted/clubs")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+   public ResponseEntity<List<ClubAuditDto>> getLatestDeletedClubs() {
+        return ResponseEntity.ok(adminService.getLatestDeletedClub());
+   }
+   @GetMapping("/latest/created/users")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+    public ResponseEntity<List<UserAuditDto>> getLatestCreatedUsers() {
+        return ResponseEntity.ok(adminService.getLatestCreatedUser());
+   }
+
+   @GetMapping("/latest/deleted/users")
+   @ApiImplicitParams({
+           @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+   })
+    public ResponseEntity<List<UserAuditDto>> getLatestDeletedUsers() {
+        return ResponseEntity.ok(adminService.getLatestDeletedUser());
+   }
+
 }

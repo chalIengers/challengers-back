@@ -10,6 +10,7 @@ import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.ClubAudit;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.repository.ClubAuditRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
@@ -141,12 +142,14 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public BaseResponseDto removeClub(Long id) {
         BaseResponseDto baseResponseDto = new BaseResponseDto();
+        String manager = null;
 
         if(clubDAO.selectClubById(id).isEmpty()){
             throw new ClubNotFoundException("해당 클럽이 존재하지 않습니다.");
         }else{
 //            클럽 매니저 삭제
             Club club = clubDAO.selectClubById(id).get();
+            manager = club.getClubManager().getUserName();
             club.setClubManager(null);
 
 //            UserClub 매핑 값 삭제
@@ -162,7 +165,11 @@ public class ClubServiceImpl implements ClubService {
 //           클럽 삭제 기록 저장.
             ClubAudit audit = new ClubAudit();
             audit.setClubId(club.getId());
+            audit.setEventType(EventType.DELETED);
+            audit.setClubName(club.getClubName());
+            audit.setCreatedBy(manager);
             audit.setDeletedAt(LocalDateTime.now());
+            audit.setCreatedAt(club.getCreatedAt());
 
             clubAuditRepository.save(audit);
 
@@ -213,6 +220,16 @@ public class ClubServiceImpl implements ClubService {
 
             // 클럽 생성자 멤버 추가
             addMember(user.getId(), createdClub.getId());
+
+            // 클럽 생성 기록 저장.
+            ClubAudit audit = new ClubAudit();
+            audit.setClubId(club.getId());
+            audit.setClubName(club.getClubName());
+            audit.setCreatedBy(club.getClubManager().getUserName());
+            audit.setEventType(EventType.CREATED);
+            audit.setCreatedAt(LocalDateTime.now());
+
+            clubAuditRepository.save(audit);
 
             return ResponseEntity.ok(BaseResponseDto.builder()
                     .success(true)
