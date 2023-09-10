@@ -6,6 +6,7 @@ import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordReques
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordWithCodeRequestDto;
 import org.knulikelion.challengers_backend.data.dto.response.UnregisterValidateResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.MailService;
 import org.knulikelion.challengers_backend.data.dto.request.UserRemoveRequestDto;
@@ -304,10 +305,10 @@ public class MyPageServiceImpl implements MyPageService {
 //        유저 삭제 기록 저장.
         UserAudit audit = new UserAudit();
         audit.setUserId(user.getId());
+        audit.setEventType(EventType.DELETED);
         audit.setDeletedAt(LocalDateTime.now());
 
         userAuditRepository.save(audit);
-
 
 //        회원 탈퇴 프로세스 완료
         return unregisterValidateResponseDto;
