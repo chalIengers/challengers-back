@@ -10,6 +10,7 @@ import org.knulikelion.challengers_backend.data.entity.Club;
 import org.knulikelion.challengers_backend.data.entity.ClubAudit;
 import org.knulikelion.challengers_backend.data.entity.User;
 import org.knulikelion.challengers_backend.data.entity.UserClub;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.repository.ClubAuditRepository;
 import org.knulikelion.challengers_backend.data.repository.ClubRepository;
 import org.knulikelion.challengers_backend.data.repository.UserClubRepository;
@@ -161,6 +162,7 @@ public class ClubServiceImpl implements ClubService {
 //           클럽 삭제 기록 저장.
             ClubAudit audit = new ClubAudit();
             audit.setClubId(club.getId());
+            audit.setEventType(EventType.DELETED);
             audit.setDeletedAt(LocalDateTime.now());
 
             clubAuditRepository.save(audit);
@@ -310,6 +312,14 @@ public class ClubServiceImpl implements ClubService {
                 userClub.setClub(club.get());
                 userClub.setUser(user);
                 userClubRepository.save(userClub);
+
+                // 클럽 생성 기록 저장.
+                ClubAudit audit = new ClubAudit();
+                audit.setClubId(clubId);
+                audit.setEventType(EventType.CREATED);
+                audit.setCreatedAt(LocalDateTime.now());
+
+                clubAuditRepository.save(audit);
 
                 baseResponseDto.setSuccess(true);
                 baseResponseDto.setMsg("성공적으로 클럽 멤버를 추가하였습니다.");
