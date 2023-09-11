@@ -150,7 +150,7 @@ public class AdminController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
     })
     public ResponseEntity<ClubResponseDto> getClubDetail(Long id) {
-        return ResponseEntity.ok(clubService.getClubDetailById(id));
+        return clubService.getClubDetailById(id);
     }
 
     @PutMapping(value = "/project/status")
@@ -180,6 +180,43 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllProject(page, size));
     }
 
+    @PostMapping(value = "/club/approve")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> changeClubStatus(
+            @RequestParam Long clubId,
+            @RequestParam(defaultValue = "ACCEPT") String status) {
+        return ResponseEntity.ok(adminService.changeClubStatus(clubId, status));
+    }
+
+    @DeleteMapping(value = "/club/remove")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> removeClub(@RequestParam Long clubId) {
+        return ResponseEntity.ok(clubService.removeClub(clubId));
+    }
+
+    @GetMapping(value = "/club/member")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<?> getAllClubMember(@RequestParam Long clubId) {
+        return ResponseEntity.ok(clubService.getMembersByClubId(clubId));
+    }
+
+    @DeleteMapping(value = "/club/member/remove")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "사용자 인증 Token", required = true, dataType = "String", paramType = "header")
+    })
+    public ResponseEntity<BaseResponseDto> removeClubMember(
+            @RequestParam(required = true) Long clubId,
+            @RequestParam(required = true) List<Long> userId
+    ) {
+        return ResponseEntity.ok(adminService.removeClubMember(clubId, userId));
+    }
+      
 //  대시 보드
     @GetMapping("/count/users")
     @ApiImplicitParams({

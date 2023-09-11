@@ -15,11 +15,13 @@ public interface AdminService {
     NoticeResponseDto getNotiDetail(Long id);
     BaseResponseDto deleteNoti(Long id);
     BaseResponseDto updateNoti(UpdateNoticeRequestDto updateNoticeRequestDto, String email);
+    BaseResponseDto removeClubMember(Long clubId, List<Long> userId);
     BaseResponseDto changeName(String email, String name);
     BaseResponseDto changeProfile(String email, String url);
     BaseResponseDto changePw(ChangePasswordRequestDto changePasswordRequestDto, String email);
     BaseResponseDto changeRole(String email, String role);
     Page<AdminClubResponseDto> getAllClubs(int page, int size);
+    BaseResponseDto changeClubStatus(Long clubId, String status);
     BaseResponseDto changeProjectStatus(Long projectId, ProjectStatus status);
     Page<AllProjectResponseDto> getAllProject(int page, int size);
 
