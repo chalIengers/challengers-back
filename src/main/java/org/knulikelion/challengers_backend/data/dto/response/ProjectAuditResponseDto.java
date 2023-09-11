@@ -1,5 +1,6 @@
 package org.knulikelion.challengers_backend.data.dto.response;
 
+
 import lombok.*;
 import org.knulikelion.challengers_backend.data.enums.EventType;
 
@@ -10,9 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ClubAuditDto {
-
-    private Long clubId;
+public class ProjectAuditResponseDto {
+    private Long projectId;
     private String projectName;
     private String createdBy;
     private LocalDateTime createdAt;

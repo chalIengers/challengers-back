@@ -1,6 +1,5 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
@@ -569,7 +568,7 @@ public class AdminServiceImpl implements AdminService {
             return baseResponseDto;
         }else {
             AdminHomeFeed selectedFeed = feed.get();
-            AdminHomeFeedDto feedDto = new AdminHomeFeedDto();
+            AdminHomeFeedResponseDto feedDto = new AdminHomeFeedResponseDto();
 
             feedDto.setName(selectedFeed.getName());
             feedDto.setRole(selectedFeed.getRole());
@@ -581,11 +580,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<AdminHomeFeedDto> getAllHomeFeed() {
+    public List<AdminHomeFeedResponseDto> getAllHomeFeed() {
         List<AdminHomeFeed> feeds = adminHomeFeedRepository.findAllByOrderByCreatedAtDesc();
 
         return feeds.stream().map(feed -> {
-            AdminHomeFeedDto dto = new AdminHomeFeedDto();
+            AdminHomeFeedResponseDto dto = new AdminHomeFeedResponseDto();
             dto.setName(feed.getName());
             dto.setRole(feed.getRole());
             dto.setContents(feed.getContents());
@@ -643,11 +642,11 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public List<ProjectAuditDto> getLatestCreatedProject() {
+    public List<ProjectAuditResponseDto> getLatestCreatedProject() {
         List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
 
         return audits.stream().map(audit -> {
-            ProjectAuditDto dto = new ProjectAuditDto();
+            ProjectAuditResponseDto dto = new ProjectAuditResponseDto();
             dto.setProjectId(audit.getProjectId());
             dto.setProjectName(audit.getProjectName());
             dto.setCreatedBy(audit.getCreatedBy());
@@ -660,11 +659,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<ProjectAuditDto> getLatestDeletedProject() {
+    public List<ProjectAuditResponseDto> getLatestDeletedProject() {
         List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
 
         return audits.stream().map(audit -> {
-            ProjectAuditDto dto = new ProjectAuditDto();
+            ProjectAuditResponseDto dto = new ProjectAuditResponseDto();
             dto.setProjectId(audit.getProjectId());
             dto.setProjectName(audit.getProjectName());
             dto.setCreatedBy(audit.getCreatedBy());
@@ -676,11 +675,11 @@ public class AdminServiceImpl implements AdminService {
         }).collect(Collectors.toList());
     }
     @Override
-    public List<ClubAuditDto> getLatestCreatedClub() {
+    public List<ClubAuditResponseDto> getLatestCreatedClub() {
         List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
 
         return audits.stream().map(audit -> {
-            ClubAuditDto dto = new ClubAuditDto();
+            ClubAuditResponseDto dto = new ClubAuditResponseDto();
             dto.setClubId(audit.getClubId());
             dto.setProjectName(audit.getClubName());
             dto.setCreatedBy(audit.getCreatedBy());
@@ -693,11 +692,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<ClubAuditDto> getLatestDeletedClub() {
+    public List<ClubAuditResponseDto> getLatestDeletedClub() {
         List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
 
         return audits.stream().map(audit -> {
-            ClubAuditDto dto = new ClubAuditDto();
+            ClubAuditResponseDto dto = new ClubAuditResponseDto();
             dto.setClubId(audit.getClubId());
             dto.setProjectName(audit.getClubName());
             dto.setCreatedBy(audit.getCreatedBy());
@@ -710,11 +709,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<UserAuditDto> getLatestCreatedUser() {
+    public List<UserAuditResponseDto> getLatestCreatedUser() {
         List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
 
         return audits.stream().map(audit -> {
-            UserAuditDto dto = new UserAuditDto();
+            UserAuditResponseDto dto = new UserAuditResponseDto();
             dto.setUserId(audit.getUserId());
             dto.setUserName(audit.getUserName());
             dto.setCreatedAt(audit.getCreatedAt());
@@ -726,11 +725,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<UserAuditDto> getLatestDeletedUser() {
+    public List<UserAuditResponseDto> getLatestDeletedUser() {
         List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
 
         return audits.stream().map(audit -> {
-            UserAuditDto dto = new UserAuditDto();
+            UserAuditResponseDto dto = new UserAuditResponseDto();
             dto.setUserId(audit.getUserId());
             dto.setUserName(audit.getUserName());
             dto.setCreatedAt(audit.getCreatedAt());

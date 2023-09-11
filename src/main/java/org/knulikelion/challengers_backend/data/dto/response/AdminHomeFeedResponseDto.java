@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class AdminHomeFeedDto {
+public class AdminHomeFeedResponseDto {
     private String contents;
     private String image;
     private String name;
