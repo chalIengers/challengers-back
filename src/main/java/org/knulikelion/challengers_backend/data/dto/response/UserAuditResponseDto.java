@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @Builder
-public class UserAuditDto {
+public class UserAuditResponseDto {
     private Long userId;
     private String userName;
     private LocalDateTime createdAt;
