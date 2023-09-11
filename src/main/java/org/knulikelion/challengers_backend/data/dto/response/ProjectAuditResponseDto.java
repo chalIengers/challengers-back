@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ProjectAuditDto {
+public class ProjectAuditResponseDto {
     private Long projectId;
     private String projectName;
     private String createdBy;
