@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ClubAuditDto {
+public class ClubAuditResponseDto {
 
     private Long clubId;
     private String projectName;
