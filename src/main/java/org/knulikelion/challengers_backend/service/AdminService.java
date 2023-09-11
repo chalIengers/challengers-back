@@ -2,12 +2,9 @@ package org.knulikelion.challengers_backend.service;
 
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
-import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AdminService {
@@ -48,13 +45,13 @@ public interface AdminService {
 
     BaseResponseDto createHomeFeed(AdminHomeFeedRequestDto adminHomeFeedDto, String token);
     Object getHomeFeed(Long id);
-    List<AdminHomeFeedDto> getAllHomeFeed();
+    List<AdminHomeFeedResponseDto> getAllHomeFeed();
     BaseResponseDto updateHomeFeed(AdminHomeFeedRequestDto adminHomeFeedRequestDto,Long feedId);
     BaseResponseDto deleteHomeFeed(Long feedId);
-    List<ProjectAuditDto> getLatestCreatedProject();
-    List<ProjectAuditDto> getLatestDeletedProject();
-    List<ClubAuditDto> getLatestCreatedClub();
-    List<ClubAuditDto> getLatestDeletedClub();
-    List<UserAuditDto> getLatestCreatedUser();
-    List<UserAuditDto> getLatestDeletedUser();
+    List<ProjectAuditResponseDto> getLatestCreatedProject();
+    List<ProjectAuditResponseDto> getLatestDeletedProject();
+    List<ClubAuditResponseDto> getLatestCreatedClub();
+    List<ClubAuditResponseDto> getLatestDeletedClub();
+    List<UserAuditResponseDto> getLatestCreatedUser();
+    List<UserAuditResponseDto> getLatestDeletedUser();
 }
