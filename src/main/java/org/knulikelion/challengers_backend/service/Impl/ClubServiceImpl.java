@@ -388,7 +388,7 @@ public class ClubServiceImpl implements ClubService {
     public Page<ClubListResponseDto> findAllClubs(int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
         // 승인 된 클럽만 resp
-        return clubRepository.findAllByClubApproved(1,pageable).map(club -> new ClubListResponseDto(club.getId(),club.getClubName(),club.getLogoUrl()));
+        return clubRepository.findAllByClubApprovedTrue(pageable).map(club -> new ClubListResponseDto(club.getId(),club.getClubName(),club.getLogoUrl()));
     }
 
     @Override
