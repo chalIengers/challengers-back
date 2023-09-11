@@ -1,14 +1,17 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.request.*;
 import org.knulikelion.challengers_backend.data.dto.response.*;
 import org.knulikelion.challengers_backend.data.entity.*;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.AdminService;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
 import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,8 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -26,29 +31,34 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final ClubRepository clubRepository;
+    private final UserClubRepository userClubRepository;
     private final AdminNoticeRepository adminNoticeRepository;
     private final ProjectRepository projectRepository;
     private final ProjectAuditRepository projectAuditRepository;
     private final ClubAuditRepository clubAuditRepository;
     private final UserAuditRepository userAuditRepository;
+    private final AdminHomeFeedRepository adminHomeFeedRepository;
 
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
                             JwtTokenProvider jwtTokenProvider,
                             ClubRepository clubRepository,
                             ExtraUserMappingRepository extraUserMappingRepository,
+                            UserClubRepository userClubRepository,
                             AdminNoticeRepository adminNoticeRepository,
-                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository) {
+                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository, AdminHomeFeedRepository adminHomeFeedRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.clubRepository = clubRepository;
         this.extraUserMappingRepository = extraUserMappingRepository;
+        this.userClubRepository = userClubRepository;
         this.adminNoticeRepository = adminNoticeRepository;
         this.projectRepository = projectRepository;
         this.projectAuditRepository = projectAuditRepository;
         this.clubAuditRepository = clubAuditRepository;
         this.userAuditRepository = userAuditRepository;
+        this.adminHomeFeedRepository = adminHomeFeedRepository;
     }
 
     @Override
@@ -237,6 +247,28 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public BaseResponseDto removeClubMember(Long clubId, List<Long> userId) {
+        if(clubRepository.findById(clubId).isPresent()) {
+            for(Long temp : userId) {
+                UserClub userClub = userClubRepository.findByUserIdAndClubId(temp, clubId);
+                if(userClub != null) {
+                    userClubRepository.delete(userClub);
+                }
+            }
+
+            return BaseResponseDto.builder()
+                    .success(true)
+                    .msg("작업이 완료되었습니다.")
+                    .build();
+        } else {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("해당 클럽을 찾을 수 없습니다.")
+                    .build();
+        }
+    }
+
+    @Override
     public BaseResponseDto changeName(String email, String name) {
         User user = userRepository.getByEmail(email);
 
@@ -361,6 +393,32 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public BaseResponseDto changeClubStatus(Long clubId, String status) {
+        Club club = clubRepository.getById(clubId);
+        String clubStatus = status.toUpperCase();
+
+        if(club == null) {
+            return BaseResponseDto.builder()
+                    .success(false)
+                    .msg("작업을 완료할 수 없습니다.")
+                    .build();
+        }
+
+        if(clubStatus.equals("ACCEPT")) {
+            club.setClubApproved(true);
+            clubRepository.save(club);
+        } else {
+            club.setClubApproved(false);
+            clubRepository.save(club);
+        }
+
+        return BaseResponseDto.builder()
+                .success(true)
+                .msg("클럽 상태 변경이 완료되었습니다.")
+                .build();
+    }
+
+    @Override
     public BaseResponseDto changeProjectStatus(Long projectId, ProjectStatus status) {
         Project project = projectRepository.getById(projectId);
         if(project == null) {
@@ -471,6 +529,216 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Long countDeletedUsers() {
         return userAuditRepository.count();
+    }
+
+    @Override
+    public BaseResponseDto createHomeFeed(AdminHomeFeedRequestDto adminHomeFeedDto,String token) {
+        AdminHomeFeed adminHomeFeed = new AdminHomeFeed();
+        User founduser = userRepository.getByEmail(jwtTokenProvider.getUserEmail(token));
+        if (founduser == null) {
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("존재하지 않는 사용자");
+
+            return baseResponseDto;
+        }else {
+            adminHomeFeed.setName(founduser.getUserName());
+            adminHomeFeed.setRole(founduser.getRoles().toString());
+            adminHomeFeed.setImage(adminHomeFeedDto.getImage());
+            adminHomeFeed.setContents(adminHomeFeedDto.getContents());
+            adminHomeFeed.setCreatedAt(LocalDateTime.now());
+            adminHomeFeedRepository.save(adminHomeFeed);
+
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(true)
+                    .msg("홈피드 생성 완료")
+                    .build();
+            return baseResponseDto;
+        }
+    }
+
+    @Override
+    public Object getHomeFeed(Long id) {
+        Optional<AdminHomeFeed> feed = adminHomeFeedRepository.findById(id);
+        if (feed.isEmpty()) {
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("홈피드가 존재하지 않음");
+            return baseResponseDto;
+        }else {
+            AdminHomeFeed selectedFeed = feed.get();
+            AdminHomeFeedDto feedDto = new AdminHomeFeedDto();
+
+            feedDto.setName(selectedFeed.getName());
+            feedDto.setRole(selectedFeed.getRole());
+            feedDto.setContents(selectedFeed.getContents());
+            feedDto.setImage(selectedFeed.getImage());
+
+            return feedDto;
+        }
+    }
+
+    @Override
+    public List<AdminHomeFeedDto> getAllHomeFeed() {
+        List<AdminHomeFeed> feeds = adminHomeFeedRepository.findAllByOrderByCreatedAtDesc();
+
+        return feeds.stream().map(feed -> {
+            AdminHomeFeedDto dto = new AdminHomeFeedDto();
+            dto.setName(feed.getName());
+            dto.setRole(feed.getRole());
+            dto.setContents(feed.getContents());
+            dto.setImage(feed.getImage());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public BaseResponseDto updateHomeFeed(AdminHomeFeedRequestDto adminHomeFeedRequestDto,Long feedId) {
+        Optional<AdminHomeFeed> feed = adminHomeFeedRepository.findById(feedId);
+
+        if (feed.isEmpty()) {
+            BaseResponseDto baseResponseDto = new BaseResponseDto();
+
+            baseResponseDto.setSuccess(false);
+            baseResponseDto.setMsg("홈피드가 존재하지 않음");
+            return baseResponseDto;
+        }else {
+            AdminHomeFeed selectedFeed = feed.get();
+
+            selectedFeed.setContents(adminHomeFeedRequestDto.getContents());
+            selectedFeed.setImage(adminHomeFeedRequestDto.getImage());
+            adminHomeFeedRepository.save(selectedFeed);
+
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(true)
+                    .msg("홈피드 수정 완료")
+                    .build();
+            return baseResponseDto;
+        }
+    }
+
+    @Override
+    public BaseResponseDto deleteHomeFeed(Long feedId) {
+        Optional<AdminHomeFeed> feed = adminHomeFeedRepository.findById(feedId);
+
+        if(feed.isEmpty()) {
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(false)
+                    .msg("홈피드가 존재하지 않음")
+                    .build();
+            return baseResponseDto;
+        }else {
+            adminHomeFeedRepository.deleteById(feedId);
+
+            BaseResponseDto baseResponseDto = BaseResponseDto.builder()
+                    .success(true)
+                    .msg("홈 피드 삭제 완료")
+                    .build();
+            return baseResponseDto;
+        }
+
+    }
+
+
+    @Override
+    public List<ProjectAuditDto> getLatestCreatedProject() {
+        List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            ProjectAuditDto dto = new ProjectAuditDto();
+            dto.setProjectId(audit.getProjectId());
+            dto.setProjectName(audit.getProjectName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjectAuditDto> getLatestDeletedProject() {
+        List<ProjectAudit> audits = projectAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            ProjectAuditDto dto = new ProjectAuditDto();
+            dto.setProjectId(audit.getProjectId());
+            dto.setProjectName(audit.getProjectName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+    @Override
+    public List<ClubAuditDto> getLatestCreatedClub() {
+        List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            ClubAuditDto dto = new ClubAuditDto();
+            dto.setClubId(audit.getClubId());
+            dto.setProjectName(audit.getClubName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ClubAuditDto> getLatestDeletedClub() {
+        List<ClubAudit> audits = clubAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            ClubAuditDto dto = new ClubAuditDto();
+            dto.setClubId(audit.getClubId());
+            dto.setProjectName(audit.getClubName());
+            dto.setCreatedBy(audit.getCreatedBy());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserAuditDto> getLatestCreatedUser() {
+        List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.CREATED);
+
+        return audits.stream().map(audit -> {
+            UserAuditDto dto = new UserAuditDto();
+            dto.setUserId(audit.getUserId());
+            dto.setUserName(audit.getUserName());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserAuditDto> getLatestDeletedUser() {
+        List<UserAudit> audits = userAuditRepository.findTop5ByEventTypeOrderByCreatedAtDesc(EventType.DELETED);
+
+        return audits.stream().map(audit -> {
+            UserAuditDto dto = new UserAuditDto();
+            dto.setUserId(audit.getUserId());
+            dto.setUserName(audit.getUserName());
+            dto.setCreatedAt(audit.getCreatedAt());
+            dto.setDeletedAt(audit.getDeletedAt());
+            dto.setEventType(audit.getEventType());
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
 

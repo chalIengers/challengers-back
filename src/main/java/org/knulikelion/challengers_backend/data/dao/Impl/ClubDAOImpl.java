@@ -43,7 +43,7 @@ public class ClubDAOImpl implements ClubDAO {
             clubInfo.setLogoUrl(club.getLogoUrl());
             clubInfo.setClubDescription(club.getClubDescription());
             clubInfo.setClubForm(club.getClubForm());
-            clubInfo.setClubApproved(club.getClubApproved());
+            clubInfo.setClubApproved(club.isClubApproved());
 
             updatedClub = clubRepository.save(clubInfo);
         }else{

@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.knulikelion.challengers_backend.data.enums.EventType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,9 +22,16 @@ public class ProjectAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private Long projectId;
 
-    @Column(nullable = false)
-    private LocalDateTime deletedAt;
+    private EventType eventType;
+
+    private LocalDateTime createdAt;
+
+    private String createdBy;
+
+    private String projectName;
+
+    @Column(nullable = true)
+    private LocalDateTime deletedAt = null;
 }

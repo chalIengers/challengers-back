@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +13,10 @@ import java.util.List;
 public interface ClubRepository extends JpaRepository<Club, Long> {
     List<Club> findAllByClubManager(User user);
 
-    Page<Club> findAll(Pageable pageable);
+    // clubApproved 0인 클럽 추출
+    Page<Club> findAllByClubApproved(Integer clubApproved, Pageable pageable);
+
+
 
     Club findByClubName(String clubName);
 
