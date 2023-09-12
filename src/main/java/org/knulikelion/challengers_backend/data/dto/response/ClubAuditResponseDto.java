@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ClubAuditResponseDto {
 
     private Long clubId;
-    private String projectName;
+    private String clubName;
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime deletedAt;
