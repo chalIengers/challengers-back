@@ -681,7 +681,7 @@ public class AdminServiceImpl implements AdminService {
         return audits.stream().map(audit -> {
             ClubAuditResponseDto dto = new ClubAuditResponseDto();
             dto.setClubId(audit.getClubId());
-            dto.setProjectName(audit.getClubName());
+            dto.setClubName(audit.getClubName());
             dto.setCreatedBy(audit.getCreatedBy());
             dto.setCreatedAt(audit.getCreatedAt());
             dto.setDeletedAt(audit.getDeletedAt());
@@ -698,7 +698,7 @@ public class AdminServiceImpl implements AdminService {
         return audits.stream().map(audit -> {
             ClubAuditResponseDto dto = new ClubAuditResponseDto();
             dto.setClubId(audit.getClubId());
-            dto.setProjectName(audit.getClubName());
+            dto.setClubName(audit.getClubName());
             dto.setCreatedBy(audit.getCreatedBy());
             dto.setCreatedAt(audit.getCreatedAt());
             dto.setDeletedAt(audit.getDeletedAt());
