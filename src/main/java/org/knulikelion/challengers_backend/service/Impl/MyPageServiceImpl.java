@@ -4,7 +4,6 @@ package org.knulikelion.challengers_backend.service.Impl;
 import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordRequestDto;
 import org.knulikelion.challengers_backend.data.dto.request.ChangePasswordWithCodeRequestDto;
-import org.knulikelion.challengers_backend.data.dto.response.ClubAuditDto;
 import org.knulikelion.challengers_backend.data.dto.response.UnregisterValidateResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.enums.EventType;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

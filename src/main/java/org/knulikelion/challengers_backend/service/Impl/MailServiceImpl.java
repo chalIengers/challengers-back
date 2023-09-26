@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class MailServiceImpl implements MailService {
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail = "sonmingi135@gmail.com";
+    private static final String senderEmail = "noreply.challengers@gmail.com";
     private static int number;
     public MailServiceImpl(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
