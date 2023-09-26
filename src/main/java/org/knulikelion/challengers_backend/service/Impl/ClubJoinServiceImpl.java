@@ -54,10 +54,10 @@ public class ClubJoinServiceImpl implements ClubJoinService {
         }
 
         /*클럽이 5개 속해있으면 막음*/
-        if(userClubResponseDtoList.size()>5){
+        if(userClubResponseDtoList.size()>=5){
             return new ResponseEntity<>(
                     BaseResponseDto.builder()
-                            .msg("소속된 클럽의 수가 5개를 초과했습니다.")
+                            .msg("가입할 수 있는 최대 클럽 수는 5개 입니다.")
                             .success(false)
                             .build(),
                     HttpStatus.UNAUTHORIZED

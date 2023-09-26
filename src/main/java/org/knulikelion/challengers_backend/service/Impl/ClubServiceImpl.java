@@ -186,6 +186,7 @@ public class ClubServiceImpl implements ClubService {
         User user = userRepository.findByEmail(userEmail);
         Club findClub = clubRepository.findByClubName(clubCreateRequestDto.getClubName());
         List<Club> clubList = clubRepository.findAllByClubManager(user);
+        log.info("[createClub] clubList : {}",clubList.size());
 
         if (user == null) {
             return new ResponseEntity<>(
@@ -198,10 +199,10 @@ public class ClubServiceImpl implements ClubService {
         }
 
         /*클럽이 5개 속해있으면 막음*/
-        if(clubList.size()>5){
+        if(clubList.size()>=5){
             return new ResponseEntity<>(
                     BaseResponseDto.builder()
-                            .msg("생성한 클럽의 수가 5개를 초과했습니다. 관리자에게 문의해주세요")
+                            .msg("생성할 수 있는 최대 클럽 수는 5개 입니다. 관리자에게 문의해주세요")
                             .success(false)
                             .build(),
                     HttpStatus.UNAUTHORIZED
@@ -229,6 +230,8 @@ public class ClubServiceImpl implements ClubService {
             club.setClubManager(user);
             club.setCreatedAt(LocalDateTime.now());
             club.setUpdatedAt(LocalDateTime.now());
+
+            clubRepository.save(club);
 
             // 클럽 생성 기록 저장.
             ClubAudit audit = new ClubAudit();
