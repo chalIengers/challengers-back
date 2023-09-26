@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dto.response.BaseResponseDto;
 import org.knulikelion.challengers_backend.data.dto.response.PendingUserResponseDto;
+import org.knulikelion.challengers_backend.data.dto.response.UserClubResponseDto;
 import org.knulikelion.challengers_backend.data.entity.*;
 import org.knulikelion.challengers_backend.data.enums.JoinRequestStatus;
 import org.knulikelion.challengers_backend.data.repository.ClubJoinRepository;
@@ -40,6 +41,7 @@ public class ClubJoinServiceImpl implements ClubJoinService {
 
         Club club = clubRepository.findById(clubId).orElseThrow(ClubNotFoundException::new);
         User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token));
+        List<UserClubResponseDto> userClubResponseDtoList = clubService.getUsersClub(jwtTokenProvider.getUserEmail(token));
 
         List<Club> foundClub = clubRepository.findAllByClubManager(user);
         for(Club temp : foundClub) {
@@ -49,6 +51,17 @@ public class ClubJoinServiceImpl implements ClubJoinService {
                         .msg("클럽 생성자는 가입을 요청할 수 없습니다.")
                         .build(),HttpStatus.BAD_REQUEST);
             }
+        }
+
+        /*클럽이 5개 속해있으면 막음*/
+        if(userClubResponseDtoList.size()>5){
+            return new ResponseEntity<>(
+                    BaseResponseDto.builder()
+                            .msg("소속된 클럽의 수가 5개를 초과했습니다.")
+                            .success(false)
+                            .build(),
+                    HttpStatus.UNAUTHORIZED
+            );
         }
 
         List<UserClub> userClubList = userClubRepository.findByUserId(user.getId());
