@@ -185,7 +185,7 @@ public class ClubServiceImpl implements ClubService {
     public ResponseEntity<BaseResponseDto> createClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
         User user = userRepository.findByEmail(userEmail);
         Club findClub = clubRepository.findByClubName(clubCreateRequestDto.getClubName());
-        List<UserClubResponseDto> userClubResponseDtoList = getUsersClub(userEmail);
+        List<Club> clubList = clubRepository.findAllByClubManager(user);
 
         if (user == null) {
             return new ResponseEntity<>(
@@ -198,10 +198,10 @@ public class ClubServiceImpl implements ClubService {
         }
 
         /*클럽이 5개 속해있으면 막음*/
-        if(userClubResponseDtoList.size()>5){
+        if(clubList.size()>5){
             return new ResponseEntity<>(
                     BaseResponseDto.builder()
-                            .msg("소속된 클럽의 수가 5개를 초과했습니다.")
+                            .msg("생성한 클럽의 수가 5개를 초과했습니다. 관리자에게 문의해주세요")
                             .success(false)
                             .build(),
                     HttpStatus.UNAUTHORIZED
@@ -229,11 +229,6 @@ public class ClubServiceImpl implements ClubService {
             club.setClubManager(user);
             club.setCreatedAt(LocalDateTime.now());
             club.setUpdatedAt(LocalDateTime.now());
-
-            Club createdClub = clubDAO.createClub(club);
-
-            // 클럽 생성자 멤버 추가
-            addMember(user.getId(), createdClub.getId());
 
             // 클럽 생성 기록 저장.
             ClubAudit audit = new ClubAudit();
@@ -425,7 +420,13 @@ public class ClubServiceImpl implements ClubService {
     public ResponseEntity<BaseResponseDto> verifyCreateClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
         User user = userRepository.findByEmail(userEmail);
         if(user == null){
-            throw new UserNotFoundException("해당 유저를 찾을 수 없습니다!");
+            return new ResponseEntity<>(
+                    BaseResponseDto.builder()
+                            .success(false)
+                            .msg("해당 유저를 찾을 수 없습니다.")
+                            .build(),
+                    HttpStatus.BAD_REQUEST
+            );
         }
 
         Club club = clubRepository.findByClubName(clubCreateRequestDto.getClubName());

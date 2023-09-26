@@ -8,9 +8,10 @@ import org.knulikelion.challengers_backend.data.enums.EventType;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 import org.knulikelion.challengers_backend.data.repository.*;
 import org.knulikelion.challengers_backend.service.AdminService;
+import org.knulikelion.challengers_backend.service.ClubService;
 import org.knulikelion.challengers_backend.service.Exception.UserNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,9 @@ public class AdminServiceImpl implements AdminService {
     private final ClubAuditRepository clubAuditRepository;
     private final UserAuditRepository userAuditRepository;
     private final AdminHomeFeedRepository adminHomeFeedRepository;
+    private final ClubService clubService;
 
+    @Autowired
     public AdminServiceImpl(UserRepository userRepository,
                             PasswordEncoder passwordEncoder,
                             JwtTokenProvider jwtTokenProvider,
@@ -45,7 +48,7 @@ public class AdminServiceImpl implements AdminService {
                             ExtraUserMappingRepository extraUserMappingRepository,
                             UserClubRepository userClubRepository,
                             AdminNoticeRepository adminNoticeRepository,
-                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository, AdminHomeFeedRepository adminHomeFeedRepository) {
+                            ProjectRepository projectRepository, ProjectAuditRepository projectAuditRepository, ClubAuditRepository clubAuditRepository, UserAuditRepository userAuditRepository, AdminHomeFeedRepository adminHomeFeedRepository, ClubService clubService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -58,6 +61,7 @@ public class AdminServiceImpl implements AdminService {
         this.clubAuditRepository = clubAuditRepository;
         this.userAuditRepository = userAuditRepository;
         this.adminHomeFeedRepository = adminHomeFeedRepository;
+        this.clubService = clubService;
     }
 
     @Override
@@ -403,9 +407,11 @@ public class AdminServiceImpl implements AdminService {
                     .build();
         }
 
+        // 관리자가 승인 해야 클럽 생성자가 클럽 멤버로 들어감.
         if(clubStatus.equals("ACCEPT")) {
             club.setClubApproved(true);
             clubRepository.save(club);
+            clubService.addMember(club.getClubManager().getId(),clubId);
         } else {
             club.setClubApproved(false);
             clubRepository.save(club);
