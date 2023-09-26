@@ -185,6 +185,8 @@ public class ClubServiceImpl implements ClubService {
     public ResponseEntity<BaseResponseDto> createClub(String userEmail, ClubCreateRequestDto clubCreateRequestDto) {
         User user = userRepository.findByEmail(userEmail);
         Club findClub = clubRepository.findByClubName(clubCreateRequestDto.getClubName());
+        List<UserClubResponseDto> userClubResponseDtoList = getUsersClub(userEmail);
+
         if (user == null) {
             return new ResponseEntity<>(
                     BaseResponseDto.builder()
@@ -194,6 +196,18 @@ public class ClubServiceImpl implements ClubService {
                     HttpStatus.BAD_REQUEST
             );
         }
+
+        /*클럽이 5개 속해있으면 막음*/
+        if(userClubResponseDtoList.size()>5){
+            return new ResponseEntity<>(
+                    BaseResponseDto.builder()
+                            .msg("소속된 클럽의 수가 5개를 초과했습니다.")
+                            .success(false)
+                            .build(),
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
+
         if (findClub != null) {
             return new ResponseEntity<>(
                     BaseResponseDto.builder()
@@ -395,7 +409,7 @@ public class ClubServiceImpl implements ClubService {
     public ResponseEntity<List<ClubMemberResponseDto>> getMembersByClubId(Long clubId) {
         Optional<Club> findClub = clubRepository.findById(clubId);
 
-        // 클럽이 없으면, 404 또는 승인이 안된 클럽이면 권한이 없음
+        // 클럽이 없으면 404 또는 승인이 안된 클럽이면 권한이 없음
         if(findClub.isEmpty() || !findClub.get().isClubApproved()){
             log.error("[getMembersByClubId] : {}",findClub.get().getClubName());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
