@@ -1,5 +1,9 @@
 package org.knulikelion.challengers_backend.service.Impl;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.knulikelion.challengers_backend.config.security.JwtTokenProvider;
 import org.knulikelion.challengers_backend.data.dao.*;
 import org.knulikelion.challengers_backend.data.dto.request.ProjectCrewRequestDto;
@@ -22,9 +26,13 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +77,8 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectTechStackRepository = projectTechStackRepository;
         this.projectAuditRepository = projectAuditRepository;
     }
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Override
     public Object getProjectById(Long id) {
@@ -139,126 +149,66 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Page<AllProjectResponseDto> getAllProject(int page, int size, String categories, String sort, List<String> techStacks) {
         String category = getCategory(categories);
-        String sortValue = sort.toUpperCase();
-        List<AllProjectResponseDto> allProjects;
+        JPAQuery<Project> projectJPAQuery = new JPAQuery<>(entityManager);
+        YearMonth currentYearMonth = YearMonth.now();
+        List<Project> projectList;
 
-        if (sortValue.equals("POPULAR")) {
-            Specification<MonthlyViews> spec = (root, query, cb) -> {
-                List<Predicate> predicates = new ArrayList<>();
-                if (!category.equals("ALL")) {
-                    predicates.add(cb.equal(root.get("project").get("projectCategory"), category));
-                }
+        BooleanExpression predicate = Expressions.asBoolean(true).isTrue(); // 초기 불린 식
 
-                if(!techStacks.isEmpty()) {
-                    List<Predicate> techPredicates= new ArrayList<>();
-                    Join<Project, ProjectTechStack> techJoin = root.join("project").join("techStacks");
-                    for (String tech : techStacks) {
-                        techPredicates.add(cb.equal(techJoin.get("techStackName"), tech));
-                    }
-                    predicates.add(cb.or(techPredicates.toArray(new Predicate[0])));
-                }
-
-                query.distinct(true);
-
-                return cb.and(predicates.toArray(new Predicate[0]));
-            };
-            List<MonthlyViews> monthlyViewsList = monthlyViewsRepository.findAll(spec);
-
-            allProjects = monthlyViewsList.stream()
-                    .map(monthlyView -> mapToAllProjectResponseDto(monthlyView.getProject()))
-                    .collect(Collectors.toList());
-
-        } else if(sortValue.equals("RECOMMEND")) {
-            Specification<Project> spec = (root , query , cb)->{
-                List<Predicate > predicates= new ArrayList<>();
-
-                if(!category.equals( "ALL" )){
-                    predicates.add(cb.equal(root.get( "projectCategory" ),category));
-                }
-
-                if(!techStacks.isEmpty()) {
-                    Predicate[] techPredicates = new Predicate[techStacks.size()];
-                    int i = 0;
-
-                    for(String tech : techStacks){
-                        Join<Project , ProjectTechStack > techJoin= root.join( "techStacks" );
-                        techPredicates[i++] = cb.equal(techJoin.get( "techStackName" ), tech);
-                    }
-
-                    predicates.add(cb.or(techPredicates));
-                }
-
-                query.distinct(true);
-
-                return cb.and(predicates.toArray(new Predicate[0]));
-            };
-
-            Sort sortParam = Sort.by(Sort.Direction.DESC, "updateCount");
-            List<Project> projectsList= projectRepository.findAll(spec, sortParam);
-
-            allProjects = projectsList.stream()
-                    .map(this::mapToAllProjectResponseDto)
-                    .collect(Collectors.toList());
-
-        } else {
-
-            Specification<Project> spec = (root , query , cb)->{
-                List<Predicate > predicates= new ArrayList<>();
-
-                if(!category.equals( "ALL" )){
-                    predicates.add(cb.equal(root.get( "projectCategory" ),category));
-                }
-
-                if(!techStacks.isEmpty()) {
-                    List<Predicate> techPredicates= new ArrayList<>();
-                    for(String tech : techStacks){
-                        Join<Project , ProjectTechStack > techJoin= root.join( "techStacks" );
-                        techPredicates.add(cb.equal(techJoin.get( "techStackName" ), tech));
-                    }
-                    predicates.add(cb.or(techPredicates.toArray(new Predicate[0])));
-                }
-
-                query.distinct(true);
-
-                return cb.and(predicates.toArray(new Predicate[0]));
-            };
-
-            List<Project> projectsList= projectRepository.findAll(spec);
-
-            allProjects = projectsList.stream()
-                    .map(this::mapToAllProjectResponseDto)
-                    .collect(Collectors.toList());
+        if(!category.equals("ALL")){ // ALL 을 제외한 다른 카테고리 일때 필터링 조건 추가
+            predicate = predicate.and(QProject.project.projectCategory.eq(category));
         }
 
-        if (page < 0) {
-            throw new IllegalArgumentException("Page index must not be less than zero.");
+        if(techStacks != null && !techStacks.isEmpty()){ // techStacks 를 반복문으로 조회하고 불린 표현식으로 추가 ex) ["Java","Spring"] 일때 두개 다 있을 때
+            BooleanExpression techPredicate = Expressions.asBoolean(true).isTrue();
+            for (String tech : techStacks){
+                techPredicate = techPredicate.and(QProject.project.techStacks.any().techStackName.eq(tech));
+            }
+            predicate = predicate.and(techPredicate);
         }
 
-        int start = Math.min(page * size, allProjects.size());
-        int end = Math.min(start + size, allProjects.size());
+        if(sort.toUpperCase().equals("POPULAR")){
+             projectList = projectJPAQuery.select(QProject.project)
+            .from(QProject.project)
+            .leftJoin(QMonthlyViews.monthlyViews).on(QProject.project.eq(QMonthlyViews.monthlyViews.project()))
+            .where(predicate.and(QMonthlyViews.monthlyViews.month.eq(currentYearMonth)))
+            .orderBy(QMonthlyViews.monthlyViews.viewCount.desc())
+            .offset(page*size)
+            .limit(size)
+            .fetch();
+        }else {
+            OrderSpecifier<?> orderBy; // 쿼리 결과의 정렬 순서 지정
 
-        return new PageImpl<>(allProjects.subList(start, end),
-                PageRequest.of(page,size),
-                allProjects.size());
-    }
-
-    private AllProjectResponseDto mapToAllProjectResponseDto(Project temp) {
-        AllProjectResponseDto allProjectResponseDto = new AllProjectResponseDto();
-
-        allProjectResponseDto.setId(temp.getId());
-        allProjectResponseDto.setProjectName(temp.getProjectName());
-        allProjectResponseDto.setProjectDescription(temp.getProjectDescription());
-        allProjectResponseDto.setImageUrl(temp.getImageUrl());
-        allProjectResponseDto.setProjectCategory(temp.getProjectCategory());
-
-        if (temp.getClub() != null) {
-            allProjectResponseDto.setBelongedClubName(temp.getClub().getClubName());
-        } else {
-            logger.info("[Log] 클럽이 존재하지 않음");
-            allProjectResponseDto.setBelongedClubName(null);
+            switch (sort.toUpperCase()) {
+                case "RECOMMEND": // update cnt 기준 내림차순
+                    orderBy = QProject.project.updateCount.desc();
+                    break;
+                case "NEW": // 생성 일자 기준 오름차순
+                    orderBy = QProject.project.createdAt.desc();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid sort parameter");
+            }
+            projectList = projectJPAQuery.from(QProject.project)
+                    .where(predicate)
+                    .orderBy(orderBy)
+                    .offset(page * size)
+                    .limit(size)
+                    .fetch();
         }
 
-        return allProjectResponseDto;
+        List<AllProjectResponseDto> responseDto = projectList.stream()
+                .map(project -> new AllProjectResponseDto().builder()
+                        .id(project.getId())
+                        .projectName(project.getProjectName())
+                        .projectDescription(project.getProjectDescription())
+                        .imageUrl(project.getImageUrl())
+                        .projectCategory(project.getProjectCategory())
+                        .belongedClubName(Optional.ofNullable(project.getClub()).map(Club::getClubName).orElse(null))
+                        .build())
+                        .collect(Collectors.toList());
+
+        return new PageImpl<>(responseDto);
     }
 
     private String getCategory(String categories) {
