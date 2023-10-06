@@ -5,6 +5,7 @@ import lombok.*;
 import org.knulikelion.challengers_backend.data.enums.ProjectStatus;
 
 import javax.persistence.*;
+import java.time.Month;
 import java.util.List;
 
 @Entity
@@ -55,4 +56,7 @@ public class Project extends BaseEntity{
 
     @OneToMany(mappedBy = "project")
     private List<ProjectTechStack> techStacks;
+
+    @OneToMany(mappedBy = "project")
+    private List<MonthlyViews> monthlyViews;
 }
