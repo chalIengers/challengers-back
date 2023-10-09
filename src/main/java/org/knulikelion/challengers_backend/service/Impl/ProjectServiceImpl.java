@@ -197,6 +197,8 @@ public class ProjectServiceImpl implements ProjectService {
                     .fetch();
         }
 
+        long totalElements = projectJPAQuery.clone().fetchCount();
+
         List<AllProjectResponseDto> responseDto = projectList.stream()
                 .map(project -> new AllProjectResponseDto().builder()
                         .id(project.getId())
@@ -208,7 +210,7 @@ public class ProjectServiceImpl implements ProjectService {
                         .build())
                         .collect(Collectors.toList());
 
-        return new PageImpl<>(responseDto);
+        return new PageImpl<>(responseDto, PageRequest.of(page,size),totalElements);
     }
 
     private String getCategory(String categories) {
